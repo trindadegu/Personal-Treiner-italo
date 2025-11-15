@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Painel de Administração - Italo Ruan Personal Trainer">
+    <title>Painel de Administração - Italo Ruan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+
+        :root {
+            --primary-color: #1e40af;
+            --secondary-color: #059669;
+            --danger-color: #dc2626;
+            --warning-color: #f59e0b;
+            --light-bg: #f8fafc;
+            --dark-text: #0f172a;
+            --gray-text: #475569;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 12px 24px rgba(30, 64, 175, 0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--dark-text);
+            background-color: var(--light-bg);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .admin-header {
+            background: white;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .header-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .header-brand i {
+            font-size: 2rem;
+        }
+
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            font-weight: 500;
+        }
+
+        .btn-logout {
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .btn-logout:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: calc(100vh - 80px);
+        }
+
+        .sidebar {
+            width: 250px;
+            background: white;
+            border-right: 2px solid var(--border-color);
+            padding: 2rem 0;
+            position: sticky;
+            top: 80px;
+            height: calc(100vh - 80px);
+            overflow-y: auto;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            background: none;
+            border: none;
+            padding: 1rem 1.5rem;
+            text-align: left;
+            cursor: pointer;
+            color: var(--gray-text);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+            font-size: 1rem;
+        }
+
+        .nav-item:hover {
+            background: var(--light-bg);
+            color: var(--primary-color);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(30, 64, 175, 0.1), transparent);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+        }
+
+        .nav-item i {
+            font-size: 1.2rem;
+            min-width: 24px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .section-header h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2rem;
+            color: var(--dark-text);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), #1e3a8a);
+            color: white;
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--secondary-color), #047857);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(5, 150, 105, 0.2);
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+        }
+
+        .treinos-container {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .treinos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .training-card {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .training-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-5px);
+        }
+
+        .training-card h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .training-card .focus {
+            background: linear-gradient(135deg, rgba(30, 64, 175, 0.1), rgba(5, 150, 105, 0.1));
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+
+        .training-card .exercises {
+            list-style: none;
+        }
+
+        .training-card .exercises li {
+            padding: 0.5rem 0;
+            color: var(--gray-text);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .training-card .exercises li:last-child {
+            border-bottom: none;
+        }
+
+        .training-card .exercises i {
+            color: var(--secondary-color);
+        }
+
+        .students-container {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .students-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .student-card {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .student-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-5px);
+        }
+
+        .student-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            margin: 0 auto 1rem;
+        }
+
+        .student-card h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .student-card p {
+            color: var(--gray-text);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .student-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        .student-actions button {
+            flex: 1;
+            padding: 0.6rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: var(--transition);
+        }
+
+        .btn-edit-student {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-edit-student:hover {
+            background: #1e3a8a;
+        }
+
+        .btn-view-student {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-view-student:hover {
+            background: #047857;
+        }
+
+        .editor-container {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .selector-box {
+            margin-bottom: 2rem;
+        }
+
+        .selector-box label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--dark-text);
+        }
+
+        .selector-box select {
+            width: 100%;
+            max-width: 400px;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .selector-box select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+
+        .days-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .day-tab {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--border-color);
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            color: var(--gray-text);
+        }
+
+        .day-tab:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .day-tab.active {
+            background: linear-gradient(135deg, var(--primary-color), #1e3a8a);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .editor-box {
+            background: var(--light-bg);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .editor-header {
+            margin-bottom: 2rem;
+        }
+
+        .editor-header h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            color: var(--dark-text);
+            margin-bottom: 1rem;
+        }
+
+        .focus-input {
+            width: 100%;
+            max-width: 500px;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .focus-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+
+        .exercises-editor {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .exercises-list {
+            margin-bottom: 1.5rem;
+        }
+
+        .exercise-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: var(--light-bg);
+            border-radius: 8px;
+            align-items: center;
+        }
+
+        .exercise-item input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .exercise-item button {
+            padding: 0.5rem 1rem;
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .exercise-item button:hover {
+            background: #b91c1c;
+        }
+
+        .exercise-video-input {
+            font-size: 0.85rem;
+            color: var(--gray-text);
+        }
+
+        .exercise-video-input::placeholder {
+            font-size: 0.85rem;
+        }
+
+        .editor-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .settings-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        .settings-box {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .settings-box h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: var(--dark-text);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark-text);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .modal-header h2 {
+            font-family: 'Poppins', sans-serif;
+            color: var(--dark-text);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--gray-text);
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--danger-color);
+        }
+
+        .modal-body {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow-hover);
+            display: none;
+            z-index: 3000;
+            animation: slideUp 0.3s ease;
+        }
+
+        .toast.active {
+            display: block;
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--secondary-color);
+            color: var(--secondary-color);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger-color);
+            color: var(--danger-color);
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                top: 0;
+                border-right: none;
+                border-bottom: 2px solid var(--border-color);
+                padding: 1rem 0;
+            }
+
+            .sidebar-nav {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .nav-item {
+                padding: 0.75rem 1rem;
+                flex: 1;
+                min-width: 150px;
+            }
+
+            .main-content {
+                padding: 1.5rem;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .treinos-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .students-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-container {
+                grid-template-columns: 1fr;
+            }
+
+            .days-tabs {
+                flex-wrap: wrap;
+            }
+
+            .day-tab {
+                flex: 1;
+                min-width: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="admin-header">
+        <div class="header-container">
+            <div class="header-brand">
+                <i class="fas fa-dumbbell"></i>
+                <span>Painel de Administração</span>
+            </div>
+            <div class="header-info">
+                <span>Italo Ruan - Personal Trainer</span>
+                <button class="btn-logout" onclick="logoutAdmin()">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <button class="nav-item active" onclick="switchTab('meu-treino')">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Meu Treino</span>
+                </button>
+                <button class="nav-item" onclick="switchTab('alunos')">
+                    <i class="fas fa-users"></i>
+                    <span>Meus Alunos</span>
+                </button>
+                <button class="nav-item" onclick="switchTab('editar-treino')">
+                    <i class="fas fa-edit"></i>
+                    <span>Editar Treinos</span>
+                </button>
+                <button class="nav-item" onclick="switchTab('configuracoes')">
+                    <i class="fas fa-cog"></i>
+                    <span>Configurações</span>
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Meu Treino Tab -->
+            <section id="meu-treino" class="tab-content active">
+                <div class="section-header">
+                    <h2>Meu Programa de Treinos</h2>
+                    <p>Visualize seu treino semanal</p>
+                </div>
+
+                <div class="treinos-container">
+                    <div id="meuTreinoGrid" class="treinos-grid">
+                        <!-- Treinos serão carregados aqui via JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Alunos Tab -->
+            <section id="alunos" class="tab-content">
+                <div class="section-header">
+                    <h2>Meus Alunos</h2>
+                    <button class="btn btn-primary" onclick="openAddStudentModal()">
+                        <i class="fas fa-plus"></i> Adicionar Aluno
+                    </button>
+                </div>
+
+                <div class="students-container">
+                    <div id="studentsList" class="students-grid">
+                        <!-- Alunos serão carregados aqui -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Editar Treinos Tab -->
+            <section id="editar-treino" class="tab-content">
+                <div class="section-header">
+                    <h2>Editar Treinos</h2>
+                    <p>Selecione um aluno ou você mesmo para editar os treinos</p>
+                </div>
+
+                <div class="editor-container">
+                    <!-- Seletor de Aluno -->
+                    <div class="selector-box">
+                        <label for="studentSelector">Selecione um aluno:</label>
+                        <select id="studentSelector" onchange="loadStudentForEditing()">
+                            <option value="self">Meu Treino (Italo Ruan)</option>
+                        </select>
+                    </div>
+
+                    <!-- Editor de Dias -->
+                    <div class="days-tabs">
+                        <button class="day-tab active" onclick="switchDay('segunda')">Segunda</button>
+                        <button class="day-tab" onclick="switchDay('terca')">Terça</button>
+                        <button class="day-tab" onclick="switchDay('quarta')">Quarta</button>
+                        <button class="day-tab" onclick="switchDay('quinta')">Quinta</button>
+                        <button class="day-tab" onclick="switchDay('sexta')">Sexta</button>
+                    </div>
+
+                    <!-- Editor de Exercícios -->
+                    <div class="editor-box">
+                        <div class="editor-header">
+                            <h3 id="dayTitle">Segunda-feira</h3>
+                            <input type="text" id="focusArea" placeholder="Foco do treino (ex: Peito + Tríceps)" class="focus-input">
+                        </div>
+
+                        <div class="exercises-editor">
+                            <div id="exercisesList" class="exercises-list">
+                                <!-- Exercícios serão carregados aqui -->
+                            </div>
+
+                            <button class="btn btn-secondary" onclick="addExercise()">
+                                <i class="fas fa-plus"></i> Adicionar Exercício
+                            </button>
+                        </div>
+
+                        <div class="editor-actions">
+                            <button class="btn btn-primary" onclick="saveDayTraining()">
+                                <i class="fas fa-save"></i> Salvar Treino
+                            </button>
+                            <button class="btn btn-danger" onclick="resetDay()">
+                                <i class="fas fa-undo"></i> Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Configurações Tab -->
+            <section id="configuracoes" class="tab-content">
+                <div class="section-header">
+                    <h2>Configurações</h2>
+                </div>
+
+                <div class="settings-container">
+                    <div class="settings-box">
+                        <h3>Informações Pessoais</h3>
+                        <div class="form-group">
+                            <label>Nome:</label>
+                            <input type="text" id="personalName" value="Italo Ruan" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label>WhatsApp:</label>
+                            <input type="text" id="whatsappNumber" value="+55 11 94877-3263" class="form-input">
+                        </div>
+                        <button class="btn btn-primary" onclick="saveSettings()">
+                            <i class="fas fa-save"></i> Salvar Configurações
+                        </button>
+                    </div>
+
+                    <div class="settings-box">
+                        <h3>Dados</h3>
+                        <button class="btn btn-warning" onclick="exportData()">
+                            <i class="fas fa-download"></i> Exportar Dados
+                        </button>
+                        <button class="btn btn-danger" onclick="resetAllData()">
+                            <i class="fas fa-trash"></i> Limpar Todos os Dados
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal para Adicionar Aluno -->
+    <div id="addStudentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Adicionar Novo Aluno</h2>
+                <button class="modal-close" onclick="closeAddStudentModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Nome do Aluno:</label>
+                    <input type="text" id="studentName" class="form-input" placeholder="Digite o nome do aluno">
+                </div>
+                <div class="form-group">
+                    <label>WhatsApp (Opcional):</label>
+                    <input type="text" id="studentWhatsapp" class="form-input" placeholder="(11) 99999-9999">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeAddStudentModal()">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveNewStudent()">Adicionar Aluno</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Editar Aluno -->
+    <div id="editStudentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Aluno</h2>
+                <button class="modal-close" onclick="closeEditStudentModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Nome do Aluno:</label>
+                    <input type="text" id="editStudentName" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label>WhatsApp:</label>
+                    <input type="text" id="editStudentWhatsapp" class="form-input">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeEditStudentModal()">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveEditedStudent()">Salvar Alterações</button>
+                <button class="btn btn-danger" onclick="deleteStudent()">Deletar Aluno</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notificação Toast -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // ========================================
+        // CONFIGURAÇÕES INICIAIS
+        // ========================================
+
+        const STORAGE_KEY = 'italoRuanTrainings';
+        const STUDENTS_KEY = 'italoRuanStudents';
+        const ADMIN_KEY = 'italoAdminLogin';
+
+        // Dados padrão
+        const defaultTrainings = {
+            segunda: {
+                focus: 'Peito + Tríceps + Ombro',
+                exercises: [
+                    'Supino reto com halteres: 4x20-15-12-10',
+                    'Supino inclinado com halteres: 4x10',
+                    'Crucifixo no banco inclinado: 4x10',
+                    'Crucifixo polia: 4x10',
+                    'Elevação lateral com halteres: 4x10',
+                    'Remada alta com barra: 4x10',
+                    'Elevação frontal com corda na polia: 3x15',
+                    'Tríceps na polia: 4x10',
+                    'Tríceps patada: 4x15'
+                ]
+            },
+            terca: {
+                focus: 'Perna - Quadríceps',
+                exercises: [
+                    'Agachamento sumô (mobilidade): 2x20 segundos',
+                    'Mobilidade de tornozelo e quadril: 2x10/lado',
+                    'Cadeira extensora: 4x20',
+                    'Agachamento livre com barra: 4x10',
+                    'Leg press 45: 4x10',
+                    'Agachamento afundo com halteres: 4x10',
+                    'Cadeira flexora: 4x20-15-12-10',
+                    'Cadeira adutora: 3x20',
+                    'Panturinha máquina: 3x15'
+                ]
+            },
+            quarta: {
+                focus: 'Costas + Posteriores + Ombro + Bíceps',
+                exercises: [
+                    'Puxada pela frente com pegada aberta: 4x20-15-12-10',
+                    'Puxada pela frente com pegada supinada: 3x10',
+                    'Remada curvada com barra: 4x10',
+                    'Remada curvada com halteres: 3x10',
+                    'Pulldown polia alta: 3x10',
+                    'Remada baixa na polia (use a barra): 3x10',
+                    'Encolhimento de ombro: 3x10',
+                    'Rosca direta com barra: 4x10',
+                    'Rosca scott com barra W: 4x10'
+                ]
+            },
+            quinta: {
+                focus: 'Pernas',
+                exercises: [
+                    'Agachamento sumô (mobilidade): 2x20 segundos',
+                    'Mobilidade de tornozelo e quadril: 2x10/lado',
+                    'Cadeira abdutora: 3x20',
+                    'Levantamento terra com barra: 4x10',
+                    'Mesa flexora bilateral: 3x10',
+                    'Elevação pélvica: 4x10',
+                    'Cadeira flexora: 4x20-15-12-10',
+                    'Stiff joelho flexionado com halteres: 4x10',
+                    'Cadeira extensora: 4x20'
+                ]
+            },
+            sexta: {
+                focus: 'Glúteos + Costas',
+                exercises: [
+                    'Desenvolvimento máquina: 4x10',
+                    'Desenvolvimento arnold: 4x10',
+                    'Elevação lateral sentado (rest-pause): 4x10',
+                    'Voador inverso com pegada pronada (rest-pause): 4x10',
+                    'Elevação frontal com corda na polia (drop-set): 4x10',
+                    'Remada com corda na polia alta: 4x10',
+                    'Encolhimento de ombro: 4x10'
+                ]
+            }
+        };
+
+        let currentDay = 'segunda';
+        let currentStudent = 'self';
+        let editingStudentId = null;
+
+        // ========================================
+        // INICIALIZAÇÃO
+        // ========================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAdminLogin();
+            initializeData();
+            loadMyTrainings();
+            loadStudents();
+            populateStudentSelector();
+        });
+
+        // ========================================
+        // VERIFICAÇÃO DE LOGIN
+        // ========================================
+
+        function checkAdminLogin() {
+            const isLoggedIn = localStorage.getItem(ADMIN_KEY);
+            if (!isLoggedIn) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        function logoutAdmin() {
+            if (confirm('Tem certeza que deseja sair?')) {
+                localStorage.removeItem(ADMIN_KEY);
+                window.location.href = 'login.html';
+            }
+        }
+
+        // ========================================
+        // GERENCIAMENTO DE DADOS
+        // ========================================
+
+        function initializeData() {
+            if (!localStorage.getItem(STORAGE_KEY)) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                    self: defaultTrainings
+                }));
+            }
+            
+            if (!localStorage.getItem(STUDENTS_KEY)) {
+                localStorage.setItem(STUDENTS_KEY, JSON.stringify([]));
+            }
+        }
+
+        function getTrainings() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            return data ? JSON.parse(data) : { self: defaultTrainings };
+        }
+
+        function saveTrainings(trainings) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(trainings));
+            showToast('Treinos salvos com sucesso!', 'success');
+        }
+
+        function getStudents() {
+            const data = localStorage.getItem(STUDENTS_KEY);
+            return data ? JSON.parse(data) : [];
+        }
+
+        function saveStudents(students) {
+            localStorage.setItem(STUDENTS_KEY, JSON.stringify(students));
+        }
+
+        // ========================================
+        // NAVEGAÇÃO DE TABS
+        // ========================================
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            const tabElement = document.getElementById(tabName);
+            if (tabElement) {
+                tabElement.classList.add('active');
+            }
+            
+            const navItem = document.querySelector(`[onclick="switchTab('${tabName}')"]`);
+            if (navItem) {
+                navItem.classList.add('active');
+            }
+        }
+
+        // ========================================
+        // SEÇÃO MEU TREINO
+        // ========================================
+
+        function loadMyTrainings() {
+            const trainings = getTrainings();
+            const myTraining = trainings.self;
+            const grid = document.getElementById('meuTreinoGrid');
+            
+            grid.innerHTML = '';
+            
+            const days = ['segunda', 'terca', 'quarta', 'quinta', 'sexta'];
+            const dayNames = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira'];
+            
+            days.forEach((day, index) => {
+                const training = myTraining[day];
+                const card = document.createElement('div');
+                card.className = 'training-card';
+                
+                const exercisesHtml = training.exercises
+                    .map(ex => {
+                        const exerciseName = typeof ex === 'string' ? ex : ex.name;
+                        const hasVideo = typeof ex === 'object' && ex.video;
+                        const videoIcon = hasVideo ? '<i class="fas fa-video" style="color: #dc2626; margin-left: 0.5rem;" title="Vídeo disponível"></i>' : '';
+                        return `<li><i class="fas fa-check-circle"></i> ${exerciseName}${videoIcon}</li>`;
+                    })
+                    .join('');
+                
+                card.innerHTML = `
+                    <h3>${dayNames[index]}</h3>
+                    <div class="focus">${training.focus}</div>
+                    <ul class="exercises">
+                        ${exercisesHtml}
+                    </ul>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        // ========================================
+        // SEÇÃO ALUNOS
+        // ========================================
+
+        function loadStudents() {
+            const students = getStudents();
+            const container = document.getElementById('studentsList');
+            
+            container.innerHTML = '';
+            
+            if (students.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">Nenhum aluno adicionado ainda. Clique em "Adicionar Aluno" para começar.</p>';
+                return;
+            }
+            
+            students.forEach(student => {
+                const card = document.createElement('div');
+                card.className = 'student-card';
+                
+                const initials = student.name
+                    .split(' ')
+                    .map(n => n[0])
+                    .join('')
+                    .toUpperCase()
+                    .slice(0, 2);
+                
+                card.innerHTML = `
+                    <div class="student-avatar">${initials}</div>
+                    <h3>${student.name}</h3>
+                    <p>${student.whatsapp || 'Sem WhatsApp'}</p>
+                    <div class="student-actions">
+                        <button class="btn-view-student" onclick="viewStudentTraining('${student.id}')">
+                            <i class="fas fa-eye"></i> Ver Treino
+                        </button>
+                        <button class="btn-edit-student" onclick="openEditStudentModal('${student.id}')">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        function openAddStudentModal() {
+            document.getElementById('addStudentModal').classList.add('active');
+        }
+
+        function closeAddStudentModal() {
+            document.getElementById('addStudentModal').classList.remove('active');
+            document.getElementById('studentName').value = '';
+            document.getElementById('studentWhatsapp').value = '';
+        }
+
+        function saveNewStudent() {
+            const name = document.getElementById('studentName').value.trim();
+            const whatsapp = document.getElementById('studentWhatsapp').value.trim();
+            
+            if (!name) {
+                showToast('Por favor, digite o nome do aluno', 'error');
+                return;
+            }
+            
+            const students = getStudents();
+            const trainings = getTrainings();
+            
+            const newStudent = {
+                id: Date.now().toString(),
+                name: name,
+                whatsapp: whatsapp || ''
+            };
+            
+            students.push(newStudent);
+            saveStudents(students);
+            
+            trainings[newStudent.id] = JSON.parse(JSON.stringify(defaultTrainings));
+            saveTrainings(trainings);
+            
+            closeAddStudentModal();
+            loadStudents();
+            populateStudentSelector();
+            showToast(`Aluno "${name}" adicionado com sucesso!`, 'success');
+        }
+
+        function openEditStudentModal(studentId) {
+            const students = getStudents();
+            const student = students.find(s => s.id === studentId);
+            
+            if (!student) return;
+            
+            editingStudentId = studentId;
+            document.getElementById('editStudentName').value = student.name;
+            document.getElementById('editStudentWhatsapp').value = student.whatsapp || '';
+            document.getElementById('editStudentModal').classList.add('active');
+        }
+
+        function closeEditStudentModal() {
+            document.getElementById('editStudentModal').classList.remove('active');
+            editingStudentId = null;
+        }
+
+        function saveEditedStudent() {
+            const students = getStudents();
+            const student = students.find(s => s.id === editingStudentId);
+            
+            if (!student) return;
+            
+            student.name = document.getElementById('editStudentName').value.trim();
+            student.whatsapp = document.getElementById('editStudentWhatsapp').value.trim();
+            
+            saveStudents(students);
+            closeEditStudentModal();
+            loadStudents();
+            populateStudentSelector();
+            showToast('Aluno atualizado com sucesso!', 'success');
+        }
+
+        function deleteStudent() {
+            if (!confirm('Tem certeza que deseja deletar este aluno? Seus treinos também serão removidos.')) {
+                return;
+            }
+            
+            let students = getStudents();
+            students = students.filter(s => s.id !== editingStudentId);
+            saveStudents(students);
+            
+            let trainings = getTrainings();
+            delete trainings[editingStudentId];
+            saveTrainings(trainings);
+            
+            closeEditStudentModal();
+            loadStudents();
+            populateStudentSelector();
+            showToast('Aluno removido com sucesso!', 'success');
+        }
+
+        function viewStudentTraining(studentId) {
+            currentStudent = studentId;
+            loadStudentForEditing();
+            switchTab('editar-treino');
+        }
+
+        // ========================================
+        // SEÇÃO EDITAR TREINOS
+        // ========================================
+
+        function populateStudentSelector() {
+            const selector = document.getElementById('studentSelector');
+            const students = getStudents();
+            
+            while (selector.options.length > 1) {
+                selector.remove(1);
+            }
+            
+            students.forEach(student => {
+                const option = document.createElement('option');
+                option.value = student.id;
+                option.textContent = student.name;
+                selector.appendChild(option);
+            });
+        }
+
+        function loadStudentForEditing() {
+            currentStudent = document.getElementById('studentSelector').value;
+            switchDay('segunda');
+        }
+
+        function switchDay(day) {
+            currentDay = day;
+            
+            document.querySelectorAll('.day-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            const dayBtn = document.querySelector(`[onclick="switchDay('${day}')"]`);
+            if (dayBtn) {
+                dayBtn.classList.add('active');
+            }
+            
+            const dayNames = {
+                segunda: 'Segunda-feira',
+                terca: 'Terça-feira',
+                quarta: 'Quarta-feira',
+                quinta: 'Quinta-feira',
+                sexta: 'Sexta-feira'
+            };
+            
+            document.getElementById('dayTitle').textContent = dayNames[day];
+            loadDayTraining();
+        }
+
+        function loadDayTraining() {
+            const trainings = getTrainings();
+            const studentTraining = trainings[currentStudent] || trainings.self;
+            const dayTraining = studentTraining[currentDay];
+            
+            document.getElementById('focusArea').value = dayTraining.focus;
+            
+            const exercisesList = document.getElementById('exercisesList');
+            exercisesList.innerHTML = '';
+            
+            dayTraining.exercises.forEach((exercise, index) => {
+                const item = document.createElement('div');
+                item.className = 'exercise-item';
+                
+                // Suportar tanto string simples quanto objeto com vídeo
+                const exerciseName = typeof exercise === 'string' ? exercise : exercise.name;
+                const videoUrl = typeof exercise === 'object' && exercise.video ? exercise.video : '';
+                
+                item.innerHTML = `
+                    <div style="flex: 1; display: flex; flex-direction: column; gap: 0.5rem;">
+                        <input type="text" value="${exerciseName}" class="exercise-input" data-index="${index}" placeholder="Nome do exercício">
+                        <input type="url" value="${videoUrl}" class="exercise-video-input" data-index="${index}" placeholder="Link do vídeo demonstração (opcional)">
+                    </div>
+                    <button onclick="removeExercise(${index})" title="Remover exercício">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+                exercisesList.appendChild(item);
+            });
+        }
+
+        function addExercise() {
+            const exercisesList = document.getElementById('exercisesList');
+            const index = exercisesList.children.length;
+            
+            const item = document.createElement('div');
+            item.className = 'exercise-item';
+            item.innerHTML = `
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <input type="text" placeholder="Digite o exercício (ex: Supino: 4x10)" class="exercise-input" data-index="${index}">
+                    <input type="url" placeholder="Link do vídeo demonstração (opcional)" class="exercise-video-input" data-index="${index}">
+                </div>
+                <button onclick="removeExercise(${index})" title="Remover exercício">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            
+            exercisesList.appendChild(item);
+        }
+
+        function removeExercise(index) {
+            const exercisesList = document.getElementById('exercisesList');
+            const items = exercisesList.querySelectorAll('.exercise-item');
+            if (items[index]) {
+                items[index].remove();
+            }
+        }
+
+        function saveDayTraining() {
+            const trainings = getTrainings();
+            const studentTraining = trainings[currentStudent] || trainings.self;
+            
+            const focusArea = document.getElementById('focusArea').value.trim();
+            
+            // Coletar exercícios com vídeos
+            const exerciseInputs = Array.from(document.querySelectorAll('.exercise-input'));
+            const videoInputs = Array.from(document.querySelectorAll('.exercise-video-input'));
+            
+            const exercises = exerciseInputs
+                .map((input, index) => {
+                    const name = input.value.trim();
+                    const video = videoInputs[index] ? videoInputs[index].value.trim() : '';
+                    
+                    if (name.length === 0) return null;
+                    
+                    // Se tiver vídeo, salvar como objeto, senão como string simples
+                    if (video) {
+                        return { name: name, video: video };
+                    } else {
+                        return name;
+                    }
+                })
+                .filter(value => value !== null);
+            
+            if (!focusArea) {
+                showToast('Por favor, digite o foco do treino', 'error');
+                return;
+            }
+            
+            if (exercises.length === 0) {
+                showToast('Por favor, adicione pelo menos um exercício', 'error');
+                return;
+            }
+            
+            studentTraining[currentDay] = {
+                focus: focusArea,
+                exercises: exercises
+            };
+            
+            trainings[currentStudent] = studentTraining;
+            saveTrainings(trainings);
+            loadMyTrainings();
+            showToast('Treino salvo com sucesso!', 'success');
+        }
+
+        function resetDay() {
+            if (confirm('Deseja descartar as alterações?')) {
+                loadDayTraining();
+            }
+        }
+
+        // ========================================
+        // CONFIGURAÇÕES
+        // ========================================
+
+        function saveSettings() {
+            const name = document.getElementById('personalName').value;
+            const whatsapp = document.getElementById('whatsappNumber').value;
+            
+            showToast('Configurações salvas com sucesso!', 'success');
+        }
+
+        function exportData() {
+            const trainings = getTrainings();
+            const students = getStudents();
+            
+            const data = {
+                trainings: trainings,
+                students: students,
+                exportDate: new Date().toLocaleString('pt-BR')
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `italo-ruan-treinos-${Date.now()}.json`;
+            link.click();
+            
+            showToast('Dados exportados com sucesso!', 'success');
+        }
+
+        function resetAllData() {
+            if (confirm('ATENÇÃO! Isso vai deletar TODOS os treinos e alunos. Tem certeza?')) {
+                if (confirm('Esta ação é irreversível. Confirmar novamente?')) {
+                    localStorage.removeItem(STORAGE_KEY);
+                    localStorage.removeItem(STUDENTS_KEY);
+                    initializeData();
+                    loadMyTrainings();
+                    loadStudents();
+                    populateStudentSelector();
+                    showToast('Todos os dados foram resetados', 'success');
+                }
+            }
+        }
+
+        // ========================================
+        // NOTIFICAÇÕES
+        // ========================================
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('active');
+            
+            setTimeout(() => {
+                toast.classList.remove('active');
+            }, 3000);
+        }
+
+        // ========================================
+        // UTILITÁRIOS
+        // ========================================
+
+        document.addEventListener('click', function(event) {
+            const addModal = document.getElementById('addStudentModal');
+            const editModal = document.getElementById('editStudentModal');
+            
+            if (event.target === addModal) {
+                closeAddStudentModal();
+            }
+            
+            if (event.target === editModal) {
+                closeEditStudentModal();
+            }
+        });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeAddStudentModal();
+                closeEditStudentModal();
+            }
+        });
+    </script>
+</body>
+</html>

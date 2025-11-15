@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Login - Italo Ruan Personal Trainer">
+    <title>Login - Italo Ruan Personal Trainer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+
+        :root {
+            --primary-color: #1e40af;
+            --secondary-color: #059669;
+            --danger-color: #dc2626;
+            --light-bg: #f8fafc;
+            --dark-text: #0f172a;
+            --gray-text: #475569;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 12px 24px rgba(30, 64, 175, 0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow-hover);
+            width: 100%;
+            max-width: 450px;
+            overflow: hidden;
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .login-header i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .login-header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .login-tabs {
+            display: flex;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .login-tab {
+            flex: 1;
+            padding: 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--gray-text);
+            transition: var(--transition);
+            font-size: 1rem;
+            position: relative;
+        }
+
+        .login-tab:hover {
+            color: var(--primary-color);
+        }
+
+        .login-tab.active {
+            color: var(--primary-color);
+        }
+
+        .login-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary-color);
+        }
+
+        .login-content {
+            padding: 2.5rem 2rem;
+        }
+
+        .login-form {
+            display: none;
+        }
+
+        .login-form.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--dark-text);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: var(--gray-text);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, var(--primary-color), #1e3a8a);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .btn-forgot-password {
+            width: 100%;
+            padding: 0.75rem;
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn-forgot-password:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: var(--danger-color);
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: none;
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .error-message.active {
+            display: block;
+        }
+
+        .success-message {
+            background: #d1fae5;
+            color: var(--secondary-color);
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: none;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .success-message.active {
+            display: block;
+        }
+
+        .login-footer {
+            text-align: center;
+            padding: 1.5rem 2rem;
+            background: var(--light-bg);
+            color: var(--gray-text);
+            font-size: 0.9rem;
+        }
+
+        .password-hint {
+            font-size: 0.85rem;
+            color: var(--gray-text);
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                border-radius: 0;
+            }
+
+            .login-header {
+                padding: 2rem 1.5rem;
+            }
+
+            .login-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .login-header i {
+                font-size: 2.5rem;
+            }
+
+            .login-content {
+                padding: 2rem 1.5rem;
+            }
+
+            .login-tabs {
+                flex-direction: column;
+            }
+
+            .login-tab {
+                padding: 1rem;
+                border-bottom: 2px solid var(--border-color);
+            }
+
+            .login-tab.active::after {
+                height: 0;
+            }
+
+            .login-tab.active {
+                background: var(--light-bg);
+                border-left: 4px solid var(--primary-color);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <!-- Header -->
+        <div class="login-header">
+            <i class="fas fa-dumbbell"></i>
+            <h1>Italo Ruan</h1>
+            <p>Personal Trainer</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="login-tabs">
+            <button class="login-tab active" onclick="switchLoginTab('admin')">
+                <i class="fas fa-lock"></i> Admin
+            </button>
+            <button class="login-tab" onclick="switchLoginTab('student')">
+                <i class="fas fa-user"></i> Aluno
+            </button>
+        </div>
+
+        <!-- Content -->
+        <div class="login-content">
+            <!-- Admin Login -->
+            <form class="login-form active" id="adminForm" onsubmit="loginAdmin(event)">
+                <div class="error-message" id="adminError"></div>
+                
+                <div class="form-group">
+                    <label for="adminUser">Usuário:</label>
+                    <input type="text" id="adminUser" placeholder="Digite seu usuário" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="adminPassword">Senha:</label>
+                    <input type="password" id="adminPassword" placeholder="Digite sua senha" required>
+                </div>
+
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Entrar como Admin
+                </button>
+            </form>
+
+            <!-- Student Login -->
+            <form class="login-form" id="studentForm" onsubmit="loginStudent(event)">
+                <div class="error-message" id="studentError"></div>
+                <div class="success-message" id="studentSuccess"></div>
+                
+                <div class="form-group">
+                    <label for="studentSelect">Selecione seu nome:</label>
+                    <select id="studentSelect" required>
+                        <option value="">-- Escolha seu nome --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="studentPassword">Senha:</label>
+                    <input type="password" id="studentPassword" placeholder="Digite sua senha" required>
+                    <div class="password-hint">💡 Senha padrão: <strong>1234</strong></div>
+                </div>
+
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Entrar como Aluno
+                </button>
+
+                <button type="button" class="btn-forgot-password" onclick="forgotPassword()">
+                    <i class="fab fa-whatsapp"></i> Esqueci minha senha
+                </button>
+            </form>
+        </div>
+
+        <!-- Footer -->
+        <div class="login-footer">
+            <p>© 2024 Italo Ruan Personal Trainer. Todos os direitos reservados.</p>
+        </div>
+    </div>
+
+    <script>
+        // ========================================
+        // CONFIGURAÇÕES
+        // ========================================
+
+        const ADMIN_KEY = 'italoAdminLogin';
+        const STUDENT_KEY = 'italoStudentLogin';
+        const STUDENTS_STORAGE_KEY = 'italoRuanStudents';
+        const ADMIN_CREDENTIALS = {
+            user: 'italo',
+            password: '123456'
+        };
+
+        // ⚠️ IMPORTANTE: Configure aqui o número do WhatsApp do admin
+        // Formato: código do país + DDD + número (sem espaços ou caracteres especiais)
+        // Exemplo: 5511987654321
+        const ADMIN_WHATSAPP = '5511948773263'; // ← ALTERE AQUI!
+
+        // Senha padrão para todos os alunos (fácil de lembrar!)
+        const DEFAULT_STUDENT_PASSWORD = '1234';
+
+        // ========================================
+        // INICIALIZAÇÃO
+        // ========================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStudentsList();
+            checkExistingLogin();
+        });
+
+        // ========================================
+        // VERIFICAÇÃO DE LOGIN EXISTENTE
+        // ========================================
+
+        function checkExistingLogin() {
+            const adminLogin = localStorage.getItem(ADMIN_KEY);
+            const studentLogin = localStorage.getItem(STUDENT_KEY);
+
+            if (adminLogin) {
+                window.location.href = 'admin.html';
+            }
+
+            if (studentLogin) {
+                const studentId = JSON.parse(studentLogin).id;
+                window.location.href = `treino-aluno.html?id=${studentId}`;
+            }
+        }
+
+        // ========================================
+        // NAVEGAÇÃO DE TABS
+        // ========================================
+
+        function switchLoginTab(tab) {
+            const tabs = document.querySelectorAll('.login-tab');
+            const forms = document.querySelectorAll('.login-form');
+
+            tabs.forEach(t => t.classList.remove('active'));
+            forms.forEach(f => f.classList.remove('active'));
+
+            const activeTab = document.querySelector(`[onclick="switchLoginTab('${tab}')"]`);
+            const activeForm = document.getElementById(`${tab}Form`);
+
+            if (activeTab) activeTab.classList.add('active');
+            if (activeForm) activeForm.classList.add('active');
+
+            clearErrors();
+        }
+
+        // ========================================
+        // LOGIN ADMIN
+        // ========================================
+
+        function loginAdmin(event) {
+            event.preventDefault();
+
+            const user = document.getElementById('adminUser').value.trim();
+            const password = document.getElementById('adminPassword').value.trim();
+            const errorDiv = document.getElementById('adminError');
+
+            errorDiv.classList.remove('active');
+
+            if (user === ADMIN_CREDENTIALS.user && password === ADMIN_CREDENTIALS.password) {
+                localStorage.setItem(ADMIN_KEY, JSON.stringify({
+                    user: user,
+                    loginTime: new Date().toISOString()
+                }));
+
+                window.location.href = 'admin.html';
+            } else {
+                errorDiv.textContent = 'Usuário ou senha incorretos!';
+                errorDiv.classList.add('active');
+                document.getElementById('adminPassword').value = '';
+            }
+        }
+
+        // ========================================
+        // LOGIN ALUNO
+        // ========================================
+
+        function loginStudent(event) {
+            event.preventDefault();
+
+            const studentId = document.getElementById('studentSelect').value;
+            const password = document.getElementById('studentPassword').value.trim();
+            const errorDiv = document.getElementById('studentError');
+
+            errorDiv.classList.remove('active');
+
+            if (!studentId) {
+                errorDiv.textContent = 'Por favor, selecione seu nome!';
+                errorDiv.classList.add('active');
+                return;
+            }
+
+            const students = JSON.parse(localStorage.getItem(STUDENTS_STORAGE_KEY) || '[]');
+            const student = students.find(s => s.id === studentId);
+
+            if (!student) {
+                errorDiv.textContent = 'Aluno não encontrado!';
+                errorDiv.classList.add('active');
+                return;
+            }
+
+            // Senha simplificada: usa senha customizada OU senha padrão "1234"
+            const correctPassword = student.password || DEFAULT_STUDENT_PASSWORD;
+
+            if (password === correctPassword) {
+                localStorage.setItem(STUDENT_KEY, JSON.stringify({
+                    id: studentId,
+                    name: student.name,
+                    loginTime: new Date().toISOString()
+                }));
+
+                window.location.href = `treino-aluno.html?id=${studentId}`;
+            } else {
+                errorDiv.textContent = 'Senha incorreta!';
+                errorDiv.classList.add('active');
+                document.getElementById('studentPassword').value = '';
+            }
+        }
+
+        // ========================================
+        // ESQUECI A SENHA
+        // ========================================
+
+        function forgotPassword() {
+            const studentId = document.getElementById('studentSelect').value;
+            const errorDiv = document.getElementById('studentError');
+            const successDiv = document.getElementById('studentSuccess');
+
+            errorDiv.classList.remove('active');
+            successDiv.classList.remove('active');
+
+            if (!studentId) {
+                errorDiv.textContent = 'Por favor, selecione seu nome primeiro!';
+                errorDiv.classList.add('active');
+                return;
+            }
+
+            const students = JSON.parse(localStorage.getItem(STUDENTS_STORAGE_KEY) || '[]');
+            const student = students.find(s => s.id === studentId);
+
+            if (!student) {
+                errorDiv.textContent = 'Aluno não encontrado!';
+                errorDiv.classList.add('active');
+                return;
+            }
+            
+            // Mensagem para enviar via WhatsApp
+            const message = `Olá! Sou *${student.name}* e esqueci minha senha de acesso ao sistema de treinos. Pode me ajudar? 🏋️`;
+            
+            // Codificar a mensagem para URL
+            const encodedMessage = encodeURIComponent(message);
+            
+            // Criar link do WhatsApp
+            const whatsappUrl = `https://wa.me/${ADMIN_WHATSAPP}?text=${encodedMessage}`;
+            
+            // Abrir WhatsApp em nova aba
+            window.open(whatsappUrl, '_blank');
+            
+            // Mostrar mensagem de sucesso
+            successDiv.textContent = '✅ Solicitação enviada! O admin receberá sua mensagem no WhatsApp.';
+            successDiv.classList.add('active');
+        }
+
+        // ========================================
+        // CARREGAR LISTA DE ALUNOS
+        // ========================================
+
+        function loadStudentsList() {
+            const students = JSON.parse(localStorage.getItem(STUDENTS_STORAGE_KEY) || '[]');
+            const select = document.getElementById('studentSelect');
+
+            select.innerHTML = '<option value="">-- Escolha seu nome --</option>';
+
+            students.forEach(student => {
+                const option = document.createElement('option');
+                option.value = student.id;
+                option.textContent = student.name;
+                select.appendChild(option);
+            });
+
+            if (students.length === 0) {
+                const option = document.createElement('option');
+                option.textContent = 'Nenhum aluno cadastrado ainda';
+                option.disabled = true;
+                select.appendChild(option);
+            }
+        }
+
+        // ========================================
+        // UTILITÁRIOS
+        // ========================================
+
+        function clearErrors() {
+            document.querySelectorAll('.error-message, .success-message').forEach(el => {
+                el.classList.remove('active');
+            });
+        }
+
+        // Permitir Enter para enviar formulário
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                const activeForm = document.querySelector('.login-form.active');
+                if (activeForm) {
+                    const submitBtn = activeForm.querySelector('button[type="submit"]');
+                    if (submitBtn) submitBtn.click();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

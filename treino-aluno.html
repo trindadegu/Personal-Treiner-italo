@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Meu Treino - Italo Ruan Personal Trainer">
+    <title>Meu Treino</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+
+        :root {
+            --primary-color: #1e40af;
+            --secondary-color: #059669;
+            --danger-color: #dc2626;
+            --light-bg: #f8fafc;
+            --dark-text: #0f172a;
+            --gray-text: #475569;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 12px 24px rgba(30, 64, 175, 0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .days-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .day-btn {
+            flex: 1;
+            min-width: 100px;
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            color: var(--gray-text);
+        }
+
+        .day-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .day-btn.active {
+            background: linear-gradient(135deg, var(--primary-color), #1e3a8a);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .training-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .training-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .training-header h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .focus-area {
+            background: linear-gradient(135deg, rgba(30, 64, 175, 0.1), rgba(5, 150, 105, 0.1));
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+
+        .exercises-list {
+            list-style: none;
+        }
+
+        .exercise-item {
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background: var(--light-bg);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            transition: var(--transition);
+        }
+
+        .exercise-item:hover {
+            box-shadow: var(--shadow);
+            transform: translateX(5px);
+        }
+
+        .exercise-item.completed {
+            opacity: 0.6;
+            border-left-color: var(--secondary-color);
+        }
+
+        .exercise-item.completed .exercise-name {
+            text-decoration: line-through;
+            color: var(--gray-text);
+        }
+
+        .exercise-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .video-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.4rem 0.8rem;
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: var(--transition);
+            margin-left: auto;
+        }
+
+        .video-link:hover {
+            background: linear-gradient(135deg, #b91c1c, #991b1b);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3);
+        }
+
+        .video-link i {
+            font-size: 1rem;
+        }
+
+        .exercise-checkbox {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            accent-color: var(--secondary-color);
+        }
+
+        .exercise-name {
+            font-weight: 600;
+            color: var(--dark-text);
+            flex: 1;
+        }
+
+        .exercise-video {
+            margin-top: 0.75rem;
+        }
+
+        .btn-video {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .btn-video:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+        }
+
+        .progress-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+
+        .footer {
+            background: white;
+            padding: 2rem;
+            text-align: center;
+            border-top: 2px solid var(--border-color);
+            margin-top: 2rem;
+        }
+
+        .btn-logout {
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-logout:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+        }
+
+        .btn-whatsapp {
+            background: #25d366;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: 1rem;
+        }
+
+        .btn-whatsapp:hover {
+            background: #1fa857;
+            transform: translateY(-2px);
+        }
+
+        .no-exercises {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray-text);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .days-selector {
+                gap: 0.5rem;
+            }
+
+            .day-btn {
+                min-width: 80px;
+                padding: 0.75rem 0.5rem;
+                font-size: 0.9rem;
+            }
+
+            .training-content {
+                padding: 1.5rem;
+            }
+
+            .exercise-item {
+                padding: 1rem;
+            }
+
+            .btn-whatsapp {
+                margin-left: 0;
+                margin-top: 1rem;
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>Meu Treino</h1>
+        <p id="studentName">Carregando...</p>
+    </div>
+
+    <!-- Container Principal -->
+    <div class="container">
+        <!-- Seletor de Dias -->
+        <div class="days-selector">
+            <button class="day-btn active" onclick="selectDay('segunda')">Segunda</button>
+            <button class="day-btn" onclick="selectDay('terca')">Terça</button>
+            <button class="day-btn" onclick="selectDay('quarta')">Quarta</button>
+            <button class="day-btn" onclick="selectDay('quinta')">Quinta</button>
+            <button class="day-btn" onclick="selectDay('sexta')">Sexta</button>
+        </div>
+
+        <!-- Progresso -->
+        <div class="progress-section">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">0 / 0 exercícios completos</div>
+        </div>
+
+        <!-- Conteúdo do Treino -->
+        <div class="training-content">
+            <div class="training-header">
+                <h2 id="dayTitle">Segunda-feira</h2>
+                <div class="focus-area" id="focusArea">Carregando...</div>
+            </div>
+
+            <ul class="exercises-list" id="exercisesList">
+                <li class="no-exercises">Carregando exercícios...</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <button class="btn-whatsapp" onclick="sendWhatsApp()">
+            <i class="fab fa-whatsapp"></i> Dúvida?
+        </button>
+        <button class="btn-logout" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Sair
+        </button>
+    </div>
+
+    <script>
+        // ========================================
+        // CONFIGURAÇÕES
+        // ========================================
+
+        const STUDENT_KEY = 'italoStudentLogin';
+        const TRAININGS_KEY = 'italoRuanTrainings';
+        const STUDENTS_KEY = 'italoRuanStudents';
+        const PROGRESS_KEY = 'studentProgress';
+
+        let currentStudent = null;
+        let currentDay = 'segunda';
+        let studentTrainings = null;
+
+        // ========================================
+        // INICIALIZAÇÃO
+        // ========================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            checkStudentLogin();
+            loadStudentData();
+            selectDay('segunda');
+        });
+
+        // ========================================
+        // VERIFICAÇÃO DE LOGIN
+        // ========================================
+
+        function checkStudentLogin() {
+            const studentLogin = localStorage.getItem(STUDENT_KEY);
+            
+            if (!studentLogin) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            currentStudent = JSON.parse(studentLogin);
+            document.getElementById('studentName').textContent = currentStudent.name;
+        }
+
+        // ========================================
+        // CARREGAMENTO DE DADOS
+        // ========================================
+
+        function loadStudentData() {
+            const trainings = JSON.parse(localStorage.getItem(TRAININGS_KEY) || '{}');
+            studentTrainings = trainings[currentStudent.id] || trainings.self || {};
+            
+            if (Object.keys(studentTrainings).length === 0) {
+                loadDefaultTrainings();
+            }
+        }
+
+        function loadDefaultTrainings() {
+            const defaultTrainings = {
+                segunda: {
+                    focus: 'Peito + Tríceps + Ombro',
+                    exercises: [
+                        'Supino reto com halteres: 4x20-15-12-10',
+                        'Supino inclinado com halteres: 4x10',
+                        'Crucifixo no banco inclinado: 4x10',
+                        'Crucifixo polia: 4x10',
+                        'Elevação lateral com halteres: 4x10',
+                        'Remada alta com barra: 4x10',
+                        'Elevação frontal com corda na polia: 3x15',
+                        'Tríceps na polia: 4x10',
+                        'Tríceps patada: 4x15'
+                    ]
+                },
+                terca: {
+                    focus: 'Perna - Quadríceps',
+                    exercises: [
+                        'Agachamento sumô (mobilidade): 2x20 segundos',
+                        'Mobilidade de tornozelo e quadril: 2x10/lado',
+                        'Cadeira extensora: 4x20',
+                        'Agachamento livre com barra: 4x10',
+                        'Leg press 45: 4x10',
+                        'Agachamento afundo com halteres: 4x10',
+                        'Cadeira flexora: 4x20-15-12-10',
+                        'Cadeira adutora: 3x20',
+                        'Panturinha máquina: 3x15'
+                    ]
+                },
+                quarta: {
+                    focus: 'Costas + Posteriores + Ombro + Bíceps',
+                    exercises: [
+                        'Puxada pela frente com pegada aberta: 4x20-15-12-10',
+                        'Puxada pela frente com pegada supinada: 3x10',
+                        'Remada curvada com barra: 4x10',
+                        'Remada curvada com halteres: 3x10',
+                        'Pulldown polia alta: 3x10',
+                        'Remada baixa na polia: 3x10',
+                        'Encolhimento de ombro: 3x10',
+                        'Rosca direta com barra: 4x10',
+                        'Rosca scott com barra W: 4x10'
+                    ]
+                },
+                quinta: {
+                    focus: 'Pernas',
+                    exercises: [
+                        'Agachamento sumô (mobilidade): 2x20 segundos',
+                        'Mobilidade de tornozelo e quadril: 2x10/lado',
+                        'Cadeira abdutora: 3x20',
+                        'Levantamento terra com barra: 4x10',
+                        'Mesa flexora bilateral: 3x10',
+                        'Elevação pélvica: 4x10',
+                        'Cadeira flexora: 4x20-15-12-10',
+                        'Stiff joelho flexionado com halteres: 4x10',
+                        'Cadeira extensora: 4x20'
+                    ]
+                },
+                sexta: {
+                    focus: 'Glúteos + Costas',
+                    exercises: [
+                        'Desenvolvimento máquina: 4x10',
+                        'Desenvolvimento arnold: 4x10',
+                        'Elevação lateral sentado (rest-pause): 4x10',
+                        'Voador inverso com pegada pronada (rest-pause): 4x10',
+                        'Elevação frontal com corda na polia (drop-set): 4x10',
+                        'Remada com corda na polia alta: 4x10',
+                        'Encolhimento de ombro: 4x10'
+                    ]
+                }
+            };
+
+            studentTrainings = defaultTrainings;
+        }
+
+        // ========================================
+        // SELEÇÃO DE DIA
+        // ========================================
+
+        function selectDay(day) {
+            currentDay = day;
+
+            document.querySelectorAll('.day-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            const activeBtn = document.querySelector(`[onclick="selectDay('${day}')\"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+
+            loadDayTraining();
+        }
+
+        function loadDayTraining() {
+            const dayNames = {
+                segunda: 'Segunda-feira',
+                terca: 'Terça-feira',
+                quarta: 'Quarta-feira',
+                quinta: 'Quinta-feira',
+                sexta: 'Sexta-feira'
+            };
+
+            const training = studentTrainings[currentDay] || { focus: 'Sem treino', exercises: [] };
+
+            document.getElementById('dayTitle').textContent = dayNames[currentDay];
+            document.getElementById('focusArea').textContent = training.focus;
+
+            const exercisesList = document.getElementById('exercisesList');
+            exercisesList.innerHTML = '';
+
+            if (training.exercises.length === 0) {
+                exercisesList.innerHTML = '<li class="no-exercises">Nenhum exercício para este dia</li>';
+                updateProgress();
+                return;
+            }
+
+            training.exercises.forEach((exercise, index) => {
+                const isCompleted = isExerciseCompleted(index);
+                
+                // Suportar tanto string simples quanto objeto com vídeo
+                const exerciseName = typeof exercise === 'string' ? exercise : exercise.name;
+                const videoUrl = typeof exercise === 'object' && exercise.video ? exercise.video : '';
+
+                const li = document.createElement('li');
+                li.className = `exercise-item ${isCompleted ? 'completed' : ''}`;
+
+                li.innerHTML = `
+                    <div class="exercise-header">
+                        <input type="checkbox" class="exercise-checkbox" ${isCompleted ? 'checked' : ''} onchange="toggleExercise(${index})">
+                        <span class="exercise-name">${exerciseName}</span>
+                        ${videoUrl ? `<a href="${videoUrl}" target="_blank" class="video-link" title="Ver vídeo demonstração">
+                            <i class="fas fa-play-circle"></i> Vídeo
+                        </a>` : ''}
+                    </div>
+                `;
+
+                exercisesList.appendChild(li);
+            });
+
+            updateProgress();
+        }
+
+        // ========================================
+        // GERENCIAMENTO DE PROGRESSO
+        // ========================================
+
+        function isExerciseCompleted(index) {
+            const progress = JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}');
+            const studentProgress = progress[currentStudent.id] || {};
+            const dayProgress = studentProgress[currentDay] || [];
+            return dayProgress.includes(index);
+        }
+
+        function toggleExercise(index) {
+            const progress = JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}');
+            if (!progress[currentStudent.id]) {
+                progress[currentStudent.id] = {};
+            }
+            if (!progress[currentStudent.id][currentDay]) {
+                progress[currentStudent.id][currentDay] = [];
+            }
+
+            const dayProgress = progress[currentStudent.id][currentDay];
+            const idx = dayProgress.indexOf(index);
+
+            if (idx > -1) {
+                dayProgress.splice(idx, 1);
+            } else {
+                dayProgress.push(index);
+            }
+
+            localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+            loadDayTraining();
+        }
+
+        function updateProgress() {
+            const training = studentTrainings[currentDay] || { exercises: [] };
+            const total = training.exercises.length;
+            const completed = Array.from(document.querySelectorAll('.exercise-checkbox:checked')).length;
+            const percentage = total > 0 ? (completed / total) * 100 : 0;
+
+            document.getElementById('progressFill').style.width = percentage + '%';
+            document.getElementById('progressText').textContent = `${completed} / ${total} exercícios completos`;
+        }
+
+        // ========================================
+        // AÇÕES
+        // ========================================
+
+        function sendWhatsApp() {
+            const students = JSON.parse(localStorage.getItem(STUDENTS_KEY) || '[]');
+            const student = students.find(s => s.id === currentStudent.id);
+            const whatsapp = student ? student.whatsapp : '+55 11 94877-3263';
+            const message = `Olá! Tenho uma dúvida sobre meu treino de ${currentDay}.`;
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${whatsapp.replace(/\\D/g, '')}?text=${encodedMessage}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        function logout() {
+            if (confirm('Tem certeza que deseja sair?')) {
+                localStorage.removeItem(STUDENT_KEY);
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+</html>
