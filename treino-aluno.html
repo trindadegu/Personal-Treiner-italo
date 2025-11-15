@@ -60,12 +60,29 @@
             padding: 2rem;
         }
 
-        .days-selector {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
+	        .days-selector {
+	            display: flex;
+	            gap: 1rem;
+	            margin-bottom: 2rem;
+	            flex-wrap: wrap;
+	        }
+	
+	        .btn-menu-toggle {
+	            display: none;
+	            background: #ffffff30;
+	            color: white;
+	            border: 1px solid #ffffff50;
+	            padding: 0.5rem 1rem;
+	            border-radius: 8px;
+	            cursor: pointer;
+	            font-size: 1rem;
+	            transition: var(--transition);
+	            margin-top: 1rem;
+	        }
+	
+	        .btn-menu-toggle:hover {
+	            background: #ffffff50;
+	        }
 
         .day-btn {
             flex: 1;
@@ -300,48 +317,106 @@
             color: var(--gray-text);
         }
 
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.5rem;
-            }
-
-            .container {
-                padding: 1rem;
-            }
-
-            .days-selector {
-                gap: 0.5rem;
-            }
-
-            .day-btn {
-                min-width: 80px;
-                padding: 0.75rem 0.5rem;
-                font-size: 0.9rem;
-            }
-
-            .training-content {
-                padding: 1.5rem;
-            }
-
-            .exercise-item {
-                padding: 1rem;
-            }
-
-            .btn-whatsapp {
-                margin-left: 0;
-                margin-top: 1rem;
-                width: 100%;
-                justify-content: center;
-            }
-        }
+	        @media (max-width: 1024px) {
+	            .container {
+	                padding: 1.5rem;
+	            }
+	            .days-selector {
+	                gap: 0.75rem;
+	            }
+	            .day-btn {
+	                min-width: 100px;
+	                padding: 0.8rem;
+	            }
+	        }
+	
+	        @media (max-width: 1024px) {
+	            .container {
+	                padding: 1.5rem;
+	            }
+	            .days-selector {
+	                gap: 0.75rem;
+	            }
+	            .day-btn {
+	                min-width: 100px;
+	                padding: 0.8rem;
+	            }
+	        }
+	
+	        @media (max-width: 768px) {
+	            .header {
+	                padding: 1.5rem;
+	                display: flex;
+	                flex-direction: column;
+	                align-items: center;
+	            }
+	
+	            .header h1 {
+	                font-size: 1.5rem;
+	            }
+	
+	            .btn-menu-toggle {
+	                display: flex;
+	                align-items: center;
+	                gap: 0.5rem;
+	            }
+	
+	            .container {
+	                padding: 1rem;
+	            }
+	
+	            .days-selector {
+	                position: absolute;
+	                top: 120px; /* Ajuste para ficar abaixo do header */
+	                left: 0;
+	                right: 0;
+	                background: white;
+	                border-bottom: 2px solid var(--border-color);
+	                padding: 0;
+	                max-height: 0; /* Usar max-height para transição */
+	                overflow: hidden;
+	                transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
+	                z-index: 999;
+	                display: flex; /* Adicionado para flex-direction: column */
+	                flex-direction: column;
+	            }
+	
+	            .days-selector.active {
+	                max-height: 500px; /* Valor grande o suficiente para o conteúdo */
+	                padding: 1rem;
+	            }
+	
+	            .day-btn {
+	                min-width: 100%;
+	                padding: 0.75rem 1rem;
+	                font-size: 1rem;
+	            }
+	
+	            .training-content {
+	                padding: 1.5rem;
+	            }
+	
+	            .exercise-item {
+	                padding: 1rem;
+	            }
+	
+	            .btn-whatsapp {
+	                margin-left: 0;
+	                margin-top: 1rem;
+	                width: 100%;
+	                justify-content: center;
+	            }
+	        }
     </style>
 </head>
-<body>
-    <!-- Header -->
-    <div class="header">
-        <h1>Meu Treino</h1>
-        <p id="studentName">Carregando...</p>
-    </div>
+<body>	    <!-- Header -->
+	    <div class="header">
+	        <h1>Meu Treino</h1>
+	        <p id="studentName">Carregando...</p>
+	        <button class="btn-menu-toggle" onclick="toggleDaysSelector()">
+	            <i class="fas fa-calendar-alt"></i> Dias
+	        </button>
+	    </div>
 
     <!-- Container Principal -->
     <div class="container">
@@ -394,6 +469,8 @@
         const TRAININGS_KEY = 'italoRuanTrainings';
         const STUDENTS_KEY = 'italoRuanStudents';
         const PROGRESS_KEY = 'studentProgress';
+        const ADMIN_WHATSAPP = '5511948773263'; // Número de contato do Italo Ruan
+        
 
         let currentStudent = null;
         let currentDay = 'segunda';
@@ -517,20 +594,41 @@
         // SELEÇÃO DE DIA
         // ========================================
 
-        function selectDay(day) {
-            currentDay = day;
-
-            document.querySelectorAll('.day-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-
-            const activeBtn = document.querySelector(`[onclick="selectDay('${day}')\"]`);
-            if (activeBtn) {
-                activeBtn.classList.add('active');
-            }
-
-            loadDayTraining();
-        }
+	        function toggleDaysSelector() {
+	            document.querySelector('.days-selector').classList.toggle('active');
+	        }
+	
+	        function toggleDaysSelector() {
+	            document.querySelector('.days-selector').classList.toggle('active');
+	        }
+	
+	        function selectDay(day) {
+	            currentDay = day;
+	            
+	            document.querySelectorAll('.day-btn').forEach(btn => {
+	                btn.classList.remove('active');
+	            });
+	            
+	            const dayBtn = document.querySelector(`[onclick="selectDay('${day}')"]`);
+	            if (dayBtn) {
+	                dayBtn.classList.add('active');
+	            }
+	            
+	            // Fechar o seletor no mobile após a seleção
+	            const selector = document.querySelector('.days-selector');
+	            if (window.innerWidth <= 768 && selector.classList.contains('active')) {
+	                selector.classList.remove('active');
+	            }
+	            
+	            loadDayTraining();
+	        } aposaseleção
+	            const selector = document.querySelector('.days-selector');
+	            if (window.innerWidth <= 768 && selector.classList.contains('active')) {
+	                selector.classList.remove('active');
+	            }
+	            
+	            loadDayTraining();
+	        
 
         function loadDayTraining() {
             const dayNames = {
@@ -629,6 +727,10 @@
         // ========================================
 
         function sendWhatsApp() {
+            const dayName = currentDay.charAt(0).toUpperCase() + currentDay.slice(1);
+            const message = encodeURIComponent(`Olá, Italo Ruan! Estou com uma dúvida sobre o meu treino (${dayName}) no aplicativo. Meu nome é ${currentStudent.name}.`);
+            window.open(`https://wa.me/${ADMIN_WHATSAPP}?text=${message}`, '_blank');
+        }
             const students = JSON.parse(localStorage.getItem(STUDENTS_KEY) || '[]');
             const student = students.find(s => s.id === currentStudent.id);
             const whatsapp = student ? student.whatsapp : '+55 11 94877-3263';
@@ -636,7 +738,7 @@
             const encodedMessage = encodeURIComponent(message);
             const whatsappUrl = `https://wa.me/${whatsapp.replace(/\\D/g, '')}?text=${encodedMessage}`;
             window.open(whatsappUrl, '_blank');
-        }
+        
 
         function logout() {
             if (confirm('Tem certeza que deseja sair?')) {

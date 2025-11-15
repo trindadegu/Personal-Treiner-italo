@@ -352,7 +352,7 @@
 
                 <div class="form-group">
                     <label for="studentPassword">Senha:</label>
-                    <input type="password" id="studentPassword" placeholder="Digite sua senha" required>
+                    <input type="text" id="studentPassword" placeholder="Digite sua senha" inputmode="numeric" pattern="[0-9]*" required>
                     <div class="password-hint">💡 Senha padrão: <strong>1234</strong></div>
                 </div>
 
@@ -388,7 +388,7 @@
         // ⚠️ IMPORTANTE: Configure aqui o número do WhatsApp do admin
         // Formato: código do país + DDD + número (sem espaços ou caracteres especiais)
         // Exemplo: 5511987654321
-        const ADMIN_WHATSAPP = '5511948773263'; // ← ALTERE AQUI!
+        const ADMIN_WHATSAPP = '5511948773263'; // ← Número do Italo Ruan
 
         // Senha padrão para todos os alunos (fácil de lembrar!)
         const DEFAULT_STUDENT_PASSWORD = '1234';
