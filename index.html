@@ -3,11 +3,452 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <meta http-equiv="refresh" content="0; url=login.html">
+    <title>Italo Ruan - Sistema de Treinos</title>
+    <meta name="description" content="Sistema de gerenciamento de treinos - Italo Ruan Personal Trainer">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1e40af;
+            --secondary-color: #059669;
+            --danger-color: #dc2626;
+            --light-bg: #f8fafc;
+            --dark-text: #0f172a;
+            --gray-text: #475569;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 12px 24px rgba(30, 64, 175, 0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--dark-text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-hover);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            font-size: 1.1rem;
+            margin: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), #1e3a8a);
+            color: white;
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--secondary-color), #047857);
+            color: white;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(5, 150, 105, 0.2);
+        }
+
+        .btn-large {
+            padding: 1.25rem 2.5rem;
+            font-size: 1.2rem;
+        }
+
+        .sync-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .sync-code {
+            background: #f8fafc;
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: monospace;
+            word-break: break-all;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .sync-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            color: white;
+            opacity: 0.8;
+            width: 100%;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+            background: white;
+            color: var(--primary-color);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .card {
+                padding: 1.5rem;
+            }
+            
+            .btn {
+                padding: 0.9rem 1.8rem;
+                font-size: 1rem;
+            }
+            
+            .btn-large {
+                padding: 1rem 2rem;
+                font-size: 1.1rem;
+            }
+            
+            .sync-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
-    
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-dumbbell"></i>
+            </div>
+            <h1>Italo Ruan</h1>
+            <p>Personal Trainer - Sistema Sincronizado de Treinos</p>
+        </div>
+
+        <div class="card">
+            <h2 style="margin-bottom: 1.5rem;">Sistema de Sincronização</h2>
+            <p style="margin-bottom: 2rem; font-size: 1.1rem;">
+                Agora seus dados ficam sincronizados entre todos os dispositivos! 
+                Use o código abaixo para compartilhar alunos e treinos.
+            </p>
+            
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem;">
+                <a href="login.html" class="btn btn-primary btn-large">
+                    <i class="fas fa-user"></i> Área do Aluno
+                </a>
+                <a href="login.html" class="btn btn-secondary btn-large">
+                    <i class="fas fa-dumbbell"></i> Painel do Professor
+                </a>
+            </div>
+        </div>
+
+        <div class="sync-section">
+            <h3 style="margin-bottom: 1rem; color: var(--primary-color);">
+                <i class="fas fa-sync-alt"></i> Sincronização de Dados
+            </h3>
+            
+            <p style="margin-bottom: 1rem;">
+                <strong>Como funciona:</strong> O Italo gera um código no computador e os alunos usam o mesmo código no celular.
+            </p>
+            
+            <div class="sync-code" id="syncCode">
+                Carregando código de sincronização...
+            </div>
+            
+            <div class="sync-actions">
+                <button class="btn btn-primary" onclick="generateSyncCode()">
+                    <i class="fas fa-redo"></i> Gerar Novo Código
+                </button>
+                <button class="btn btn-secondary" onclick="applySyncCode()">
+                    <i class="fas fa-download"></i> Usar Código
+                </button>
+                <button class="btn" style="background: #f59e0b; color: white;" onclick="showInstructions()">
+                    <i class="fas fa-question-circle"></i> Como Usar
+                </button>
+            </div>
+            
+            <div id="syncStatus" style="margin-top: 1rem; padding: 0.5rem; border-radius: 6px;"></div>
+        </div>
+
+        <div class="footer">
+            <p>© 2024 Italo Ruan Personal Trainer. Sistema sincronizado automaticamente.</p>
+        </div>
+    </div>
+
+    <script>
+        // ========================================
+        // SISTEMA DE SINCRONIZAÇÃO AUTOMÁTICA
+        // ========================================
+        
+        const SYSTEM_DATA_KEY = 'italoRuanSystemData';
+        const SYNC_CODE_KEY = 'italoSyncCode';
+        
+        // Inicializar dados do sistema
+        function initializeSystemData() {
+            if (!localStorage.getItem(SYSTEM_DATA_KEY)) {
+                const initialData = {
+                    students: [],
+                    trainings: {},
+                    progress: {},
+                    defaultTrainings: {},
+                    adminCredentials: {
+                        user: 'italo',
+                        password: 'italoruan123'
+                    },
+                    lastSync: new Date().toISOString()
+                };
+                
+                localStorage.setItem(SYSTEM_DATA_KEY, JSON.stringify(initialData));
+                console.log('Sistema inicializado com dados padrão');
+            }
+            
+            // Verificar se há código de sincronização na URL
+            checkUrlForSyncCode();
+            
+            // Gerar/atualizar código de sincronização
+            updateSyncCode();
+        }
+        
+        // Verificar se há código de sincronização na URL
+        function checkUrlForSyncCode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const syncCode = urlParams.get('sync');
+            
+            if (syncCode) {
+                applySyncCodeFromUrl(syncCode);
+            }
+        }
+        
+        // Aplicar código de sincronização da URL
+        function applySyncCodeFromUrl(syncCode) {
+            try {
+                const decodedData = decodeSyncCode(syncCode);
+                if (decodedData) {
+                    localStorage.setItem(SYSTEM_DATA_KEY, JSON.stringify(decodedData));
+                    localStorage.setItem(SYNC_CODE_KEY, syncCode);
+                    
+                    showStatus('✅ Dados sincronizados com sucesso via URL!', 'success');
+                    
+                    // Remover parâmetro da URL sem recarregar a página
+                    const newUrl = window.location.pathname;
+                    window.history.replaceState({}, document.title, newUrl);
+                    
+                    // Atualizar código exibido
+                    updateSyncCode();
+                }
+            } catch (error) {
+                showStatus('❌ Erro ao sincronizar dados da URL', 'error');
+                console.error('Erro ao aplicar sync code da URL:', error);
+            }
+        }
+        
+        // Gerar código de sincronização
+        function generateSyncCode() {
+            const systemData = getSystemData();
+            const syncCode = encodeSyncCode(systemData);
+            
+            localStorage.setItem(SYNC_CODE_KEY, syncCode);
+            updateSyncCodeDisplay(syncCode);
+            
+            // Atualizar URL com código de sincronização
+            updateUrlWithSyncCode(syncCode);
+            
+            showStatus('✅ Novo código gerado! Compartilhe este código com seus alunos.', 'success');
+        }
+        
+        // Atualizar URL com código de sincronização
+        function updateUrlWithSyncCode(syncCode) {
+            const newUrl = `${window.location.pathname}?sync=${syncCode}`;
+            window.history.replaceState({}, document.title, newUrl);
+        }
+        
+        // Atualizar código de sincronização
+        function updateSyncCode() {
+            let syncCode = localStorage.getItem(SYNC_CODE_KEY);
+            
+            if (!syncCode) {
+                const systemData = getSystemData();
+                syncCode = encodeSyncCode(systemData);
+                localStorage.setItem(SYNC_CODE_KEY, syncCode);
+            }
+            
+            updateSyncCodeDisplay(syncCode);
+            updateUrlWithSyncCode(syncCode);
+        }
+        
+        // Atualizar exibição do código
+        function updateSyncCodeDisplay(syncCode) {
+            document.getElementById('syncCode').textContent = syncCode;
+        }
+        
+        // Aplicar código de sincronização (manual)
+        function applySyncCode() {
+            const syncCode = prompt('Cole o código de sincronização:');
+            
+            if (syncCode) {
+                try {
+                    const decodedData = decodeSyncCode(syncCode);
+                    if (decodedData) {
+                        localStorage.setItem(SYSTEM_DATA_KEY, JSON.stringify(decodedData));
+                        localStorage.setItem(SYNC_CODE_KEY, syncCode);
+                        
+                        showStatus('✅ Dados sincronizados com sucesso!', 'success');
+                        updateSyncCode();
+                    }
+                } catch (error) {
+                    showStatus('❌ Código inválido! Verifique e tente novamente.', 'error');
+                    console.error('Erro ao aplicar sync code:', error);
+                }
+            }
+        }
+        
+        // Codificar dados para sincronização
+        function encodeSyncCode(data) {
+            const dataString = JSON.stringify(data);
+            return btoa(unescape(encodeURIComponent(dataString)));
+        }
+        
+        // Decodificar dados da sincronização
+        function decodeSyncCode(syncCode) {
+            try {
+                const dataString = decodeURIComponent(escape(atob(syncCode)));
+                return JSON.parse(dataString);
+            } catch (error) {
+                console.error('Erro ao decodificar sync code:', error);
+                return null;
+            }
+        }
+        
+        // Mostrar status
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('syncStatus');
+            statusEl.textContent = message;
+            statusEl.style.background = type === 'success' ? '#d1fae5' : '#fee2e2';
+            statusEl.style.color = type === 'success' ? '#059669' : '#dc2626';
+            statusEl.style.border = type === 'success' ? '1px solid #10b981' : '1px solid #ef4444';
+            
+            setTimeout(() => {
+                statusEl.textContent = '';
+                statusEl.style.background = 'transparent';
+                statusEl.style.border = 'none';
+            }, 5000);
+        }
+        
+        // Mostrar instruções
+        function showInstructions() {
+            alert(`COMO USAR A SINCRONIZAÇÃO:
+
+1. ITALO (Professor):
+   - Cadastre os alunos no computador
+   - Clique em "Gerar Novo Código"
+   - Compartilhe o código com os alunos
+
+2. ALUNOS:
+   - Acessem o link do site
+   - Cliquem em "Usar Código"
+   - Colem o código que o Italo enviou
+   - Pronto! Seus nomes aparecerão no login
+
+O código sincroniza automaticamente todos os dados entre dispositivos!`);
+        }
+        
+        // Obter dados do sistema
+        function getSystemData() {
+            return JSON.parse(localStorage.getItem(SYSTEM_DATA_KEY) || '{}');
+        }
+        
+        // Inicializar ao carregar a página
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSystemData();
+            
+            // Verificar se há dados para restaurar
+            const systemData = getSystemData();
+            if (systemData.students && systemData.students.length > 0) {
+                console.log(`Sistema carregado com ${systemData.students.length} aluno(s)`);
+            }
+        });
+    </script>
 </body>
 </html>

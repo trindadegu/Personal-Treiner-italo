@@ -33,61 +33,70 @@
             background-color: var(--light-bg);
             color: var(--dark-text);
             line-height: 1.6;
+            padding-bottom: 80px; /* Espaço para o footer fixo */
         }
 
         .header {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
-            padding: 2rem;
+            padding: 1.5rem 1rem;
             text-align: center;
             box-shadow: var(--shadow);
+            position: relative;
         }
 
         .header h1 {
             font-family: 'Poppins', sans-serif;
-            font-size: 2rem;
+            font-size: 1.5rem;
             margin-bottom: 0.5rem;
         }
 
         .header p {
-            font-size: 1rem;
+            font-size: 0.9rem;
             opacity: 0.9;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        .days-selector {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-
         .btn-menu-toggle {
-            display: none;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
             background: #ffffff30;
             color: white;
             border: 1px solid #ffffff50;
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 0.75rem;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.9rem;
             transition: var(--transition);
-            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .btn-menu-toggle:hover {
             background: #ffffff50;
         }
 
-        .day-btn {
-            flex: 1;
-            min-width: 100px;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 1rem;
+        }
+
+        .days-selector {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            background: white;
+            border-radius: 12px;
+            padding: 0.75rem;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .day-btn {
+            padding: 0.75rem 0.5rem;
             border: 2px solid var(--border-color);
             background: white;
             border-radius: 8px;
@@ -95,6 +104,11 @@
             font-weight: 600;
             transition: var(--transition);
             color: var(--gray-text);
+            font-size: 0.8rem;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .day-btn:hover {
@@ -108,126 +122,21 @@
             border-color: var(--primary-color);
         }
 
-        .training-content {
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: var(--shadow);
-            margin-bottom: 2rem;
-        }
-
-        .training-header {
-            margin-bottom: 2rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        .training-header h2 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 1.5rem;
-            color: var(--primary-color);
-            margin-bottom: 0.5rem;
-        }
-
-        .focus-area {
-            background: linear-gradient(135deg, rgba(30, 64, 175, 0.1), rgba(5, 150, 105, 0.1));
-            padding: 1rem;
-            border-radius: 8px;
-            font-weight: 600;
-            color: var(--dark-text);
-        }
-
-        .exercises-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 2rem;
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        
-        .exercises-table th,
-        .exercises-table td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .exercises-table th {
-            background: var(--light-bg);
-            font-weight: 600;
-            color: var(--dark-text);
-        }
-        
-        .exercise-row {
-            transition: background-color 0.2s ease;
-        }
-        
-        .exercise-row:hover {
-            background: var(--light-bg);
-        }
-
-        .exercise-row.completed {
-            opacity: 0.6;
-            background: #f0f9ff;
-        }
-
-        .exercise-row.completed .exercise-name {
-            text-decoration: line-through;
-            color: var(--gray-text);
-        }
-
-        .exercise-checkbox {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            accent-color: var(--secondary-color);
-            margin-right: 0.5rem;
-        }
-
-        .exercise-name {
-            font-weight: 600;
-            color: var(--dark-text);
-            display: flex;
-            align-items: center;
-        }
-
-        .video-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: linear-gradient(135deg, #dc2626, #b91c1c);
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            transition: var(--transition);
-        }
-
-        .video-link:hover {
-            background: linear-gradient(135deg, #b91c1c, #991b1b);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3);
-        }
-
         .progress-section {
             background: white;
             border-radius: 12px;
-            padding: 2rem;
+            padding: 1.25rem;
             box-shadow: var(--shadow);
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
 
         .progress-bar {
             width: 100%;
-            height: 10px;
+            height: 8px;
             background: var(--border-color);
             border-radius: 10px;
             overflow: hidden;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
         }
 
         .progress-fill {
@@ -241,21 +150,160 @@
             text-align: center;
             font-weight: 600;
             color: var(--dark-text);
+            font-size: 0.9rem;
+        }
+
+        .training-content {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+        }
+
+        .training-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .training-header h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            margin-bottom: 0.75rem;
+        }
+
+        .focus-area {
+            background: linear-gradient(135deg, rgba(30, 64, 175, 0.1), rgba(5, 150, 105, 0.1));
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-weight: 600;
+            color: var(--dark-text);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .exercises-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-top: 1rem;
+        }
+
+        .exercises-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            min-width: 500px;
+        }
+        
+        .exercises-table th,
+        .exercises-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.85rem;
+        }
+        
+        .exercises-table th {
+            background: var(--light-bg);
+            font-weight: 600;
+            color: var(--dark-text);
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+        }
+        
+        .exercise-row {
+            transition: background-color 0.2s ease;
+        }
+        
+        .exercise-row:hover {
+            background: var(--light-bg);
+        }
+
+        .exercise-row.completed {
+            opacity: 0.7;
+            background: #f0f9ff;
+        }
+
+        .exercise-row.completed .exercise-name {
+            text-decoration: line-through;
+            color: var(--gray-text);
+        }
+
+        .exercise-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--secondary-color);
+            margin-right: 0.5rem;
+        }
+
+        .exercise-name {
+            font-weight: 600;
+            color: var(--dark-text);
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        .video-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.4rem 0.75rem;
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .video-link:hover {
+            background: linear-gradient(135deg, #b91c1c, #991b1b);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3);
+        }
+
+        .no-exercises {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray-text);
+            font-size: 0.9rem;
         }
 
         .footer {
             background: white;
-            padding: 2rem;
+            padding: 1rem;
             text-align: center;
             border-top: 2px solid var(--border-color);
             margin-top: 2rem;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .footer-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            max-width: 400px;
+            margin: 0 auto;
         }
 
         .btn-logout {
             background: var(--danger-color);
             color: white;
             border: none;
-            padding: 0.75rem 1.5rem;
+            padding: 0.75rem 1rem;
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
@@ -263,6 +311,9 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            flex: 1;
+            justify-content: center;
+            font-size: 0.85rem;
         }
 
         .btn-logout:hover {
@@ -274,7 +325,7 @@
             background: #25d366;
             color: white;
             border: none;
-            padding: 0.75rem 1.5rem;
+            padding: 0.75rem 1rem;
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
@@ -282,7 +333,9 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            margin-left: 1rem;
+            flex: 1;
+            justify-content: center;
+            font-size: 0.85rem;
         }
 
         .btn-whatsapp:hover {
@@ -290,117 +343,294 @@
             transform: translateY(-2px);
         }
 
-        .no-exercises {
-            text-align: center;
-            padding: 2rem;
-            color: var(--gray-text);
-        }
-
-        @media (max-width: 1024px) {
-            .container {
-                padding: 1.5rem;
-            }
-            .days-selector {
-                gap: 0.75rem;
-            }
-            .day-btn {
-                min-width: 100px;
-                padding: 0.8rem;
-            }
-        }
-
+        /* Mobile First - Telas pequenas */
         @media (max-width: 768px) {
             .header {
-                padding: 1.5rem;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
+                padding: 1.25rem 1rem;
             }
-
+            
             .header h1 {
-                font-size: 1.5rem;
+                font-size: 1.3rem;
+                margin-bottom: 0.25rem;
             }
-
+            
+            .header p {
+                font-size: 0.85rem;
+            }
+            
             .btn-menu-toggle {
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
+                top: 0.75rem;
+                right: 0.75rem;
+                padding: 0.4rem 0.6rem;
+                font-size: 0.8rem;
             }
-
+            
+            .btn-menu-toggle span {
+                display: none;
+            }
+            
             .container {
-                padding: 1rem;
+                padding: 0.75rem;
             }
-
+            
             .days-selector {
-                position: absolute;
-                top: 120px;
-                left: 0;
-                right: 0;
-                background: white;
-                border-bottom: 2px solid var(--border-color);
-                padding: 0;
-                max-height: 0;
-                overflow: hidden;
-                transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
-                z-index: 999;
-                display: flex;
-                flex-direction: column;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 0.4rem;
+                padding: 0.6rem;
+                margin-bottom: 1rem;
             }
-
-            .days-selector.active {
-                max-height: 500px;
-                padding: 1rem;
-            }
-
+            
             .day-btn {
-                min-width: 100%;
-                padding: 0.75rem 1rem;
-                font-size: 1rem;
+                padding: 0.6rem 0.4rem;
+                font-size: 0.75rem;
             }
-
+            
+            .progress-section {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+            
             .training-content {
-                padding: 1.5rem;
+                padding: 1.25rem;
+                margin-bottom: 1rem;
             }
-
-            .exercises-table {
-                display: block;
-                overflow-x: auto;
+            
+            .training-header h2 {
+                font-size: 1.2rem;
             }
-
+            
+            .focus-area {
+                padding: 0.6rem;
+                font-size: 0.85rem;
+            }
+            
             .exercises-table th,
             .exercises-table td {
-                padding: 0.75rem 0.5rem;
-                font-size: 0.9rem;
+                padding: 0.6rem;
+                font-size: 0.8rem;
             }
-
+            
+            .exercise-checkbox {
+                width: 16px;
+                height: 16px;
+            }
+            
+            .video-link {
+                padding: 0.35rem 0.6rem;
+                font-size: 0.75rem;
+            }
+            
+            .footer {
+                padding: 0.75rem;
+            }
+            
+            .footer-actions {
+                gap: 0.5rem;
+            }
+            
+            .btn-logout,
             .btn-whatsapp {
-                margin-left: 0;
-                margin-top: 1rem;
-                width: 100%;
-                justify-content: center;
+                padding: 0.6rem 0.75rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.2rem;
+            }
+            
+            .container {
+                padding: 0.5rem;
+            }
+            
+            .days-selector {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.3rem;
+                padding: 0.5rem;
+            }
+            
+            .day-btn {
+                padding: 0.5rem 0.3rem;
+                font-size: 0.7rem;
+            }
+            
+            .progress-section {
+                padding: 0.75rem;
+            }
+            
+            .progress-bar {
+                height: 6px;
+            }
+            
+            .progress-text {
+                font-size: 0.8rem;
+            }
+            
+            .training-content {
+                padding: 1rem;
+            }
+            
+            .training-header {
+                margin-bottom: 1rem;
+                padding-bottom: 0.75rem;
+            }
+            
+            .training-header h2 {
+                font-size: 1.1rem;
+                margin-bottom: 0.5rem;
+            }
+            
+            .focus-area {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
+            
+            .exercises-table {
+                min-width: 400px;
+            }
+            
+            .exercises-table th,
+            .exercises-table td {
+                padding: 0.5rem;
+                font-size: 0.75rem;
+            }
+            
+            .exercise-name {
+                font-size: 0.75rem;
+            }
+            
+            .video-link {
+                padding: 0.3rem 0.5rem;
+                font-size: 0.7rem;
+            }
+            
+            .footer-actions {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .btn-logout,
+            .btn-whatsapp {
+                padding: 0.75rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .header h1 {
+                font-size: 1.1rem;
+            }
+            
+            .header p {
+                font-size: 0.8rem;
+            }
+            
+            .days-selector {
+                grid-template-columns: 1fr;
+            }
+            
+            .day-btn {
+                padding: 0.6rem;
+                font-size: 0.8rem;
+            }
+            
+            .exercises-table {
+                min-width: 350px;
+            }
+            
+            .exercises-table th,
+            .exercises-table td {
+                padding: 0.4rem;
+                font-size: 0.7rem;
+            }
+        }
+
+        /* Estados especiais para mobile */
+        .days-selector.mobile-collapsed {
+            display: none;
+        }
+
+        .days-selector.mobile-expanded {
+            display: grid;
+            position: absolute;
+            top: 100%;
+            left: 0.75rem;
+            right: 0.75rem;
+            z-index: 100;
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* Scrollbar personalizado para tabelas */
+        .exercises-container::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .exercises-container::-webkit-scrollbar-track {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
+        .exercises-container::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        .exercises-container::-webkit-scrollbar-thumb:hover {
+            background: #1e3a8a;
+        }
+
+        /* Melhorias de acessibilidade */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .exercise-row.completed {
+                background: #e0e0e0;
+            }
+            
+            .video-link {
+                border: 2px solid currentColor;
             }
         }
     </style>
 </head>
+
 <body>
     <!-- Header -->
     <div class="header">
         <h1>Meu Treino</h1>
         <p id="studentName">Carregando...</p>
-        <button class="btn-menu-toggle" onclick="toggleDaysSelector()">
-            <i class="fas fa-calendar-alt"></i> Dias
+        <button class="btn-menu-toggle" onclick="toggleDaysSelector()" aria-label="Alternar menu de dias">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Dias</span>
         </button>
     </div>
 
     <!-- Container Principal -->
     <div class="container">
         <!-- Seletor de Dias -->
-        <div class="days-selector">
-            <button class="day-btn active" onclick="selectDay('segunda')">Segunda</button>
-            <button class="day-btn" onclick="selectDay('terca')">Terça</button>
-            <button class="day-btn" onclick="selectDay('quarta')">Quarta</button>
-            <button class="day-btn" onclick="selectDay('quinta')">Quinta</button>
-            <button class="day-btn" onclick="selectDay('sexta')">Sexta</button>
+        <div class="days-selector" id="daysSelector">
+            <button class="day-btn active" onclick="selectDay('segunda')" aria-label="Treino de segunda-feira">
+                Segunda
+            </button>
+            <button class="day-btn" onclick="selectDay('terca')" aria-label="Treino de terça-feira">
+                Terça
+            </button>
+            <button class="day-btn" onclick="selectDay('quarta')" aria-label="Treino de quarta-feira">
+                Quarta
+            </button>
+            <button class="day-btn" onclick="selectDay('quinta')" aria-label="Treino de quinta-feira">
+                Quinta
+            </button>
+            <button class="day-btn" onclick="selectDay('sexta')" aria-label="Treino de sexta-feira">
+                Sexta
+            </button>
         </div>
 
         <!-- Progresso -->
@@ -418,31 +648,35 @@
                 <div class="focus-area" id="focusArea">Carregando...</div>
             </div>
 
-            <table class="exercises-table">
-                <thead>
-                    <tr>
-                        <th width="5%"></th>
-                        <th width="45%">Exercício</th>
-                        <th width="15%">Séries</th>
-                        <th width="15%">Repetições</th>
-                        <th width="20%">Vídeo</th>
-                    </tr>
-                </thead>
-                <tbody id="exercisesTableBody">
-                    <!-- Exercícios serão injetados aqui -->
-                </tbody>
-            </table>
+            <div class="exercises-container">
+                <table class="exercises-table">
+                    <thead>
+                        <tr>
+                            <th width="5%"></th>
+                            <th width="45%">Exercício</th>
+                            <th width="15%">Séries</th>
+                            <th width="15%">Repetições</th>
+                            <th width="20%">Vídeo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="exercisesTableBody">
+                        <!-- Exercícios serão injetados aqui -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <!-- Footer -->
     <div class="footer">
-        <button class="btn-whatsapp" onclick="sendWhatsApp()">
-            <i class="fab fa-whatsapp"></i> Dúvida?
-        </button>
-        <button class="btn-logout" onclick="logout()">
-            <i class="fas fa-sign-out-alt"></i> Sair
-        </button>
+        <div class="footer-actions">
+            <button class="btn-whatsapp" onclick="sendWhatsApp()">
+                <i class="fab fa-whatsapp"></i> Dúvida?
+            </button>
+            <button class="btn-logout" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Sair
+            </button>
+        </div>
     </div>
 
     <script>
@@ -456,20 +690,104 @@
         const PROGRESS_KEY = 'studentProgress';
         const ADMIN_WHATSAPP = '5511948773263';
         const BACKUP_KEY = 'italoBackupData';
+        
+        // CHAVE DE SINCRONIZAÇÃO AUTOMÁTICA
+        const ACADEMY_ID = 'italo_ruan_academy_2024';
 
         let currentStudent = null;
         let currentDay = 'segunda';
         let studentTrainings = null;
+        let isDaysMenuOpen = false;
+
+        // ========================================
+        // SISTEMA DE SINCRONIZAÇÃO AUTOMÁTICA
+        // ========================================
+
+        function loadSyncedDataForStudent() {
+            // Carrega dados sincronizados para o aluno
+            const syncedStudents = localStorage.getItem(`${ACADEMY_ID}_students`);
+            const syncedTrainings = localStorage.getItem(`${ACADEMY_ID}_trainings`);
+            const syncedDefaultTrainings = localStorage.getItem(`${ACADEMY_ID}_default_trainings`);
+            
+            let loadedData = false;
+            
+            if (syncedStudents) {
+                localStorage.setItem(STUDENTS_KEY, syncedStudents);
+                loadedData = true;
+            }
+            if (syncedTrainings) {
+                localStorage.setItem(TRAININGS_KEY, syncedTrainings);
+                loadedData = true;
+            }
+            if (syncedDefaultTrainings) {
+                localStorage.setItem('italoDefaultTrainings', syncedDefaultTrainings);
+                loadedData = true;
+            }
+            
+            if (loadedData) {
+                console.log('Dados sincronizados carregados para aluno');
+            }
+            
+            return loadedData;
+        }
 
         // ========================================
         // INICIALIZAÇÃO
         // ========================================
 
         document.addEventListener('DOMContentLoaded', function() {
+            // CARREGA DADOS SINCRONIZADOS PRIMEIRO
+            loadSyncedDataForStudent();
+            
             checkStudentLogin();
             loadStudentData();
             selectDay('segunda');
+            setupMobileMenu();
+            
+            // Monitora mudanças no storage (sincronização em tempo real)
+            window.addEventListener('storage', function(e) {
+                if (e.key && e.key.startsWith(ACADEMY_ID)) {
+                    console.log('Dados atualizados em outro dispositivo, recarregando...');
+                    loadSyncedDataForStudent();
+                    loadStudentData();
+                    loadDayTraining();
+                }
+            });
         });
+
+        // ========================================
+        // CONFIGURAÇÃO DO MENU MOBILE
+        // ========================================
+
+        function setupMobileMenu() {
+            // Fechar menu ao clicar fora (apenas mobile)
+            if (window.innerWidth <= 768) {
+                document.addEventListener('click', function(event) {
+                    const daysSelector = document.getElementById('daysSelector');
+                    const menuToggle = document.querySelector('.btn-menu-toggle');
+                    
+                    if (isDaysMenuOpen && 
+                        !daysSelector.contains(event.target) && 
+                        !menuToggle.contains(event.target)) {
+                        toggleDaysSelector();
+                    }
+                });
+            }
+        }
+
+        function toggleDaysSelector() {
+            const daysSelector = document.getElementById('daysSelector');
+            if (window.innerWidth <= 768) {
+                if (isDaysMenuOpen) {
+                    daysSelector.classList.remove('mobile-expanded');
+                    daysSelector.classList.add('mobile-collapsed');
+                } else {
+                    daysSelector.classList.remove('mobile-collapsed');
+                    daysSelector.classList.add('mobile-expanded');
+                }
+                isDaysMenuOpen = !isDaysMenuOpen;
+            }
+        }
 
         // ========================================
         // VERIFICAÇÃO DE LOGIN
@@ -514,6 +832,20 @@
                     }
                 } catch (error) {
                     console.error('Erro ao carregar treinos do backup:', error);
+                }
+            }
+            
+            // Tenta carregar da sincronização
+            const syncedDefaultTrainings = localStorage.getItem(`${ACADEMY_ID}_default_trainings`);
+            if (syncedDefaultTrainings) {
+                try {
+                    const defaultTrainings = JSON.parse(syncedDefaultTrainings);
+                    if (defaultTrainings && Object.keys(defaultTrainings).length > 0) {
+                        studentTrainings = defaultTrainings;
+                        return;
+                    }
+                } catch (error) {
+                    console.error('Erro ao carregar treinos sincronizados:', error);
                 }
             }
             
@@ -613,10 +945,6 @@
         // SELEÇÃO DE DIA
         // ========================================
 
-        function toggleDaysSelector() {
-            document.querySelector('.days-selector').classList.toggle('active');
-        }
-
         function selectDay(day) {
             currentDay = day;
             
@@ -630,9 +958,8 @@
             }
             
             // Fechar o seletor no mobile após a seleção
-            const selector = document.querySelector('.days-selector');
-            if (window.innerWidth <= 768 && selector.classList.contains('active')) {
-                selector.classList.remove('active');
+            if (window.innerWidth <= 768 && isDaysMenuOpen) {
+                toggleDaysSelector();
             }
             
             loadDayTraining();
@@ -668,7 +995,9 @@
                 
                 row.innerHTML = `
                     <td>
-                        <input type="checkbox" class="exercise-checkbox" ${isCompleted ? 'checked' : ''} onchange="toggleExercise(${index})">
+                        <input type="checkbox" class="exercise-checkbox" ${isCompleted ? 'checked' : ''} 
+                               onchange="toggleExercise(${index})" 
+                               aria-label="${isCompleted ? 'Desmarcar' : 'Marcar'} exercício ${exercise.name} como completo">
                     </td>
                     <td>
                         <span class="exercise-name">${exercise.name || exercise}</span>
@@ -677,7 +1006,8 @@
                     <td>${exercise.reps || '-'}</td>
                     <td>
                         ${exercise.video ? `
-                            <a href="${exercise.video}" target="_blank" class="video-link" title="Ver vídeo demonstração">
+                            <a href="${exercise.video}" target="_blank" class="video-link" 
+                               title="Ver vídeo demonstração do exercício ${exercise.name}">
                                 <i class="fas fa-play-circle"></i> Assistir
                             </a>
                         ` : '-'}
@@ -721,6 +1051,11 @@
 
             localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
             loadDayTraining();
+            
+            // Feedback tátil (vibração se suportado)
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
         }
 
         function updateProgress() {
@@ -749,6 +1084,77 @@
                 window.location.href = 'login.html';
             }
         }
+
+        // ========================================
+        // MELHORIAS DE USABILIDADE
+        // ========================================
+
+        // Swipe para trocar dias (mobile)
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const swipeDistance = touchEndX - touchStartX;
+
+            if (Math.abs(swipeDistance) < swipeThreshold) return;
+
+            const days = ['segunda', 'terca', 'quarta', 'quinta', 'sexta'];
+            const currentIndex = days.indexOf(currentDay);
+
+            if (swipeDistance > 0 && currentIndex > 0) {
+                // Swipe direito - dia anterior
+                selectDay(days[currentIndex - 1]);
+            } else if (swipeDistance < 0 && currentIndex < days.length - 1) {
+                // Swipe esquerdo - próximo dia
+                selectDay(days[currentIndex + 1]);
+            }
+        }
+
+        // Atalhos de teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT') return; // Não interferir em inputs
+
+            const days = ['segunda', 'terca', 'quarta', 'quinta', 'sexta'];
+            const currentIndex = days.indexOf(currentDay);
+
+            switch(e.key) {
+                case 'ArrowLeft':
+                    if (currentIndex > 0) {
+                        selectDay(days[currentIndex - 1]);
+                    }
+                    break;
+                case 'ArrowRight':
+                    if (currentIndex < days.length - 1) {
+                        selectDay(days[currentIndex + 1]);
+                    }
+                    break;
+                case 'Escape':
+                    if (isDaysMenuOpen) {
+                        toggleDaysSelector();
+                    }
+                    break;
+            }
+        });
+
+        // Otimização para performance
+        window.addEventListener('resize', () => {
+            // Reset menu state on resize
+            const daysSelector = document.getElementById('daysSelector');
+            if (window.innerWidth > 768) {
+                daysSelector.classList.remove('mobile-collapsed', 'mobile-expanded');
+                isDaysMenuOpen = false;
+            }
+        });
     </script>
 </body>
 </html>
