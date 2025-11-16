@@ -455,6 +455,7 @@
         const STUDENTS_KEY = 'italoRuanStudents';
         const PROGRESS_KEY = 'studentProgress';
         const ADMIN_WHATSAPP = '5511948773263';
+        const BACKUP_KEY = 'italoBackupData';
 
         let currentStudent = null;
         let currentDay = 'segunda';
@@ -500,6 +501,22 @@
         }
 
         function loadDefaultTrainings() {
+            // Tenta carregar do backup primeiro
+            const backupData = localStorage.getItem(BACKUP_KEY);
+            if (backupData) {
+                try {
+                    const data = JSON.parse(backupData);
+                    const defaultTrainings = data.defaultTrainings;
+                    
+                    if (defaultTrainings && Object.keys(defaultTrainings).length > 0) {
+                        studentTrainings = defaultTrainings;
+                        return;
+                    }
+                } catch (error) {
+                    console.error('Erro ao carregar treinos do backup:', error);
+                }
+            }
+            
             // Treino padrão caso não haja treino específico
             const defaultTrainings = {
                 segunda: {

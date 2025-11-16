@@ -380,6 +380,12 @@
                 <button type="submit" class="btn-login">
                     <i class="fas fa-sign-in-alt"></i> Entrar como Professor
                 </button>
+
+                <div class="form-group" style="margin-top: 1rem;">
+                    <button type="button" class="btn-forgot-password" onclick="importBackupFromLogin()">
+                        <i class="fas fa-file-import"></i> Importar Dados de Backup
+                    </button>
+                </div>
             </form>
 
             <!-- Student Login -->
@@ -424,6 +430,8 @@
         const ADMIN_KEY = 'italoAdminLogin';
         const STUDENT_KEY = 'italoStudentLogin';
         const STUDENTS_STORAGE_KEY = 'italoRuanStudents';
+        const TRAININGS_STORAGE_KEY = 'italoRuanTrainings';
+        const PROGRESS_STORAGE_KEY = 'studentProgress';
         const THEME_KEY = 'appTheme';
         const ADMIN_CREDENTIALS = {
             user: 'italo',
@@ -431,6 +439,7 @@
         };
 
         const ADMIN_WHATSAPP = '5511948773263';
+        const BACKUP_KEY = 'italoBackupData';
 
         // ========================================
         // INICIALIZAÇÃO
@@ -438,9 +447,39 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             loadTheme();
+            
+            // Tenta restaurar backup primeiro
+            checkAndRestoreBackup();
+            
             loadStudentsList();
             checkExistingLogin();
         });
+
+        // ========================================
+        // SISTEMA DE BACKUP AUTOMÁTICO
+        // ========================================
+
+        function checkAndRestoreBackup() {
+            const backupData = localStorage.getItem(BACKUP_KEY);
+            if (backupData) {
+                try {
+                    const data = JSON.parse(backupData);
+                    
+                    // Restaura dados do backup
+                    localStorage.setItem(STUDENTS_STORAGE_KEY, JSON.stringify(data.students || []));
+                    localStorage.setItem(TRAININGS_STORAGE_KEY, JSON.stringify(data.trainings || {}));
+                    localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(data.progress || {}));
+                    localStorage.setItem('italoDefaultTrainings', JSON.stringify(data.defaultTrainings || {}));
+                    
+                    console.log('Backup restaurado automaticamente');
+                    return true;
+                } catch (error) {
+                    console.error('Erro ao restaurar backup:', error);
+                    return false;
+                }
+            }
+            return false;
+        }
 
         // ========================================
         // GERENCIAMENTO DE TEMA
@@ -649,6 +688,53 @@
         }
 
         // ========================================
+        // IMPORTAR BACKUP DO LOGIN
+        // ========================================
+
+        function importBackupFromLogin() {
+            const backupCode = prompt('Cole o código de backup para importar alunos e treinos:');
+            
+            if (!backupCode) {
+                return;
+            }
+            
+            try {
+                // Decodificar Base64
+                const dataString = decodeURIComponent(escape(atob(backupCode)));
+                const data = JSON.parse(dataString);
+                
+                if (confirm(`Deseja importar dados de ${data.students.length} aluno(s)?`)) {
+                    // Salvar dados importados
+                    localStorage.setItem(STUDENTS_STORAGE_KEY, JSON.stringify(data.students || []));
+                    localStorage.setItem(TRAININGS_STORAGE_KEY, JSON.stringify(data.trainings || {}));
+                    localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(data.progress || {}));
+                    localStorage.setItem('italoDefaultTrainings', JSON.stringify(data.defaultTrainings || {}));
+                    
+                    // Salvar como backup também
+                    localStorage.setItem(BACKUP_KEY, JSON.stringify(data));
+                    
+                    // Mostrar mensagem de sucesso
+                    const successDiv = document.getElementById('adminError');
+                    successDiv.textContent = '✅ Dados importados com sucesso! Recarregando...';
+                    successDiv.style.background = '#d1fae5';
+                    successDiv.style.color = '#059669';
+                    successDiv.style.borderLeftColor = '#059669';
+                    successDiv.classList.add('active');
+                    
+                    // Recarregar a página para atualizar a lista
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                }
+            } catch (error) {
+                const errorDiv = document.getElementById('adminError');
+                errorDiv.textContent = '❌ Erro: Código de backup inválido!';
+                errorDiv.classList.add('active');
+                console.error('Erro ao importar backup:', error);
+            }
+        }
+
+        // ========================================
         // UTILITÁRIOS
         // ========================================
 
@@ -656,6 +742,42 @@
             document.querySelectorAll('.error-message, .success-message').forEach(el => {
                 el.classList.remove('active');
             });
+        }
+
+        function showToast(message, type = 'success') {
+            // Criar container de toast se não existir
+            let container = document.getElementById('toastContainer');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'toastContainer';
+                container.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    z-index: 3000;
+                `;
+                document.body.appendChild(container);
+            }
+
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                background: white;
+                border-radius: 8px;
+                padding: 1rem 1.5rem;
+                margin-bottom: 10px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                animation: slideUp 0.3s ease-out;
+                font-weight: 600;
+                border-left: 4px solid ${type === 'success' ? '#059669' : '#dc2626'};
+                color: ${type === 'success' ? '#059669' : '#dc2626'};
+            `;
+            toast.textContent = message;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 5000);
         }
 
         // Permitir Enter para enviar formulário

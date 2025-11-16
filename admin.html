@@ -905,6 +905,9 @@
                 <button class="nav-item" onclick="switchTab('edit-training')">
                     <i class="fas fa-edit"></i> Editar Treino Aluno
                 </button>
+                <button class="nav-item" onclick="switchTab('default-trainings')">
+                    <i class="fas fa-clipboard-list"></i> Treinos Padrão
+                </button>
                 <button class="nav-item" onclick="switchTab('progress')">
                     <i class="fas fa-chart-line"></i> Progresso dos Alunos
                 </button>
@@ -1001,6 +1004,62 @@
                 </div>
             </section>
 
+            <!-- Treinos Padrão -->
+            <section class="tab-content" id="default-trainings">
+                <div class="section-header">
+                    <h2>Treinos Padrão</h2>
+                    <button class="btn btn-primary" onclick="applyDefaultTrainingToAll()">
+                        <i class="fas fa-users"></i> Aplicar a Todos os Alunos
+                    </button>
+                </div>
+                <div class="edit-training-container">
+                    <div class="days-tabs" id="defaultDaysTabs">
+                        <!-- Abas de Dias para treinos padrão -->
+                    </div>
+
+                    <div class="training-editor">
+                        <h3 id="defaultCurrentDayTitle">Treino Padrão - Segunda</h3>
+                        
+                        <div class="focus-area-group">
+                            <label for="defaultFocusArea">Área de Foco:</label>
+                            <input type="text" id="defaultFocusArea" class="form-input" placeholder="Ex: PEITO + TRÍCEPS + OMBRO">
+                        </div>
+
+                        <div class="exercises-editor">
+                            <h4>Exercícios:</h4>
+                            
+                            <table class="exercises-table">
+                                <thead>
+                                    <tr>
+                                        <th width="40%">Exercício</th>
+                                        <th width="15%">Séries</th>
+                                        <th width="15%">Repetições</th>
+                                        <th width="25%">Link do Vídeo</th>
+                                        <th width="5%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="defaultExercisesTableBody">
+                                    <!-- Linhas de exercícios padrão serão injetadas aqui -->
+                                </tbody>
+                            </table>
+                            
+                            <button class="btn btn-secondary" onclick="addDefaultExerciseRow()">
+                                <i class="fas fa-plus"></i> Adicionar Exercício
+                            </button>
+                        </div>
+
+                        <div class="editor-actions" style="margin-top: 2rem;">
+                            <button class="btn btn-primary" onclick="saveDefaultTraining()">
+                                <i class="fas fa-save"></i> Salvar Treino Padrão
+                            </button>
+                            <button class="btn btn-warning" onclick="loadPredefinedTraining()">
+                                <i class="fas fa-magic"></i> Carregar Treino Pré-definido
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Progresso dos Alunos -->
             <section class="tab-content" id="progress">
                 <div class="section-header">
@@ -1090,6 +1149,8 @@
         const PROGRESS_STORAGE_KEY = 'studentProgress';
         const ADMIN_CREDENTIALS_KEY = 'italoAdminCredentials';
         const THEME_KEY = 'appTheme';
+        const DEFAULT_TRAININGS_KEY = 'italoDefaultTrainings';
+        const BACKUP_KEY = 'italoBackupData';
 
         let currentAdminCredentials = {
             user: 'italo',
@@ -1107,14 +1168,66 @@
             loadTheme();
             checkAdminLogin();
             loadAdminCredentials();
-            loadStudents();
-            loadStudentsForTrainingEdit();
-            loadStudentsForProgress();
-            setupDaysTabs();
             
-            // Inicializa a aba Dashboard
+            // Tenta restaurar backup automaticamente
+            if (!restoreFromAutoBackup()) {
+                // Se não houver backup, carrega dados normais
+                loadStudents();
+                loadStudentsForTrainingEdit();
+                loadStudentsForProgress();
+                setupDaysTabs();
+                initializeDefaultTrainingsTab();
+            }
+            
+            // Cria backup inicial
+            createAutoBackup();
+            
             switchTab('dashboard');
         });
+
+        // ========================================
+        // SISTEMA DE BACKUP AUTOMÁTICO
+        // ========================================
+
+        function createAutoBackup() {
+            const backupData = {
+                students: getStudents(),
+                trainings: getTrainings(),
+                progress: getProgress(),
+                defaultTrainings: getDefaultTrainings(),
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem(BACKUP_KEY, JSON.stringify(backupData));
+        }
+
+        function restoreFromAutoBackup() {
+            const backupData = localStorage.getItem(BACKUP_KEY);
+            if (!backupData) return false;
+            
+            try {
+                const data = JSON.parse(backupData);
+                
+                // Restaura os dados
+                saveStudents(data.students || []);
+                saveTrainings(data.trainings || {});
+                localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(data.progress || {}));
+                saveDefaultTrainings(data.defaultTrainings || {});
+                
+                // Carrega os dados restaurados
+                loadStudents();
+                loadStudentsForTrainingEdit();
+                loadStudentsForProgress();
+                setupDaysTabs();
+                initializeDefaultTrainingsTab();
+                
+                console.log('Backup restaurado automaticamente');
+                return true;
+            } catch (error) {
+                console.error('Erro ao restaurar backup:', error);
+                return false;
+            }
+        }
 
         // ========================================
         // GERENCIAMENTO DE TEMA
@@ -1152,6 +1265,7 @@
 
         function saveStudents(students) {
             localStorage.setItem(STUDENTS_STORAGE_KEY, JSON.stringify(students));
+            createAutoBackup(); // Backup automático
         }
 
         function getTrainings() {
@@ -1160,10 +1274,20 @@
 
         function saveTrainings(trainings) {
             localStorage.setItem(TRAININGS_STORAGE_KEY, JSON.stringify(trainings));
+            createAutoBackup(); // Backup automático
         }
 
         function getProgress() {
             return JSON.parse(localStorage.getItem(PROGRESS_STORAGE_KEY) || '{}');
+        }
+
+        function getDefaultTrainings() {
+            return JSON.parse(localStorage.getItem(DEFAULT_TRAININGS_KEY) || '{}');
+        }
+
+        function saveDefaultTrainings(trainings) {
+            localStorage.setItem(DEFAULT_TRAININGS_KEY, JSON.stringify(trainings));
+            createAutoBackup(); // Backup automático
         }
 
         // ========================================
@@ -1200,6 +1324,7 @@
             
             localStorage.setItem(ADMIN_CREDENTIALS_KEY, JSON.stringify(currentAdminCredentials));
             document.getElementById('adminPasswordSetting').value = '';
+            createAutoBackup(); // Backup automático
         }
 
         // ========================================
@@ -1233,7 +1358,12 @@
                 document.getElementById('totalStudents').textContent = getStudents().length;
             } else if (tabName === 'progress') {
                 loadProgressOverview();
+            } else if (tabName === 'default-trainings') {
+                initializeDefaultTrainingsTab();
             }
+            
+            // Cria backup sempre que mudar de aba (para sincronização)
+            createAutoBackup();
         }
 
         // ========================================
@@ -1559,6 +1689,266 @@
         }
 
         // ========================================
+        // TREINOS PADRÃO
+        // ========================================
+
+        function initializeDefaultTrainingsTab() {
+            setupDefaultDaysTabs();
+            loadDefaultTraining();
+        }
+
+        function setupDefaultDaysTabs() {
+            const days = ['segunda', 'terca', 'quarta', 'quinta', 'sexta'];
+            const tabsContainer = document.getElementById('defaultDaysTabs');
+            tabsContainer.innerHTML = '';
+
+            days.forEach(day => {
+                const button = document.createElement('button');
+                button.className = 'day-tab';
+                button.textContent = day.charAt(0).toUpperCase() + day.slice(1);
+                button.onclick = () => selectDefaultDayToEdit(day);
+                tabsContainer.appendChild(button);
+            });
+        }
+
+        function selectDefaultDayToEdit(day) {
+            currentDay = day;
+            
+            document.querySelectorAll('#defaultDaysTabs .day-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`#defaultDaysTabs button:nth-child(${['segunda', 'terca', 'quarta', 'quinta', 'sexta'].indexOf(day) + 1})`).classList.add('active');
+            
+            document.getElementById('defaultCurrentDayTitle').textContent = 'Treino Padrão - ' + day.charAt(0).toUpperCase() + day.slice(1);
+            
+            loadDefaultTraining();
+        }
+
+        function loadDefaultTraining() {
+            const defaultTrainings = getDefaultTrainings();
+            const dayTraining = defaultTrainings[currentDay];
+            
+            if (!dayTraining) {
+                // Se não houver treino padrão, inicializa um vazio
+                initializeDefaultTrainings();
+                loadDefaultTraining(); // Tenta carregar novamente
+                return;
+            }
+
+            document.getElementById('defaultFocusArea').value = dayTraining.focus || '';
+            loadDefaultExercisesToTable(dayTraining.exercises || []);
+        }
+
+        function initializeDefaultTrainings() {
+            const defaultTrainings = {
+                segunda: {
+                    focus: 'PEITO + TRÍCEPS + OMBRO',
+                    exercises: [
+                        { name: 'Supino reto com halteres', series: '4', reps: '20-15-12-10', video: '' },
+                        { name: 'Supino inclinado com halteres', series: '4', reps: '10', video: '' },
+                        { name: 'Crucifixo no banco inclinado', series: '4', reps: '10', video: '' },
+                        { name: 'Crucifixo polia', series: '4', reps: '10', video: '' },
+                        { name: 'Elevação lateral com halteres', series: '4', reps: '10', video: '' },
+                        { name: 'Remada alta com barra', series: '4', reps: '10', video: '' },
+                        { name: 'Elevação frontal com corda na polia', series: '3', reps: '15', video: '' },
+                        { name: 'Tríceps na polia', series: '4', reps: '10', video: '' },
+                        { name: 'Tríceps patada', series: '4', reps: '15', video: '' }
+                    ]
+                },
+                terca: {
+                    focus: 'PERNAS - QUADRÍCEPS',
+                    exercises: [
+                        { name: 'Agachamento sumô (mobilidade)', series: '2', reps: '20 segundos', video: '' },
+                        { name: 'Mobilidade de tornozelo e quadril', series: '2', reps: '10/lado', video: '' },
+                        { name: 'Cadeira extensora', series: '4', reps: '20', video: '' },
+                        { name: 'Agachamento livre com barra', series: '4', reps: '10', video: '' },
+                        { name: 'Leg press 45', series: '4', reps: '10', video: '' },
+                        { name: 'Agachamento afundo com halteres', series: '4', reps: '10', video: '' },
+                        { name: 'Cadeira flexora', series: '4', reps: '20-15-12-10', video: '' },
+                        { name: 'Cadeira adutora', series: '3', reps: '20', video: '' },
+                        { name: 'Panturrilha máquina', series: '3', reps: '15', video: '' }
+                    ]
+                },
+                quarta: {
+                    focus: 'COSTAS + POST. OMBRO, BÍCEPS',
+                    exercises: [
+                        { name: 'Puxada pela fren. com pegada aberta', series: '4', reps: '20-15-12-10', video: '' },
+                        { name: 'Puxada pela fren. com pegada supinada', series: '3', reps: '10', video: '' },
+                        { name: 'Remada curvada com barra', series: '4', reps: '10', video: '' },
+                        { name: 'Remada curvada com halteres', series: '3', reps: '10', video: '' },
+                        { name: 'Pulldown polia alta', series: '3', reps: '10', video: '' },
+                        { name: 'Remada baixa na polia (use a barra)', series: '3', reps: '10', video: '' },
+                        { name: 'Encolhimento de ombro', series: '3', reps: '10', video: '' },
+                        { name: 'Rosca direta com barra', series: '4', reps: '10', video: '' },
+                        { name: 'Rosca Scott com barra W', series: '4', reps: '10', video: '' }
+                    ]
+                },
+                quinta: {
+                    focus: 'PERNAS GLÚTEOS',
+                    exercises: [
+                        { name: 'Agachamento sumô (mobilidade)', series: '2', reps: '20 segundos', video: '' },
+                        { name: 'Mobilidade de tornozelo e quadril', series: '2', reps: '10/lado', video: '' },
+                        { name: 'Cadeira adutora', series: '3', reps: '20', video: '' },
+                        { name: 'Levantamento terra com barra', series: '4', reps: '10', video: '' },
+                        { name: 'Mesa flexora bilateral', series: '3', reps: '10', video: '' },
+                        { name: 'Elevação pélvica', series: '4', reps: '10', video: '' },
+                        { name: 'Cadeira flexora', series: '4', reps: '20-15-12-10', video: '' },
+                        { name: 'Stiff joelho flexionado com halteres', series: '4', reps: '10', video: '' },
+                        { name: 'Cadeira extensoura', series: '4', reps: '20', video: '' }
+                    ]
+                },
+                sexta: {
+                    focus: 'OMBRO COMPLETO',
+                    exercises: [
+                        { name: 'Desenvolvimento máquina', series: '4', reps: '10', video: '' },
+                        { name: 'Desenvolvimento Arnold', series: '4', reps: '10', video: '' },
+                        { name: 'Elevação lateral sentado/rest-pause na última série', series: '4', reps: '10', video: '' },
+                        { name: 'Voador inversor com pegada pronada (use o rest-pause)', series: '4', reps: '10', video: '' },
+                        { name: 'Elevação frontal com corda na polia (drop-set na última série)', series: '4', reps: '10', video: '' },
+                        { name: 'Remada com corda na polia alta', series: '4', reps: '10', video: '' },
+                        { name: 'Encolhimento de ombro', series: '4', reps: '10', video: '' }
+                    ]
+                }
+            };
+            
+            saveDefaultTrainings(defaultTrainings);
+        }
+
+        function loadPredefinedTraining() {
+            if (confirm('Carregar treino pré-definido? Isso substituirá o treino atual deste dia.')) {
+                initializeDefaultTrainings();
+                loadDefaultTraining();
+                showToast('Treino pré-definido carregado com sucesso!', 'success');
+            }
+        }
+
+        function addDefaultExerciseRow() {
+            const tbody = document.getElementById('defaultExercisesTableBody');
+            const row = document.createElement('tr');
+            row.className = 'exercise-row';
+            row.innerHTML = `
+                <td>
+                    <input type="text" class="exercise-name" placeholder="Ex: Supino reto com halteres" required>
+                </td>
+                <td>
+                    <input type="text" class="exercise-series" placeholder="Ex: 4" required>
+                </td>
+                <td>
+                    <input type="text" class="exercise-reps" placeholder="Ex: 20-15-12-10" required>
+                </td>
+                <td>
+                    <input type="text" class="exercise-video" placeholder="https://youtube.com/...">
+                </td>
+                <td>
+                    <button type="button" class="btn-remove-exercise" onclick="removeDefaultExerciseRow(this)">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        }
+
+        function removeDefaultExerciseRow(button) {
+            const row = button.closest('tr');
+            row.remove();
+        }
+
+        function loadDefaultExercisesToTable(exercises) {
+            const tbody = document.getElementById('defaultExercisesTableBody');
+            tbody.innerHTML = '';
+
+            if (exercises && exercises.length > 0) {
+                exercises.forEach(exercise => {
+                    const row = document.createElement('tr');
+                    row.className = 'exercise-row';
+                    row.innerHTML = `
+                        <td>
+                            <input type="text" class="exercise-name" value="${exercise.name || ''}" placeholder="Ex: Supino reto com halteres" required>
+                        </td>
+                        <td>
+                            <input type="text" class="exercise-series" value="${exercise.series || ''}" placeholder="Ex: 4" required>
+                        </td>
+                        <td>
+                            <input type="text" class="exercise-reps" value="${exercise.reps || ''}" placeholder="Ex: 20-15-12-10" required>
+                        </td>
+                        <td>
+                            <input type="text" class="exercise-video" value="${exercise.video || ''}" placeholder="https://youtube.com/...">
+                        </td>
+                        <td>
+                            <button type="button" class="btn-remove-exercise" onclick="removeDefaultExerciseRow(this)">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } else {
+                addDefaultExerciseRow();
+            }
+        }
+
+        function getDefaultExercisesFromTable() {
+            const exercises = [];
+            const rows = document.querySelectorAll('#defaultExercisesTableBody .exercise-row');
+            
+            rows.forEach(row => {
+                const name = row.querySelector('.exercise-name').value.trim();
+                const series = row.querySelector('.exercise-series').value.trim();
+                const reps = row.querySelector('.exercise-reps').value.trim();
+                const video = row.querySelector('.exercise-video').value.trim();
+                
+                if (name && series && reps) {
+                    exercises.push({
+                        name: name,
+                        series: series,
+                        reps: reps,
+                        video: video
+                    });
+                }
+            });
+            
+            return exercises;
+        }
+
+        function saveDefaultTraining() {
+            const defaultTrainings = getDefaultTrainings();
+            
+            if (!defaultTrainings[currentDay]) {
+                defaultTrainings[currentDay] = {};
+            }
+            
+            const dayTraining = defaultTrainings[currentDay];
+            
+            dayTraining.focus = document.getElementById('defaultFocusArea').value.trim();
+            dayTraining.exercises = getDefaultExercisesFromTable();
+            
+            saveDefaultTrainings(defaultTrainings);
+            showToast(`Treino padrão de ${currentDay} salvo com sucesso!`, 'success');
+        }
+
+        function applyDefaultTrainingToAll() {
+            if (confirm('Aplicar treino padrão atual a TODOS os alunos? Isso substituirá os treinos existentes.')) {
+                const defaultTrainings = getDefaultTrainings();
+                const students = getStudents();
+                const trainings = getTrainings();
+                
+                students.forEach(student => {
+                    if (!trainings[student.id]) {
+                        trainings[student.id] = {};
+                    }
+                    
+                    // Aplica o treino padrão para todos os dias
+                    Object.keys(defaultTrainings).forEach(day => {
+                        trainings[student.id][day] = JSON.parse(JSON.stringify(defaultTrainings[day]));
+                    });
+                });
+                
+                saveTrainings(trainings);
+                showToast(`Treino padrão aplicado a ${students.length} aluno(s) com sucesso!`, 'success');
+            }
+        }
+
+        // ========================================
         // MONITORAMENTO DE PROGRESSO
         // ========================================
 
@@ -1664,7 +2054,8 @@
                 adminCredentials: JSON.parse(localStorage.getItem(ADMIN_CREDENTIALS_KEY) || '{}'),
                 students: getStudents(),
                 trainings: getTrainings(),
-                progress: getProgress()
+                progress: getProgress(),
+                defaultTrainings: getDefaultTrainings()
             };
             
             const dataStr = JSON.stringify(data, null, 2);
@@ -1687,6 +2078,8 @@
                 localStorage.removeItem(STUDENTS_STORAGE_KEY);
                 localStorage.removeItem(TRAININGS_STORAGE_KEY);
                 localStorage.removeItem(PROGRESS_STORAGE_KEY);
+                localStorage.removeItem(DEFAULT_TRAININGS_KEY);
+                localStorage.removeItem(BACKUP_KEY);
                 
                 loadStudents();
                 loadStudentsForTrainingEdit();
