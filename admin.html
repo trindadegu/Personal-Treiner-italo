@@ -15,12 +15,22 @@
             --danger-color: #dc2626;
             --warning-color: #f59e0b;
             --light-bg: #f8fafc;
+            --dark-bg: #0f172a;
+            --dark-card: #1e293b;
             --dark-text: #0f172a;
+            --light-text: #f8fafc;
             --gray-text: #475569;
             --border-color: #e2e8f0;
+            --dark-border: #334155;
             --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             --shadow-hover: 0 12px 24px rgba(30, 64, 175, 0.15);
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] {
+            --light-bg: var(--dark-bg);
+            --dark-text: var(--light-text);
+            --border-color: var(--dark-border);
         }
 
         * {
@@ -38,16 +48,17 @@
             color: var(--dark-text);
             background-color: var(--light-bg);
             line-height: 1.6;
-            /* Removido overflow-x: hidden para evitar problemas de layout */
+            transition: var(--transition);
         }
 
         .admin-header {
-            background: white;
+            background: var(--light-bg);
             box-shadow: var(--shadow);
             position: sticky;
             top: 0;
             z-index: 1000;
             border-bottom: 2px solid var(--primary-color);
+            transition: var(--transition);
         }
 
         .header-container {
@@ -97,7 +108,24 @@
             transform: translateY(-2px);
         }
 
-        /* CORREÇÃO DE LAYOUT E RESPONSIVIDADE */
+        .theme-toggle {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            background: #1e3a8a;
+            transform: translateY(-2px);
+        }
+
         .admin-container {
             display: flex;
             min-height: calc(100vh - 80px);
@@ -107,7 +135,7 @@
 
         .sidebar {
             width: 250px;
-            background: white;
+            background: var(--light-bg);
             border-right: 2px solid var(--border-color);
             padding: 2rem 0;
             position: fixed;
@@ -115,6 +143,7 @@
             height: calc(100vh - 80px);
             overflow-y: auto;
             z-index: 900;
+            transition: var(--transition);
         }
 
         .sidebar-nav {
@@ -140,7 +169,7 @@
         }
 
         .nav-item:hover {
-            background: var(--light-bg);
+            background: var(--border-color);
             color: var(--primary-color);
         }
 
@@ -160,7 +189,8 @@
             padding: 2rem;
             overflow-y: auto;
             min-width: 0;
-            margin-left: 250px; /* Margem para compensar o sidebar fixo */
+            margin-left: 250px;
+            transition: var(--transition);
         }
 
         .tab-content {
@@ -253,75 +283,13 @@
             transform: translateY(-2px);
         }
 
-        .treinos-container {
-            background: white;
+        .treinos-container, .students-container, .edit-training-container, .progress-container, .settings-box {
+            background: var(--light-bg);
             border-radius: 12px;
             padding: 2rem;
             box-shadow: var(--shadow);
-        }
-
-        .treinos-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        .training-card {
-            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1.5rem;
+            border: 1px solid var(--border-color);
             transition: var(--transition);
-        }
-
-        .training-card:hover {
-            border-color: var(--primary-color);
-            box-shadow: var(--shadow-hover);
-            transform: translateY(-5px);
-        }
-
-        .training-card h3 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 1.3rem;
-            color: var(--primary-color);
-            margin-bottom: 1rem;
-        }
-
-        .training-card .focus {
-            background: linear-gradient(135deg, rgba(30, 64, 175, 0.1), rgba(5, 150, 105, 0.1));
-            padding: 0.75rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            font-weight: 600;
-            color: var(--dark-text);
-        }
-
-        .training-card .exercises {
-            list-style: none;
-        }
-
-        .training-card .exercises li {
-            padding: 0.5rem 0;
-            color: var(--gray-text);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .training-card .exercises li:last-child {
-            border-bottom: none;
-        }
-
-        .training-card .exercises i {
-            color: var(--secondary-color);
-        }
-
-        .students-container {
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: var(--shadow);
         }
 
         .students-grid {
@@ -331,7 +299,7 @@
         }
 
         .student-card {
-            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            background: linear-gradient(135deg, var(--light-bg), var(--border-color));
             border: 2px solid var(--border-color);
             border-radius: 12px;
             padding: 1.5rem;
@@ -362,6 +330,7 @@
             font-family: 'Poppins', sans-serif;
             font-size: 1.2rem;
             margin-bottom: 0.5rem;
+            color: var(--dark-text);
         }
 
         .student-card p {
@@ -380,13 +349,6 @@
             font-size: 0.9rem;
         }
 
-        .edit-training-container {
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: var(--shadow);
-        }
-
         .days-tabs {
             display: flex;
             gap: 0.5rem;
@@ -399,7 +361,7 @@
             flex-shrink: 0;
             padding: 0.75rem 1.5rem;
             border: 2px solid var(--border-color);
-            background: white;
+            background: var(--light-bg);
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
@@ -422,6 +384,7 @@
             background: var(--light-bg);
             border-radius: 12px;
             padding: 2rem;
+            border: 1px solid var(--border-color);
         }
 
         .training-editor h3 {
@@ -439,6 +402,7 @@
             display: block;
             font-weight: 600;
             margin-bottom: 0.5rem;
+            color: var(--dark-text);
         }
 
         .focus-area-group input {
@@ -449,6 +413,8 @@
             font-family: 'Inter', sans-serif;
             font-size: 1rem;
             transition: var(--transition);
+            background: var(--light-bg);
+            color: var(--dark-text);
         }
 
         .focus-area-group input:focus {
@@ -458,60 +424,72 @@
         }
 
         .exercises-editor {
-            background: white;
+            background: var(--light-bg);
             border-radius: 8px;
             padding: 1.5rem;
             margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
         }
 
-        .exercises-list {
+        .exercises-table {
+            width: 100%;
+            border-collapse: collapse;
             margin-bottom: 1.5rem;
-        }
-
-        .exercise-item {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            padding: 1rem;
             background: var(--light-bg);
             border-radius: 8px;
-            align-items: center;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
-
-        .exercise-item input {
-            flex: 1;
+        
+        .exercises-table th,
+        .exercises-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--dark-text);
+        }
+        
+        .exercises-table th {
+            background: var(--border-color);
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+        
+        .exercises-table input {
+            width: 100%;
             padding: 0.5rem;
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 4px;
             font-family: 'Inter', sans-serif;
+            background: var(--light-bg);
+            color: var(--dark-text);
         }
-
-        .exercise-item input:focus {
+        
+        .exercises-table input:focus {
             outline: none;
             border-color: var(--primary-color);
         }
-
-        .exercise-item button {
-            padding: 0.5rem 1rem;
+        
+        .exercise-row {
+            transition: background-color 0.2s ease;
+        }
+        
+        .exercise-row:hover {
+            background: var(--border-color);
+        }
+        
+        .btn-remove-exercise {
             background: var(--danger-color);
             color: white;
             border: none;
-            border-radius: 6px;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
             cursor: pointer;
             transition: var(--transition);
         }
-
-        .exercise-item button:hover {
+        
+        .btn-remove-exercise:hover {
             background: #b91c1c;
-        }
-
-        .exercise-video-input {
-            font-size: 0.85rem;
-            color: var(--gray-text);
-        }
-
-        .exercise-video-input::placeholder {
-            font-size: 0.85rem;
         }
 
         .editor-actions {
@@ -523,13 +501,6 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
             gap: 2rem;
-        }
-
-        .settings-box {
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: var(--shadow);
         }
 
         .settings-box h3 {
@@ -558,12 +529,112 @@
             font-family: 'Inter', sans-serif;
             font-size: 1rem;
             transition: var(--transition);
+            background: var(--light-bg);
+            color: var(--dark-text);
         }
 
         .form-input:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+
+        .progress-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .progress-card {
+            background: linear-gradient(135deg, var(--light-bg), var(--border-color));
+            border-radius: 12px;
+            padding: 1.5rem;
+            border-left: 4px solid var(--primary-color);
+            transition: var(--transition);
+        }
+
+        .progress-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .progress-card h4 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--dark-text);
+        }
+
+        .progress-details {
+            font-size: 0.9rem;
+            color: var(--gray-text);
+        }
+
+        .progress-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .progress-item:last-child {
+            border-bottom: none;
+        }
+
+        .completed-exercise {
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+
+        .pending-exercise {
+            color: var(--gray-text);
+        }
+
+        .progress-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--gray-text);
+        }
+
+        .student-selector {
+            margin-bottom: 2rem;
+        }
+
+        .student-selector label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark-text);
+        }
+
+        .student-selector select {
+            width: 100%;
+            max-width: 300px;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            background: var(--light-bg);
+            color: var(--dark-text);
         }
 
         .modal {
@@ -584,13 +655,14 @@
         }
 
         .modal-content {
-            background: white;
+            background: var(--light-bg);
             border-radius: 12px;
             padding: 2rem;
             max-width: 500px;
             width: 90%;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             animation: slideIn 0.3s ease;
+            border: 1px solid var(--border-color);
         }
 
         @keyframes slideIn {
@@ -643,7 +715,7 @@
         }
 
         .toast {
-            background: white;
+            background: var(--light-bg);
             border-radius: 8px;
             padding: 1rem 1.5rem;
             margin-bottom: 10px;
@@ -651,6 +723,7 @@
             animation: slideUp 0.3s ease-out;
             font-weight: 600;
             border-left: 4px solid;
+            border: 1px solid var(--border-color);
         }
 
         .toast.success {
@@ -690,16 +763,15 @@
             background: #1e3a8a;
         }
 
-        /* MEDIA QUERIES CORRIGIDAS */
         @media (max-width: 1024px) {
             .sidebar {
                 width: 200px;
             }
             .main-content {
                 padding: 1.5rem;
-                margin-left: 200px; /* Ajustar margem para sidebar de 200px */
+                margin-left: 200px;
             }
-            .treinos-grid, .students-grid {
+            .students-grid {
                 grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             }
         }
@@ -714,7 +786,7 @@
             }
 
             .main-content {
-                margin-left: 0; /* Remover margem em mobile */
+                margin-left: 0;
                 padding: 1rem;
             }
 
@@ -731,7 +803,7 @@
                 overflow: hidden;
                 transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
                 z-index: 999;
-                background: white;
+                background: var(--light-bg);
             }
 
             .sidebar.active {
@@ -764,15 +836,11 @@
                 gap: 1rem;
             }
 
-            .treinos-grid, .students-grid, .settings-container {
+            .students-grid, .settings-container, .progress-grid {
                 grid-template-columns: 1fr;
             }
 
             .student-card {
-                padding: 1rem;
-            }
-
-            .training-card {
                 padding: 1rem;
             }
 
@@ -810,6 +878,9 @@
                 <span>Admin Panel</span>
             </div>
             <div class="header-info">
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                </button>
                 <button class="btn-menu-toggle" onclick="toggleSidebar()">
                     <i class="fas fa-bars"></i>
                 </button>
@@ -831,11 +902,11 @@
                 <button class="nav-item" onclick="switchTab('students')">
                     <i class="fas fa-users"></i> Alunos
                 </button>
-                <button class="nav-item" onclick="switchTab('trainings')">
-                    <i class="fas fa-dumbbell"></i> Treinos Padrão
-                </button>
                 <button class="nav-item" onclick="switchTab('edit-training')">
                     <i class="fas fa-edit"></i> Editar Treino Aluno
+                </button>
+                <button class="nav-item" onclick="switchTab('progress')">
+                    <i class="fas fa-chart-line"></i> Progresso dos Alunos
                 </button>
                 <button class="nav-item" onclick="switchTab('settings')">
                     <i class="fas fa-cog"></i> Configurações
@@ -871,21 +942,6 @@
                 </div>
             </section>
 
-            <!-- Treinos Padrão -->
-            <section class="tab-content" id="trainings">
-                <div class="section-header">
-                    <h2>Treinos Padrão</h2>
-                    <button class="btn btn-secondary" onclick="openAddTrainingModal()">
-                        <i class="fas fa-plus"></i> Adicionar Treino
-                    </button>
-                </div>
-                <div class="treinos-container">
-                    <div class="treinos-grid" id="trainingsGrid">
-                        <!-- Cards de Treinos Padrão serão injetados aqui -->
-                    </div>
-                </div>
-            </section>
-
             <!-- Editar Treino Aluno -->
             <section class="tab-content" id="edit-training">
                 <div class="section-header">
@@ -909,25 +965,56 @@
                             
                             <div class="focus-area-group">
                                 <label for="focusArea">Área de Foco:</label>
-                                <input type="text" id="focusArea" class="form-input" placeholder="Ex: Peito e Tríceps">
+                                <input type="text" id="focusArea" class="form-input" placeholder="Ex: PEITO + TRÍCEPS + OMBRO">
                             </div>
 
                             <div class="exercises-editor">
                                 <h4>Exercícios:</h4>
-                                <div class="exercises-list" id="exercisesList">
-                                    <!-- Exercícios serão injetados aqui -->
-                                </div>
-                                <button class="btn btn-secondary" onclick="addExercise()">
+                                
+                                <table class="exercises-table">
+                                    <thead>
+                                        <tr>
+                                            <th width="40%">Exercício</th>
+                                            <th width="15%">Séries</th>
+                                            <th width="15%">Repetições</th>
+                                            <th width="25%">Link do Vídeo</th>
+                                            <th width="5%"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="exercisesTableBody">
+                                        <!-- Linhas de exercícios serão injetadas aqui -->
+                                    </tbody>
+                                </table>
+                                
+                                <button class="btn btn-secondary" onclick="addExerciseRow()">
                                     <i class="fas fa-plus"></i> Adicionar Exercício
                                 </button>
                             </div>
 
-                            <div class="editor-actions">
+                            <div class="editor-actions" style="margin-top: 2rem;">
                                 <button class="btn btn-primary" onclick="saveStudentTraining()">
                                     <i class="fas fa-save"></i> Salvar Treino
                                 </button>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Progresso dos Alunos -->
+            <section class="tab-content" id="progress">
+                <div class="section-header">
+                    <h2>Progresso dos Alunos</h2>
+                </div>
+                <div class="progress-container">
+                    <div class="student-selector">
+                        <label for="studentProgressSelect">Selecione o Aluno para ver o progresso:</label>
+                        <select id="studentProgressSelect" class="form-input" onchange="loadStudentProgress(this.value)">
+                            <option value="">-- Todos os Alunos --</option>
+                        </select>
+                    </div>
+                    <div class="progress-grid" id="progressGrid">
+                        <!-- Cards de progresso serão injetados aqui -->
                     </div>
                 </div>
             </section>
@@ -983,39 +1070,7 @@
                         <label for="studentNameModal">Nome do Aluno:</label>
                         <input type="text" id="studentNameModal" class="form-input" required>
                     </div>
-                    <div class="form-group">
-                        <label for="studentPasswordModal">Senha (Opcional):</label>
-                        <input type="text" id="studentPasswordModal" class="form-input" placeholder="Deixe em branco para usar a padrão (1234)">
-                    </div>
                     <button type="submit" class="btn btn-primary" id="studentModalSubmit">Salvar</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Adicionar/Editar Treino Padrão -->
-    <div id="trainingModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="trainingModalTitle">Adicionar Treino Padrão</h2>
-                <button class="modal-close" onclick="closeModal('trainingModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="trainingFormModal">
-                    <input type="hidden" id="trainingIdModal">
-                    <div class="form-group">
-                        <label for="trainingNameModal">Nome do Treino (Ex: Treino A):</label>
-                        <input type="text" id="trainingNameModal" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="trainingFocusModal">Área de Foco (Ex: Peito e Tríceps):</label>
-                        <input type="text" id="trainingFocusModal" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="trainingExercisesModal">Exercícios (Um por linha: Nome | Link do Vídeo):</label>
-                        <textarea id="trainingExercisesModal" class="form-input" rows="5" placeholder="Ex: Supino Reto | https://youtube.com/supino"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary" id="trainingModalSubmit">Salvar</button>
                 </form>
             </div>
         </div>
@@ -1032,13 +1087,13 @@
         const ADMIN_KEY = 'italoAdminLogin';
         const STUDENTS_STORAGE_KEY = 'italoRuanStudents';
         const TRAININGS_STORAGE_KEY = 'italoRuanTrainings';
-        const DEFAULT_TRAININGS_KEY = 'italoRuanDefaultTrainings';
+        const PROGRESS_STORAGE_KEY = 'studentProgress';
         const ADMIN_CREDENTIALS_KEY = 'italoAdminCredentials';
-        const DEFAULT_STUDENT_PASSWORD = '1234';
+        const THEME_KEY = 'appTheme';
 
         let currentAdminCredentials = {
             user: 'italo',
-            password: '123456'
+            password: 'italoruan123'
         };
 
         let currentStudent = null;
@@ -1049,16 +1104,43 @@
         // ========================================
 
         document.addEventListener('DOMContentLoaded', function() {
+            loadTheme();
             checkAdminLogin();
             loadAdminCredentials();
             loadStudents();
-            loadDefaultTrainings();
             loadStudentsForTrainingEdit();
+            loadStudentsForProgress();
             setupDaysTabs();
             
             // Inicializa a aba Dashboard
             switchTab('dashboard');
         });
+
+        // ========================================
+        // GERENCIAMENTO DE TEMA
+        // ========================================
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem(THEME_KEY) || 'light';
+            setTheme(savedTheme);
+        }
+
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            const themeIcon = document.getElementById('themeIcon');
+            if (theme === 'dark') {
+                themeIcon.className = 'fas fa-sun';
+            } else {
+                themeIcon.className = 'fas fa-moon';
+            }
+            localStorage.setItem(THEME_KEY, theme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            setTheme(newTheme);
+        }
 
         // ========================================
         // PERSISTÊNCIA DE DADOS
@@ -1080,12 +1162,8 @@
             localStorage.setItem(TRAININGS_STORAGE_KEY, JSON.stringify(trainings));
         }
 
-        function getDefaultTrainings() {
-            return JSON.parse(localStorage.getItem(DEFAULT_TRAININGS_KEY) || '[]');
-        }
-
-        function saveDefaultTrainings(defaultTrainings) {
-            localStorage.setItem(DEFAULT_TRAININGS_KEY, JSON.stringify(defaultTrainings));
+        function getProgress() {
+            return JSON.parse(localStorage.getItem(PROGRESS_STORAGE_KEY) || '{}');
         }
 
         // ========================================
@@ -1151,10 +1229,10 @@
 
             if (tabName === 'students') {
                 loadStudents();
-            } else if (tabName === 'trainings') {
-                loadDefaultTrainings();
             } else if (tabName === 'dashboard') {
                 document.getElementById('totalStudents').textContent = getStudents().length;
+            } else if (tabName === 'progress') {
+                loadProgressOverview();
             }
         }
 
@@ -1179,10 +1257,8 @@
                     <div class="student-avatar">${student.name.charAt(0).toUpperCase()}</div>
                     <h4>${student.name}</h4>
                     <p>ID: ${student.id}</p>
+                    <p style="font-size: 0.9rem; color: var(--secondary-color); margin-bottom: 1rem;">Senha: ${student.id.slice(-6)}</p>
                     <div class="student-actions">
-                        <button class="btn btn-primary btn-action" onclick="openEditStudentModal('${student.id}')">
-                            <i class="fas fa-edit"></i> Editar
-                        </button>
                         <button class="btn btn-danger btn-action" onclick="deleteStudent('${student.id}')">
                             <i class="fas fa-trash-alt"></i> Excluir
                         </button>
@@ -1193,6 +1269,7 @@
             
             // Atualiza a lista de alunos para edição de treino
             loadStudentsForTrainingEdit();
+            loadStudentsForProgress();
             document.getElementById('totalStudents').textContent = students.length;
         }
 
@@ -1200,43 +1277,24 @@
             document.getElementById('studentModalTitle').textContent = 'Adicionar Novo Aluno';
             document.getElementById('studentIdModal').value = '';
             document.getElementById('studentNameModal').value = '';
-            document.getElementById('studentPasswordModal').value = '';
             document.getElementById('studentModalSubmit').textContent = 'Salvar Aluno';
             document.getElementById('studentFormModal').onsubmit = saveNewStudent;
             openModal('studentModal');
         }
 
-        function openEditStudentModal(id) {
-            const students = getStudents();
-            const student = students.find(s => s.id === id);
-
-            if (student) {
-                document.getElementById('studentModalTitle').textContent = 'Editar Aluno';
-                document.getElementById('studentIdModal').value = student.id;
-                document.getElementById('studentNameModal').value = student.name;
-                document.getElementById('studentPasswordModal').value = student.password || '';
-                document.getElementById('studentModalSubmit').textContent = 'Atualizar Aluno';
-                document.getElementById('studentFormModal').onsubmit = saveEditedStudent;
-                openModal('studentModal');
-            }
-        }
-
         function saveNewStudent(event) {
             event.preventDefault();
             const name = document.getElementById('studentNameModal').value.trim();
-            let password = document.getElementById('studentPasswordModal').value.trim();
             
-            if (!password) {
-                password = DEFAULT_STUDENT_PASSWORD;
-            }
-
             const students = getStudents();
-            const newId = 'aluno' + (students.length + 1);
-
+            
+            // Gera um ID único com timestamp
+            const newId = 'aluno_' + Date.now().toString();
+            
             const newStudent = {
                 id: newId,
                 name: name,
-                password: password
+                createdAt: new Date().toISOString()
             };
 
             students.push(newStudent);
@@ -1247,37 +1305,7 @@
 
             loadStudents();
             closeModal('studentModal');
-            showToast('Aluno adicionado com sucesso!', 'success');
-            
-            // Força a atualização do seletor de alunos no login.html
-            updateLoginStudentSelector();
-        }
-
-        function saveEditedStudent(event) {
-            event.preventDefault();
-            const id = document.getElementById('studentIdModal').value;
-            const name = document.getElementById('studentNameModal').value.trim();
-            let password = document.getElementById('studentPasswordModal').value.trim();
-
-            let students = getStudents();
-            const index = students.findIndex(s => s.id === id);
-
-            if (index !== -1) {
-                students[index].name = name;
-                if (password) {
-                    students[index].password = password;
-                } else if (!students[index].password) {
-                    students[index].password = DEFAULT_STUDENT_PASSWORD;
-                }
-                
-                saveStudents(students);
-                loadStudents();
-                closeModal('studentModal');
-                showToast('Aluno atualizado com sucesso!', 'success');
-                
-                // Força a atualização do seletor de alunos no login.html
-                updateLoginStudentSelector();
-            }
+            showToast(`Aluno adicionado com sucesso! ID: ${newId} - Senha: ${newId.slice(-6)}`, 'success');
         }
 
         function deleteStudent(id) {
@@ -1293,204 +1321,7 @@
 
                 loadStudents();
                 showToast('Aluno excluído com sucesso!', 'success');
-                
-                // Força a atualização do seletor de alunos no login.html
-                updateLoginStudentSelector();
             }
-        }
-        
-        // Função para forçar a atualização do seletor de alunos no login.html
-        function updateLoginStudentSelector() {
-            // Esta função é um placeholder. O login.html deve ter sua própria função
-            // de carregamento que é chamada no DOMContentLoaded.
-            // O importante é que o localStorage foi atualizado.
-            console.log("Students list updated in localStorage. Login page will reflect changes on next load.");
-        }
-
-        // ========================================
-        // GERENCIAMENTO DE TREINOS PADRÃO
-        // ========================================
-
-        function loadDefaultTrainings() {
-            const defaultTrainings = getDefaultTrainings();
-            const trainingsGrid = document.getElementById('trainingsGrid');
-            trainingsGrid.innerHTML = '';
-
-            if (defaultTrainings.length === 0) {
-                trainingsGrid.innerHTML = '<p style="text-align: center; grid-column: 1 / -1; color: var(--gray-text);">Nenhum treino padrão cadastrado.</p>';
-                return;
-            }
-
-            defaultTrainings.forEach(training => {
-                const card = document.createElement('div');
-                card.className = 'training-card';
-                
-                const exercisesHtml = training.exercises.map(ex => `
-                    <li><i class="fas fa-check-circle"></i> ${ex.name}</li>
-                `).join('');
-
-                card.innerHTML = `
-                    <h3>${training.name}</h3>
-                    <div class="focus">Foco: ${training.focus}</div>
-                    <ul class="exercises">${exercisesHtml}</ul>
-                    <div class="student-actions" style="margin-top: 1rem;">
-                        <button class="btn btn-primary btn-action" onclick="openEditTrainingModal('${training.id}')">
-                            <i class="fas fa-edit"></i> Editar
-                        </button>
-                        <button class="btn btn-danger btn-action" onclick="deleteDefaultTraining('${training.id}')">
-                            <i class="fas fa-trash-alt"></i> Excluir
-                        </button>
-                        <button class="btn btn-secondary btn-action" onclick="applyDefaultTraining('${training.id}')">
-                            <i class="fas fa-copy"></i> Aplicar a Aluno
-                        </button>
-                    </div>
-                `;
-                trainingsGrid.appendChild(card);
-            });
-        }
-
-        function openAddTrainingModal() {
-            document.getElementById('trainingModalTitle').textContent = 'Adicionar Novo Treino Padrão';
-            document.getElementById('trainingIdModal').value = '';
-            document.getElementById('trainingNameModal').value = '';
-            document.getElementById('trainingFocusModal').value = '';
-            document.getElementById('trainingExercisesModal').value = '';
-            document.getElementById('trainingModalSubmit').textContent = 'Salvar Treino';
-            document.getElementById('trainingFormModal').onsubmit = saveNewDefaultTraining;
-            openModal('trainingModal');
-        }
-
-        function openEditTrainingModal(id) {
-            const defaultTrainings = getDefaultTrainings();
-            const training = defaultTrainings.find(t => t.id === id);
-
-            if (training) {
-                document.getElementById('trainingModalTitle').textContent = 'Editar Treino Padrão';
-                document.getElementById('trainingIdModal').value = training.id;
-                document.getElementById('trainingNameModal').value = training.name;
-                document.getElementById('trainingFocusModal').value = training.focus;
-                
-                const exercisesText = training.exercises.map(ex => `${ex.name} | ${ex.video}`).join('\n');
-                document.getElementById('trainingExercisesModal').value = exercisesText;
-                
-                document.getElementById('trainingModalSubmit').textContent = 'Atualizar Treino';
-                document.getElementById('trainingFormModal').onsubmit = saveEditedDefaultTraining;
-                openModal('trainingModal');
-            }
-        }
-
-        function parseExercises(text) {
-            return text.split('\n')
-                .map(line => {
-                    const parts = line.split('|').map(p => p.trim());
-                    if (parts[0]) {
-                        return {
-                            name: parts[0],
-                            video: parts[1] || ''
-                        };
-                    }
-                    return null;
-                })
-                .filter(ex => ex !== null);
-        }
-
-        function saveNewDefaultTraining(event) {
-            event.preventDefault();
-            const name = document.getElementById('trainingNameModal').value.trim();
-            const focus = document.getElementById('trainingFocusModal').value.trim();
-            const exercisesText = document.getElementById('trainingExercisesModal').value.trim();
-            const exercises = parseExercises(exercisesText);
-
-            const defaultTrainings = getDefaultTrainings();
-            const newId = 'default' + (defaultTrainings.length + 1);
-
-            const newTraining = {
-                id: newId,
-                name: name,
-                focus: focus,
-                exercises: exercises
-            };
-
-            defaultTrainings.push(newTraining);
-            saveDefaultTrainings(defaultTrainings);
-            loadDefaultTrainings();
-            closeModal('trainingModal');
-            showToast('Treino padrão adicionado com sucesso!', 'success');
-        }
-
-        function saveEditedDefaultTraining(event) {
-            event.preventDefault();
-            const id = document.getElementById('trainingIdModal').value;
-            const name = document.getElementById('trainingNameModal').value.trim();
-            const focus = document.getElementById('trainingFocusModal').value.trim();
-            const exercisesText = document.getElementById('trainingExercisesModal').value.trim();
-            const exercises = parseExercises(exercisesText);
-
-            let defaultTrainings = getDefaultTrainings();
-            const index = defaultTrainings.findIndex(t => t.id === id);
-
-            if (index !== -1) {
-                defaultTrainings[index].name = name;
-                defaultTrainings[index].focus = focus;
-                defaultTrainings[index].exercises = exercises;
-                
-                saveDefaultTrainings(defaultTrainings);
-                loadDefaultTrainings();
-                closeModal('trainingModal');
-                showToast('Treino padrão atualizado com sucesso!', 'success');
-            }
-        }
-
-        function deleteDefaultTraining(id) {
-            if (confirm('Tem certeza que deseja excluir este treino padrão?')) {
-                let defaultTrainings = getDefaultTrainings();
-                defaultTrainings = defaultTrainings.filter(t => t.id !== id);
-                saveDefaultTrainings(defaultTrainings);
-                loadDefaultTrainings();
-                showToast('Treino padrão excluído com sucesso!', 'success');
-            }
-        }
-
-        function applyDefaultTraining(trainingId) {
-            const students = getStudents();
-            if (students.length === 0) {
-                showToast('Nenhum aluno cadastrado para aplicar o treino.', 'error');
-                return;
-            }
-
-            const studentId = prompt('Digite o ID do aluno para aplicar este treino (Ex: aluno1):');
-            if (!studentId) return;
-
-            const student = students.find(s => s.id === studentId);
-            if (!student) {
-                showToast('Aluno não encontrado!', 'error');
-                return;
-            }
-
-            const defaultTrainings = getDefaultTrainings();
-            const defaultTraining = defaultTrainings.find(t => t.id === trainingId);
-
-            if (!defaultTraining) {
-                showToast('Treino padrão não encontrado!', 'error');
-                return;
-            }
-
-            const trainings = getTrainings();
-            
-            // Cria um novo objeto de treino para o aluno baseado no padrão
-            const newStudentTraining = {};
-            const days = ['segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado', 'domingo'];
-            
-            days.forEach(day => {
-                newStudentTraining[day] = {
-                    focus: defaultTraining.focus,
-                    exercises: defaultTraining.exercises.map(ex => ({ ...ex })) // Copia profunda
-                };
-            });
-
-            trainings[studentId] = newStudentTraining;
-            saveTrainings(trainings);
-            showToast(`Treino padrão aplicado a ${student.name} com sucesso!`, 'success');
         }
         
         function initializeStudentTraining(studentId) {
@@ -1499,7 +1330,7 @@
             // Verifica se o aluno já tem treino
             if (trainings[studentId]) return;
 
-            const days = ['segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado', 'domingo'];
+            const days = ['segunda', 'terca', 'quarta', 'quinta', 'sexta'];
             const newStudentTraining = {};
             
             days.forEach(day => {
@@ -1540,8 +1371,22 @@
             }
         }
 
+        function loadStudentsForProgress() {
+            const students = getStudents();
+            const select = document.getElementById('studentProgressSelect');
+            
+            select.innerHTML = '<option value="">-- Todos os Alunos --</option>';
+            
+            students.forEach(student => {
+                const option = document.createElement('option');
+                option.value = student.id;
+                option.textContent = student.name;
+                select.appendChild(option);
+            });
+        }
+
         function setupDaysTabs() {
-            const days = ['segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado', 'domingo'];
+            const days = ['segunda', 'terca', 'quarta', 'quinta', 'sexta'];
             const tabsContainer = document.getElementById('daysTabs');
             tabsContainer.innerHTML = '';
 
@@ -1573,9 +1418,9 @@
             document.querySelectorAll('.day-tab').forEach(btn => {
                 btn.classList.remove('active');
             });
-            document.querySelector(`#daysTabs button:nth-child(${['segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado', 'domingo'].indexOf(day) + 1})`).classList.add('active');
+            document.querySelector(`#daysTabs button:nth-child(${['segunda', 'terca', 'quarta', 'quinta', 'sexta'].indexOf(day) + 1})`).classList.add('active');
             
-            document.getElementById('currentDayTitle').textContent = day.charAt(0).toUpperCase() + day.slice(1);
+            document.getElementById('currentDayTitle').textContent = 'Treino de ' + day.charAt(0).toUpperCase() + day.slice(1);
             
             loadDayTraining();
         }
@@ -1592,22 +1437,100 @@
             }
 
             document.getElementById('focusArea').value = dayTraining.focus || '';
-            
-            const exercisesList = document.getElementById('exercisesList');
-            exercisesList.innerHTML = '';
+            loadExercisesToTable(dayTraining.exercises || []);
+        }
 
-            dayTraining.exercises.forEach((exercise, index) => {
-                const item = document.createElement('div');
-                item.className = 'exercise-item';
-                item.innerHTML = `
-                    <input type="text" class="exercise-name-input" value="${exercise.name || ''}" placeholder="Nome do Exercício" required>
-                    <input type="text" class="exercise-video-input" value="${exercise.video || ''}" placeholder="Link do Vídeo (Opcional)">
-                    <button type="button" class="btn-danger" onclick="removeExercise(this)">
+        // ========================================
+        // FUNÇÕES PARA GERENCIAR EXERCÍCIOS EM TABELA
+        // ========================================
+
+        function addExerciseRow() {
+            const tbody = document.getElementById('exercisesTableBody');
+            const row = document.createElement('tr');
+            row.className = 'exercise-row';
+            row.innerHTML = `
+                <td>
+                    <input type="text" class="exercise-name" placeholder="Ex: Supino reto com halteres" required>
+                </td>
+                <td>
+                    <input type="text" class="exercise-series" placeholder="Ex: 4" required>
+                </td>
+                <td>
+                    <input type="text" class="exercise-reps" placeholder="Ex: 20-15-12-10" required>
+                </td>
+                <td>
+                    <input type="text" class="exercise-video" placeholder="https://youtube.com/...">
+                </td>
+                <td>
+                    <button type="button" class="btn-remove-exercise" onclick="removeExerciseRow(this)">
                         <i class="fas fa-trash-alt"></i>
                     </button>
-                `;
-                exercisesList.appendChild(item);
+                </td>
+            `;
+            tbody.appendChild(row);
+        }
+
+        function removeExerciseRow(button) {
+            const row = button.closest('tr');
+            row.remove();
+        }
+
+        function loadExercisesToTable(exercises) {
+            const tbody = document.getElementById('exercisesTableBody');
+            tbody.innerHTML = '';
+
+            if (exercises && exercises.length > 0) {
+                exercises.forEach(exercise => {
+                    const row = document.createElement('tr');
+                    row.className = 'exercise-row';
+                    row.innerHTML = `
+                        <td>
+                            <input type="text" class="exercise-name" value="${exercise.name || ''}" placeholder="Ex: Supino reto com halteres" required>
+                        </td>
+                        <td>
+                            <input type="text" class="exercise-series" value="${exercise.series || ''}" placeholder="Ex: 4" required>
+                        </td>
+                        <td>
+                            <input type="text" class="exercise-reps" value="${exercise.reps || ''}" placeholder="Ex: 20-15-12-10" required>
+                        </td>
+                        <td>
+                            <input type="text" class="exercise-video" value="${exercise.video || ''}" placeholder="https://youtube.com/...">
+                        </td>
+                        <td>
+                            <button type="button" class="btn-remove-exercise" onclick="removeExerciseRow(this)">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } else {
+                // Adiciona uma linha vazia se não houver exercícios
+                addExerciseRow();
+            }
+        }
+
+        function getExercisesFromTable() {
+            const exercises = [];
+            const rows = document.querySelectorAll('#exercisesTableBody .exercise-row');
+            
+            rows.forEach(row => {
+                const name = row.querySelector('.exercise-name').value.trim();
+                const series = row.querySelector('.exercise-series').value.trim();
+                const reps = row.querySelector('.exercise-reps').value.trim();
+                const video = row.querySelector('.exercise-video').value.trim();
+                
+                if (name && series && reps) {
+                    exercises.push({
+                        name: name,
+                        series: series,
+                        reps: reps,
+                        video: video
+                    });
+                }
             });
+            
+            return exercises;
         }
 
         function saveStudentTraining() {
@@ -1624,51 +1547,112 @@
             // 1. Coletar a área de foco
             dayTraining.focus = document.getElementById('focusArea').value.trim();
             
-            // 2. Coletar os exercícios
-            const newExercises = [];
-            const exerciseItems = document.querySelectorAll('#exercisesList .exercise-item');
-            
-            exerciseItems.forEach(item => {
-                const nameInput = item.querySelector('.exercise-name-input');
-                const videoInput = item.querySelector('.exercise-video-input');
-                
-                if (nameInput && nameInput.value.trim()) {
-                    const exercise = {
-                        name: nameInput.value.trim(),
-                        video: videoInput ? videoInput.value.trim() : ''
-                    };
-                    newExercises.push(exercise);
-                }
-            });
-            
-            dayTraining.exercises = newExercises;
+            // 2. Coletar os exercícios da tabela
+            dayTraining.exercises = getExercisesFromTable();
             
             // 3. Salvar de volta no localStorage
             saveTrainings(trainings);
             
             // 4. Atualizar a visualização e notificar
             loadDayTraining(); // Recarrega o treino do dia atual
-            loadStudents(); // Atualiza a lista de alunos
             showToast(`Treino de ${currentDay} salvo com sucesso para o aluno!`, 'success');
         }
 
-        function addExercise() {
-            const exercisesList = document.getElementById('exercisesList');
-            
-            const item = document.createElement('div');
-            item.className = 'exercise-item';
-            item.innerHTML = `
-                <input type="text" class="exercise-name-input" value="" placeholder="Nome do Exercício" required>
-                <input type="text" class="exercise-video-input" value="" placeholder="Link do Vídeo (Opcional)">
-                <button type="button" class="btn-danger" onclick="removeExercise(this)">
-                    <i class="fas fa-trash-alt"></i>
-                </button>
-            `;
-            exercisesList.appendChild(item);
+        // ========================================
+        // MONITORAMENTO DE PROGRESSO
+        // ========================================
+
+        function loadStudentProgress(studentId) {
+            loadProgressOverview(studentId);
         }
 
-        function removeExercise(button) {
-            button.closest('.exercise-item').remove();
+        function loadProgressOverview(selectedStudentId = null) {
+            const students = getStudents();
+            const trainings = getTrainings();
+            const progress = getProgress();
+            const progressGrid = document.getElementById('progressGrid');
+            progressGrid.innerHTML = '';
+
+            if (students.length === 0) {
+                progressGrid.innerHTML = '<p style="text-align: center; grid-column: 1 / -1; color: var(--gray-text);">Nenhum aluno cadastrado.</p>';
+                return;
+            }
+
+            const studentsToShow = selectedStudentId 
+                ? students.filter(s => s.id === selectedStudentId)
+                : students;
+
+            if (studentsToShow.length === 0) {
+                progressGrid.innerHTML = '<p style="text-align: center; grid-column: 1 / -1; color: var(--gray-text);">Nenhum aluno selecionado.</p>';
+                return;
+            }
+
+            studentsToShow.forEach(student => {
+                const studentTrainings = trainings[student.id] || {};
+                const studentProgress = progress[student.id] || {};
+                
+                let totalExercises = 0;
+                let completedExercises = 0;
+                let progressByDay = {};
+
+                // Calcular estatísticas
+                Object.keys(studentTrainings).forEach(day => {
+                    const dayTraining = studentTrainings[day];
+                    const dayProgress = studentProgress[day] || [];
+                    
+                    if (dayTraining && dayTraining.exercises) {
+                        totalExercises += dayTraining.exercises.length;
+                        completedExercises += dayProgress.length;
+                        
+                        progressByDay[day] = {
+                            total: dayTraining.exercises.length,
+                            completed: dayProgress.length,
+                            exercises: dayTraining.exercises.map((exercise, index) => ({
+                                name: exercise.name,
+                                completed: dayProgress.includes(index),
+                                series: exercise.series,
+                                reps: exercise.reps
+                            }))
+                        };
+                    }
+                });
+
+                const completionRate = totalExercises > 0 ? Math.round((completedExercises / totalExercises) * 100) : 0;
+
+                const progressCard = document.createElement('div');
+                progressCard.className = 'progress-card';
+                progressCard.innerHTML = `
+                    <h4>${student.name}</h4>
+                    <div class="progress-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">${completionRate}%</div>
+                            <div class="stat-label">Concluído</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${completedExercises}</div>
+                            <div class="stat-label">de ${totalExercises}</div>
+                        </div>
+                    </div>
+                    <div class="progress-details">
+                        ${Object.keys(progressByDay).map(day => `
+                            <div style="margin-bottom: 1rem;">
+                                <strong>${day.charAt(0).toUpperCase() + day.slice(1)}</strong>
+                                <div style="font-size: 0.8rem; margin-top: 0.5rem;">
+                                    ${progressByDay[day].exercises.map(exercise => `
+                                        <div class="progress-item">
+                                            <span class="${exercise.completed ? 'completed-exercise' : 'pending-exercise'}">
+                                                ${exercise.completed ? '✅' : '⭕'} ${exercise.name}
+                                            </span>
+                                            <span>${exercise.series}x${exercise.reps}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                progressGrid.appendChild(progressCard);
+            });
         }
 
         // ========================================
@@ -1680,7 +1664,7 @@
                 adminCredentials: JSON.parse(localStorage.getItem(ADMIN_CREDENTIALS_KEY) || '{}'),
                 students: getStudents(),
                 trainings: getTrainings(),
-                defaultTrainings: getDefaultTrainings()
+                progress: getProgress()
             };
             
             const dataStr = JSON.stringify(data, null, 2);
@@ -1699,14 +1683,14 @@
         }
 
         function clearAllData() {
-            if (confirm('ATENÇÃO: Você tem certeza que deseja limpar TODOS os dados (alunos, treinos, padrões)? Esta ação é irreversível.')) {
+            if (confirm('ATENÇÃO: Você tem certeza que deseja limpar TODOS os dados (alunos, treinos, progresso)? Esta ação é irreversível.')) {
                 localStorage.removeItem(STUDENTS_STORAGE_KEY);
                 localStorage.removeItem(TRAININGS_STORAGE_KEY);
-                localStorage.removeItem(DEFAULT_TRAININGS_KEY);
+                localStorage.removeItem(PROGRESS_STORAGE_KEY);
                 
                 loadStudents();
-                loadDefaultTrainings();
                 loadStudentsForTrainingEdit();
+                loadStudentsForProgress();
                 switchTab('dashboard');
                 showToast('Todos os dados foram limpos com sucesso!', 'success');
             }

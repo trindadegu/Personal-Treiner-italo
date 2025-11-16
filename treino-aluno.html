@@ -55,34 +55,34 @@
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
         }
 
-	        .days-selector {
-	            display: flex;
-	            gap: 1rem;
-	            margin-bottom: 2rem;
-	            flex-wrap: wrap;
-	        }
-	
-	        .btn-menu-toggle {
-	            display: none;
-	            background: #ffffff30;
-	            color: white;
-	            border: 1px solid #ffffff50;
-	            padding: 0.5rem 1rem;
-	            border-radius: 8px;
-	            cursor: pointer;
-	            font-size: 1rem;
-	            transition: var(--transition);
-	            margin-top: 1rem;
-	        }
-	
-	        .btn-menu-toggle:hover {
-	            background: #ffffff50;
-	        }
+        .days-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-menu-toggle {
+            display: none;
+            background: #ffffff30;
+            color: white;
+            border: 1px solid #ffffff50;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+            margin-top: 1rem;
+        }
+
+        .btn-menu-toggle:hover {
+            background: #ffffff50;
+        }
 
         .day-btn {
             flex: 1;
@@ -137,101 +137,80 @@
             color: var(--dark-text);
         }
 
-        .exercises-list {
-            list-style: none;
-        }
-
-        .exercise-item {
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            background: var(--light-bg);
+        .exercises-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+            background: white;
             border-radius: 8px;
-            border-left: 4px solid var(--primary-color);
-            transition: var(--transition);
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .exercises-table th,
+        .exercises-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .exercises-table th {
+            background: var(--light-bg);
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+        
+        .exercise-row {
+            transition: background-color 0.2s ease;
+        }
+        
+        .exercise-row:hover {
+            background: var(--light-bg);
         }
 
-        .exercise-item:hover {
-            box-shadow: var(--shadow);
-            transform: translateX(5px);
-        }
-
-        .exercise-item.completed {
+        .exercise-row.completed {
             opacity: 0.6;
-            border-left-color: var(--secondary-color);
+            background: #f0f9ff;
         }
 
-        .exercise-item.completed .exercise-name {
+        .exercise-row.completed .exercise-name {
             text-decoration: line-through;
             color: var(--gray-text);
         }
 
-        .exercise-header {
+        .exercise-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--secondary-color);
+            margin-right: 0.5rem;
+        }
+
+        .exercise-name {
+            font-weight: 600;
+            color: var(--dark-text);
             display: flex;
             align-items: center;
-            gap: 1rem;
-            margin-bottom: 0.5rem;
-            flex-wrap: wrap;
         }
 
         .video-link {
             display: inline-flex;
             align-items: center;
-            gap: 0.3rem;
-            padding: 0.4rem 0.8rem;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
             background: linear-gradient(135deg, #dc2626, #b91c1c);
             color: white;
             text-decoration: none;
             border-radius: 6px;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             font-weight: 600;
             transition: var(--transition);
-            margin-left: auto;
         }
 
         .video-link:hover {
             background: linear-gradient(135deg, #b91c1c, #991b1b);
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3);
-        }
-
-        .video-link i {
-            font-size: 1rem;
-        }
-
-        .exercise-checkbox {
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-            accent-color: var(--secondary-color);
-        }
-
-        .exercise-name {
-            font-weight: 600;
-            color: var(--dark-text);
-            flex: 1;
-        }
-
-        .exercise-video {
-            margin-top: 0.75rem;
-        }
-
-        .btn-video {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: var(--danger-color);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: var(--transition);
-        }
-
-        .btn-video:hover {
-            background: #b91c1c;
-            transform: translateY(-2px);
         }
 
         .progress-section {
@@ -317,106 +296,101 @@
             color: var(--gray-text);
         }
 
-	        @media (max-width: 1024px) {
-	            .container {
-	                padding: 1.5rem;
-	            }
-	            .days-selector {
-	                gap: 0.75rem;
-	            }
-	            .day-btn {
-	                min-width: 100px;
-	                padding: 0.8rem;
-	            }
-	        }
-	
-	        @media (max-width: 1024px) {
-	            .container {
-	                padding: 1.5rem;
-	            }
-	            .days-selector {
-	                gap: 0.75rem;
-	            }
-	            .day-btn {
-	                min-width: 100px;
-	                padding: 0.8rem;
-	            }
-	        }
-	
-	        @media (max-width: 768px) {
-	            .header {
-	                padding: 1.5rem;
-	                display: flex;
-	                flex-direction: column;
-	                align-items: center;
-	            }
-	
-	            .header h1 {
-	                font-size: 1.5rem;
-	            }
-	
-	            .btn-menu-toggle {
-	                display: flex;
-	                align-items: center;
-	                gap: 0.5rem;
-	            }
-	
-	            .container {
-	                padding: 1rem;
-	            }
-	
-	            .days-selector {
-	                position: absolute;
-	                top: 120px; /* Ajuste para ficar abaixo do header */
-	                left: 0;
-	                right: 0;
-	                background: white;
-	                border-bottom: 2px solid var(--border-color);
-	                padding: 0;
-	                max-height: 0; /* Usar max-height para transição */
-	                overflow: hidden;
-	                transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
-	                z-index: 999;
-	                display: flex; /* Adicionado para flex-direction: column */
-	                flex-direction: column;
-	            }
-	
-	            .days-selector.active {
-	                max-height: 500px; /* Valor grande o suficiente para o conteúdo */
-	                padding: 1rem;
-	            }
-	
-	            .day-btn {
-	                min-width: 100%;
-	                padding: 0.75rem 1rem;
-	                font-size: 1rem;
-	            }
-	
-	            .training-content {
-	                padding: 1.5rem;
-	            }
-	
-	            .exercise-item {
-	                padding: 1rem;
-	            }
-	
-	            .btn-whatsapp {
-	                margin-left: 0;
-	                margin-top: 1rem;
-	                width: 100%;
-	                justify-content: center;
-	            }
-	        }
+        @media (max-width: 1024px) {
+            .container {
+                padding: 1.5rem;
+            }
+            .days-selector {
+                gap: 0.75rem;
+            }
+            .day-btn {
+                min-width: 100px;
+                padding: 0.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1.5rem;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .btn-menu-toggle {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .days-selector {
+                position: absolute;
+                top: 120px;
+                left: 0;
+                right: 0;
+                background: white;
+                border-bottom: 2px solid var(--border-color);
+                padding: 0;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
+                z-index: 999;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .days-selector.active {
+                max-height: 500px;
+                padding: 1rem;
+            }
+
+            .day-btn {
+                min-width: 100%;
+                padding: 0.75rem 1rem;
+                font-size: 1rem;
+            }
+
+            .training-content {
+                padding: 1.5rem;
+            }
+
+            .exercises-table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .exercises-table th,
+            .exercises-table td {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.9rem;
+            }
+
+            .btn-whatsapp {
+                margin-left: 0;
+                margin-top: 1rem;
+                width: 100%;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
-<body>	    <!-- Header -->
-	    <div class="header">
-	        <h1>Meu Treino</h1>
-	        <p id="studentName">Carregando...</p>
-	        <button class="btn-menu-toggle" onclick="toggleDaysSelector()">
-	            <i class="fas fa-calendar-alt"></i> Dias
-	        </button>
-	    </div>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>Meu Treino</h1>
+        <p id="studentName">Carregando...</p>
+        <button class="btn-menu-toggle" onclick="toggleDaysSelector()">
+            <i class="fas fa-calendar-alt"></i> Dias
+        </button>
+    </div>
 
     <!-- Container Principal -->
     <div class="container">
@@ -444,9 +418,20 @@
                 <div class="focus-area" id="focusArea">Carregando...</div>
             </div>
 
-            <ul class="exercises-list" id="exercisesList">
-                <li class="no-exercises">Carregando exercícios...</li>
-            </ul>
+            <table class="exercises-table">
+                <thead>
+                    <tr>
+                        <th width="5%"></th>
+                        <th width="45%">Exercício</th>
+                        <th width="15%">Séries</th>
+                        <th width="15%">Repetições</th>
+                        <th width="20%">Vídeo</th>
+                    </tr>
+                </thead>
+                <tbody id="exercisesTableBody">
+                    <!-- Exercícios serão injetados aqui -->
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -469,8 +454,7 @@
         const TRAININGS_KEY = 'italoRuanTrainings';
         const STUDENTS_KEY = 'italoRuanStudents';
         const PROGRESS_KEY = 'studentProgress';
-        const ADMIN_WHATSAPP = '5511948773263'; // Número de contato do Italo Ruan
-        
+        const ADMIN_WHATSAPP = '5511948773263';
 
         let currentStudent = null;
         let currentDay = 'segunda';
@@ -508,7 +492,7 @@
 
         function loadStudentData() {
             const trainings = JSON.parse(localStorage.getItem(TRAININGS_KEY) || '{}');
-            studentTrainings = trainings[currentStudent.id] || trainings.self || {};
+            studentTrainings = trainings[currentStudent.id] || {};
             
             if (Object.keys(studentTrainings).length === 0) {
                 loadDefaultTrainings();
@@ -516,73 +500,91 @@
         }
 
         function loadDefaultTrainings() {
+            // Treino padrão caso não haja treino específico
             const defaultTrainings = {
                 segunda: {
-                    focus: 'Peito + Tríceps + Ombro',
+                    focus: 'PEITO + TRÍCEPS + OMBRO',
                     exercises: [
-                        'Supino reto com halteres: 4x20-15-12-10',
-                        'Supino inclinado com halteres: 4x10',
-                        'Crucifixo no banco inclinado: 4x10',
-                        'Crucifixo polia: 4x10',
-                        'Elevação lateral com halteres: 4x10',
-                        'Remada alta com barra: 4x10',
-                        'Elevação frontal com corda na polia: 3x15',
-                        'Tríceps na polia: 4x10',
-                        'Tríceps patada: 4x15'
+                        {
+                            name: 'Supino reto com halteres',
+                            series: '4',
+                            reps: '20-15-12-10',
+                            video: ''
+                        },
+                        {
+                            name: 'Supino inclinado com halteres',
+                            series: '4',
+                            reps: '10',
+                            video: ''
+                        }
                     ]
                 },
                 terca: {
-                    focus: 'Perna - Quadríceps',
+                    focus: 'PERNAS - QUADRÍCEPS',
                     exercises: [
-                        'Agachamento sumô (mobilidade): 2x20 segundos',
-                        'Mobilidade de tornozelo e quadril: 2x10/lado',
-                        'Cadeira extensora: 4x20',
-                        'Agachamento livre com barra: 4x10',
-                        'Leg press 45: 4x10',
-                        'Agachamento afundo com halteres: 4x10',
-                        'Cadeira flexora: 4x20-15-12-10',
-                        'Cadeira adutora: 3x20',
-                        'Panturinha máquina: 3x15'
+                        {
+                            name: 'Agachamento livre com barra',
+                            series: '4',
+                            reps: '10',
+                            video: ''
+                        },
+                        {
+                            name: 'Leg press 45',
+                            series: '4',
+                            reps: '10',
+                            video: ''
+                        }
                     ]
                 },
                 quarta: {
-                    focus: 'Costas + Posteriores + Ombro + Bíceps',
+                    focus: 'COSTAS + BÍCEPS',
                     exercises: [
-                        'Puxada pela frente com pegada aberta: 4x20-15-12-10',
-                        'Puxada pela frente com pegada supinada: 3x10',
-                        'Remada curvada com barra: 4x10',
-                        'Remada curvada com halteres: 3x10',
-                        'Pulldown polia alta: 3x10',
-                        'Remada baixa na polia: 3x10',
-                        'Encolhimento de ombro: 3x10',
-                        'Rosca direta com barra: 4x10',
-                        'Rosca scott com barra W: 4x10'
+                        {
+                            name: 'Puxada pela frente com pegada aberta',
+                            series: '4',
+                            reps: '20-15-12-10',
+                            video: ''
+                        },
+                        {
+                            name: 'Remada curvada com barra',
+                            series: '4',
+                            reps: '10',
+                            video: ''
+                        }
                     ]
                 },
                 quinta: {
-                    focus: 'Pernas',
+                    focus: 'PERNAS',
                     exercises: [
-                        'Agachamento sumô (mobilidade): 2x20 segundos',
-                        'Mobilidade de tornozelo e quadril: 2x10/lado',
-                        'Cadeira abdutora: 3x20',
-                        'Levantamento terra com barra: 4x10',
-                        'Mesa flexora bilateral: 3x10',
-                        'Elevação pélvica: 4x10',
-                        'Cadeira flexora: 4x20-15-12-10',
-                        'Stiff joelho flexionado com halteres: 4x10',
-                        'Cadeira extensora: 4x20'
+                        {
+                            name: 'Agachamento sumô',
+                            series: '4',
+                            reps: '10',
+                            video: ''
+                        },
+                        {
+                            name: 'Levantamento terra',
+                            series: '4',
+                            reps: '10',
+                            video: ''
+                        }
                     ]
                 },
                 sexta: {
-                    focus: 'Glúteos + Costas',
+                    focus: 'OMBROS + ABDOMEN',
                     exercises: [
-                        'Desenvolvimento máquina: 4x10',
-                        'Desenvolvimento arnold: 4x10',
-                        'Elevação lateral sentado (rest-pause): 4x10',
-                        'Voador inverso com pegada pronada (rest-pause): 4x10',
-                        'Elevação frontal com corda na polia (drop-set): 4x10',
-                        'Remada com corda na polia alta: 4x10',
-                        'Encolhimento de ombro: 4x10'
+                        {
+                            name: 'Desenvolvimento máquina',
+                            series: '4',
+                            reps: '10',
+                            video: ''
+                        },
+                        {
+                            name: 'Elevação lateral',
+                            series: '4',
+                            reps: '10',
+                            video: ''
+                        }
                     ]
                 }
             };
@@ -594,41 +596,30 @@
         // SELEÇÃO DE DIA
         // ========================================
 
-	        function toggleDaysSelector() {
-	            document.querySelector('.days-selector').classList.toggle('active');
-	        }
-	
-	        function toggleDaysSelector() {
-	            document.querySelector('.days-selector').classList.toggle('active');
-	        }
-	
-	        function selectDay(day) {
-	            currentDay = day;
-	            
-	            document.querySelectorAll('.day-btn').forEach(btn => {
-	                btn.classList.remove('active');
-	            });
-	            
-	            const dayBtn = document.querySelector(`[onclick="selectDay('${day}')"]`);
-	            if (dayBtn) {
-	                dayBtn.classList.add('active');
-	            }
-	            
-	            // Fechar o seletor no mobile após a seleção
-	            const selector = document.querySelector('.days-selector');
-	            if (window.innerWidth <= 768 && selector.classList.contains('active')) {
-	                selector.classList.remove('active');
-	            }
-	            
-	            loadDayTraining();
-	        } aposaseleção
-	            const selector = document.querySelector('.days-selector');
-	            if (window.innerWidth <= 768 && selector.classList.contains('active')) {
-	                selector.classList.remove('active');
-	            }
-	            
-	            loadDayTraining();
-	        
+        function toggleDaysSelector() {
+            document.querySelector('.days-selector').classList.toggle('active');
+        }
+
+        function selectDay(day) {
+            currentDay = day;
+            
+            document.querySelectorAll('.day-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            const dayBtn = document.querySelector(`[onclick="selectDay('${day}')"]`);
+            if (dayBtn) {
+                dayBtn.classList.add('active');
+            }
+            
+            // Fechar o seletor no mobile após a seleção
+            const selector = document.querySelector('.days-selector');
+            if (window.innerWidth <= 768 && selector.classList.contains('active')) {
+                selector.classList.remove('active');
+            }
+            
+            loadDayTraining();
+        }
 
         function loadDayTraining() {
             const dayNames = {
@@ -644,36 +635,39 @@
             document.getElementById('dayTitle').textContent = dayNames[currentDay];
             document.getElementById('focusArea').textContent = training.focus;
 
-            const exercisesList = document.getElementById('exercisesList');
-            exercisesList.innerHTML = '';
+            const tbody = document.getElementById('exercisesTableBody');
+            tbody.innerHTML = '';
 
-            if (training.exercises.length === 0) {
-                exercisesList.innerHTML = '<li class="no-exercises">Nenhum exercício para este dia</li>';
+            if (!training.exercises || training.exercises.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="no-exercises">Nenhum exercício para este dia</td></tr>';
                 updateProgress();
                 return;
             }
 
             training.exercises.forEach((exercise, index) => {
                 const isCompleted = isExerciseCompleted(index);
+                const row = document.createElement('tr');
+                row.className = `exercise-row ${isCompleted ? 'completed' : ''}`;
                 
-                // Suportar tanto string simples quanto objeto com vídeo
-                const exerciseName = typeof exercise === 'string' ? exercise : exercise.name;
-                const videoUrl = typeof exercise === 'object' && exercise.video ? exercise.video : '';
-
-                const li = document.createElement('li');
-                li.className = `exercise-item ${isCompleted ? 'completed' : ''}`;
-
-                li.innerHTML = `
-                    <div class="exercise-header">
+                row.innerHTML = `
+                    <td>
                         <input type="checkbox" class="exercise-checkbox" ${isCompleted ? 'checked' : ''} onchange="toggleExercise(${index})">
-                        <span class="exercise-name">${exerciseName}</span>
-                        ${videoUrl ? `<a href="${videoUrl}" target="_blank" class="video-link" title="Ver vídeo demonstração">
-                            <i class="fas fa-play-circle"></i> Vídeo
-                        </a>` : ''}
-                    </div>
+                    </td>
+                    <td>
+                        <span class="exercise-name">${exercise.name || exercise}</span>
+                    </td>
+                    <td>${exercise.series || '-'}</td>
+                    <td>${exercise.reps || '-'}</td>
+                    <td>
+                        ${exercise.video ? `
+                            <a href="${exercise.video}" target="_blank" class="video-link" title="Ver vídeo demonstração">
+                                <i class="fas fa-play-circle"></i> Assistir
+                            </a>
+                        ` : '-'}
+                    </td>
                 `;
 
-                exercisesList.appendChild(li);
+                tbody.appendChild(row);
             });
 
             updateProgress();
@@ -714,7 +708,7 @@
 
         function updateProgress() {
             const training = studentTrainings[currentDay] || { exercises: [] };
-            const total = training.exercises.length;
+            const total = training.exercises ? training.exercises.length : 0;
             const completed = Array.from(document.querySelectorAll('.exercise-checkbox:checked')).length;
             const percentage = total > 0 ? (completed / total) * 100 : 0;
 
@@ -731,14 +725,6 @@
             const message = encodeURIComponent(`Olá, Italo Ruan! Estou com uma dúvida sobre o meu treino (${dayName}) no aplicativo. Meu nome é ${currentStudent.name}.`);
             window.open(`https://wa.me/${ADMIN_WHATSAPP}?text=${message}`, '_blank');
         }
-            const students = JSON.parse(localStorage.getItem(STUDENTS_KEY) || '[]');
-            const student = students.find(s => s.id === currentStudent.id);
-            const whatsapp = student ? student.whatsapp : '+55 11 94877-3263';
-            const message = `Olá! Tenho uma dúvida sobre meu treino de ${currentDay}.`;
-            const encodedMessage = encodeURIComponent(message);
-            const whatsappUrl = `https://wa.me/${whatsapp.replace(/\\D/g, '')}?text=${encodedMessage}`;
-            window.open(whatsappUrl, '_blank');
-        
 
         function logout() {
             if (confirm('Tem certeza que deseja sair?')) {

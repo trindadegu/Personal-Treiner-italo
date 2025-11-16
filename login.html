@@ -14,12 +14,22 @@
             --secondary-color: #059669;
             --danger-color: #dc2626;
             --light-bg: #f8fafc;
+            --dark-bg: #0f172a;
+            --dark-card: #1e293b;
             --dark-text: #0f172a;
+            --light-text: #f8fafc;
             --gray-text: #475569;
             --border-color: #e2e8f0;
+            --dark-border: #334155;
             --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             --shadow-hover: 0 12px 24px rgba(30, 64, 175, 0.15);
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] {
+            --light-bg: var(--dark-bg);
+            --dark-text: var(--light-text);
+            --border-color: var(--dark-border);
         }
 
         * {
@@ -36,15 +46,17 @@
             align-items: center;
             justify-content: center;
             padding: 2rem;
+            transition: var(--transition);
         }
 
         .login-container {
-            background: white;
+            background: var(--light-bg);
             border-radius: 16px;
             box-shadow: var(--shadow-hover);
             width: 100%;
             max-width: 450px;
             overflow: hidden;
+            transition: var(--transition);
         }
 
         .login-header {
@@ -140,6 +152,7 @@
             font-weight: 600;
             margin-bottom: 0.75rem;
             color: var(--dark-text);
+            transition: var(--transition);
         }
 
         .form-group input,
@@ -151,6 +164,8 @@
             font-family: 'Inter', sans-serif;
             font-size: 1rem;
             transition: var(--transition);
+            background: var(--light-bg);
+            color: var(--dark-text);
         }
 
         .form-group input:focus,
@@ -248,6 +263,8 @@
             background: var(--light-bg);
             color: var(--gray-text);
             font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+            transition: var(--transition);
         }
 
         .password-hint {
@@ -255,6 +272,29 @@
             color: var(--gray-text);
             margin-top: 0.5rem;
             font-style: italic;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
         }
 
         @media (max-width: 480px) {
@@ -299,6 +339,10 @@
     </style>
 </head>
 <body>
+    <button class="theme-toggle" onclick="toggleTheme()">
+        <i class="fas fa-moon" id="themeIcon"></i>
+    </button>
+
     <div class="login-container">
         <!-- Header -->
         <div class="login-header">
@@ -310,7 +354,7 @@
         <!-- Tabs -->
         <div class="login-tabs">
             <button class="login-tab active" onclick="switchLoginTab('admin')">
-                <i class="fas fa-lock"></i> Admin
+                <i class="fas fa-lock"></i> Professor
             </button>
             <button class="login-tab" onclick="switchLoginTab('student')">
                 <i class="fas fa-user"></i> Aluno
@@ -334,7 +378,7 @@
                 </div>
 
                 <button type="submit" class="btn-login">
-                    <i class="fas fa-sign-in-alt"></i> Entrar como Admin
+                    <i class="fas fa-sign-in-alt"></i> Entrar como Professor
                 </button>
             </form>
 
@@ -353,7 +397,7 @@
                 <div class="form-group">
                     <label for="studentPassword">Senha:</label>
                     <input type="text" id="studentPassword" placeholder="Digite sua senha" inputmode="numeric" pattern="[0-9]*" required>
-                    <div class="password-hint">💡 Senha padrão: <strong>1234</strong></div>
+                    <div class="password-hint">💡 Senha: últimos 6 dígitos do seu ID</div>
                 </div>
 
                 <button type="submit" class="btn-login">
@@ -380,27 +424,49 @@
         const ADMIN_KEY = 'italoAdminLogin';
         const STUDENT_KEY = 'italoStudentLogin';
         const STUDENTS_STORAGE_KEY = 'italoRuanStudents';
+        const THEME_KEY = 'appTheme';
         const ADMIN_CREDENTIALS = {
             user: 'italo',
-            password: '123456'
+            password: 'italoruan123'
         };
 
-        // ⚠️ IMPORTANTE: Configure aqui o número do WhatsApp do admin
-        // Formato: código do país + DDD + número (sem espaços ou caracteres especiais)
-        // Exemplo: 5511987654321
-        const ADMIN_WHATSAPP = '5511948773263'; // ← Número do Italo Ruan
-
-        // Senha padrão para todos os alunos (fácil de lembrar!)
-        const DEFAULT_STUDENT_PASSWORD = '1234';
+        const ADMIN_WHATSAPP = '5511948773263';
 
         // ========================================
         // INICIALIZAÇÃO
         // ========================================
 
         document.addEventListener('DOMContentLoaded', function() {
+            loadTheme();
             loadStudentsList();
             checkExistingLogin();
         });
+
+        // ========================================
+        // GERENCIAMENTO DE TEMA
+        // ========================================
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem(THEME_KEY) || 'light';
+            setTheme(savedTheme);
+        }
+
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            const themeIcon = document.getElementById('themeIcon');
+            if (theme === 'dark') {
+                themeIcon.className = 'fas fa-sun';
+            } else {
+                themeIcon.className = 'fas fa-moon';
+            }
+            localStorage.setItem(THEME_KEY, theme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            setTheme(newTheme);
+        }
 
         // ========================================
         // VERIFICAÇÃO DE LOGIN EXISTENTE
@@ -441,7 +507,7 @@
         }
 
         // ========================================
-        // LOGIN ADMIN
+        // LOGIN PROFESSOR
         // ========================================
 
         function loginAdmin(event) {
@@ -495,8 +561,8 @@
                 return;
             }
 
-            // Senha simplificada: usa senha customizada OU senha padrão "1234"
-            const correctPassword = student.password || DEFAULT_STUDENT_PASSWORD;
+            // Senha = últimos 6 dígitos do ID
+            const correctPassword = student.id.slice(-6);
 
             if (password === correctPassword) {
                 localStorage.setItem(STUDENT_KEY, JSON.stringify({
@@ -507,7 +573,7 @@
 
                 window.location.href = `treino-aluno.html?id=${studentId}`;
             } else {
-                errorDiv.textContent = 'Senha incorreta!';
+                errorDiv.textContent = 'Senha incorreta! Use os últimos 6 dígitos do seu ID.';
                 errorDiv.classList.add('active');
                 document.getElementById('studentPassword').value = '';
             }
@@ -541,7 +607,7 @@
             }
             
             // Mensagem para enviar via WhatsApp
-            const message = `Olá! Sou *${student.name}* e esqueci minha senha de acesso ao sistema de treinos. Pode me ajudar? 🏋️`;
+            const message = `Olá! Sou *${student.name}* e esqueci minha senha de acesso ao sistema de treinos. Meu ID é ${student.id}. Pode me ajudar? 🏋️`;
             
             // Codificar a mensagem para URL
             const encodedMessage = encodeURIComponent(message);
@@ -553,7 +619,7 @@
             window.open(whatsappUrl, '_blank');
             
             // Mostrar mensagem de sucesso
-            successDiv.textContent = '✅ Solicitação enviada! O admin receberá sua mensagem no WhatsApp.';
+            successDiv.textContent = '✅ Solicitação enviada! O professor receberá sua mensagem no WhatsApp.';
             successDiv.classList.add('active');
         }
 
