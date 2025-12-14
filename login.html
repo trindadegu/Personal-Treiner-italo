@@ -6,6 +6,7 @@
     <meta name="description" content="Login - Italo Ruan Personal Trainer">
     <title>Login - Italo Ruan Personal Trainer</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
 
@@ -297,6 +298,21 @@
             transform: scale(1.1);
         }
 
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--border-color);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         @media (max-width: 480px) {
             .login-container {
                 border-radius: 0;
@@ -377,15 +393,9 @@
                     <input type="password" id="adminPassword" placeholder="Digite sua senha" required>
                 </div>
 
-                <button type="submit" class="btn-login">
+                <button type="submit" class="btn-login" id="adminLoginBtn">
                     <i class="fas fa-sign-in-alt"></i> Entrar como Professor
                 </button>
-
-                <div class="form-group" style="margin-top: 1rem;">
-                    <button type="button" class="btn-forgot-password" onclick="importBackupFromLogin()">
-                        <i class="fas fa-file-import"></i> Importar Dados de Backup
-                    </button>
-                </div>
             </form>
 
             <!-- Student Login -->
@@ -406,7 +416,7 @@
                     <div class="password-hint">💡 Senha: últimos 6 dígitos do seu ID</div>
                 </div>
 
-                <button type="submit" class="btn-login">
+                <button type="submit" class="btn-login" id="studentLoginBtn">
                     <i class="fas fa-sign-in-alt"></i> Entrar como Aluno
                 </button>
 
@@ -421,26 +431,25 @@
             <p>© 2024 Italo Ruan Personal Trainer. Todos os direitos reservados.</p>
         </div>
     </div>
-    
 
     <script>
         // ========================================
-        // CONFIGURAÇÕES
+        // CONFIGURAÇÕES SUPABASE
         // ========================================
 
-        const ADMIN_KEY = 'italoAdminLogin';
-        const STUDENT_KEY = 'italoStudentLogin';
-        const STUDENTS_STORAGE_KEY = 'italoRuanStudents';
-        const TRAININGS_STORAGE_KEY = 'italoRuanTrainings';
-        const PROGRESS_STORAGE_KEY = 'studentProgress';
+        const SUPABASE_URL = 'https://idwtktaypxsomnqlmjdp.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkd3RrdGF5cHhzb21ucWxtamRwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU2ODQ4NjIsImV4cCI6MjA4MTI2MDg2Mn0.NqqhknttW9VfIb4sr3NkpTRemV3_YohxK093Pjhm8v0';
+        
+        // Inicializar Supabase
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Configurações do sistema
         const THEME_KEY = 'appTheme';
+        const ADMIN_WHATSAPP = '5511948773263';
         const ADMIN_CREDENTIALS = {
             user: 'italo',
             password: 'italoruan123'
         };
-
-        const ADMIN_WHATSAPP = '5511948773263';
-        const BACKUP_KEY = 'italoBackupData';
 
         // ========================================
         // INICIALIZAÇÃO
@@ -448,39 +457,9 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             loadTheme();
-            
-            // Tenta restaurar backup primeiro
-            checkAndRestoreBackup();
-            
-            loadStudentsList();
             checkExistingLogin();
+            loadStudentsList();
         });
-
-        // ========================================
-        // SISTEMA DE BACKUP AUTOMÁTICO
-        // ========================================
-
-        function checkAndRestoreBackup() {
-            const backupData = localStorage.getItem(BACKUP_KEY);
-            if (backupData) {
-                try {
-                    const data = JSON.parse(backupData);
-                    
-                    // Restaura dados do backup
-                    localStorage.setItem(STUDENTS_STORAGE_KEY, JSON.stringify(data.students || []));
-                    localStorage.setItem(TRAININGS_STORAGE_KEY, JSON.stringify(data.trainings || {}));
-                    localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(data.progress || {}));
-                    localStorage.setItem('italoDefaultTrainings', JSON.stringify(data.defaultTrainings || {}));
-                    
-                    console.log('Backup restaurado automaticamente');
-                    return true;
-                } catch (error) {
-                    console.error('Erro ao restaurar backup:', error);
-                    return false;
-                }
-            }
-            return false;
-        }
 
         // ========================================
         // GERENCIAMENTO DE TEMA
@@ -512,17 +491,36 @@
         // VERIFICAÇÃO DE LOGIN EXISTENTE
         // ========================================
 
-        function checkExistingLogin() {
-            const adminLogin = localStorage.getItem(ADMIN_KEY);
-            const studentLogin = localStorage.getItem(STUDENT_KEY);
+        async function checkExistingLogin() {
+            const adminLogin = localStorage.getItem('admin_session');
+            const studentLogin = localStorage.getItem('student_session');
 
             if (adminLogin) {
-                window.location.href = 'admin.html';
+                try {
+                    const session = JSON.parse(adminLogin);
+                    const currentTime = new Date().getTime();
+                    if (session.expiresAt > currentTime) {
+                        window.location.href = 'admin.html';
+                    } else {
+                        localStorage.removeItem('admin_session');
+                    }
+                } catch (error) {
+                    localStorage.removeItem('admin_session');
+                }
             }
 
             if (studentLogin) {
-                const studentId = JSON.parse(studentLogin).id;
-                window.location.href = `treino-aluno.html?id=${studentId}`;
+                try {
+                    const session = JSON.parse(studentLogin);
+                    const currentTime = new Date().getTime();
+                    if (session.expiresAt > currentTime) {
+                        window.location.href = `treino-aluno.html?id=${session.id}`;
+                    } else {
+                        localStorage.removeItem('student_session');
+                    }
+                } catch (error) {
+                    localStorage.removeItem('student_session');
+                }
             }
         }
 
@@ -550,26 +548,80 @@
         // LOGIN PROFESSOR
         // ========================================
 
-        function loginAdmin(event) {
+        async function loginAdmin(event) {
             event.preventDefault();
 
             const user = document.getElementById('adminUser').value.trim();
             const password = document.getElementById('adminPassword').value.trim();
             const errorDiv = document.getElementById('adminError');
+            const loginBtn = document.getElementById('adminLoginBtn');
 
             errorDiv.classList.remove('active');
 
-            if (user === ADMIN_CREDENTIALS.user && password === ADMIN_CREDENTIALS.password) {
-                localStorage.setItem(ADMIN_KEY, JSON.stringify({
-                    user: user,
-                    loginTime: new Date().toISOString()
-                }));
+            // Mostrar loading
+            const originalText = loginBtn.innerHTML;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
+            loginBtn.disabled = true;
 
-                window.location.href = 'admin.html';
-            } else {
+            try {
+                // Verificar credenciais no Supabase
+                const { data, error } = await supabase
+                    .from('admins')
+                    .select('*')
+                    .eq('username', user)
+                    .eq('password', password)
+                    .single();
+
+                if (error) {
+                    if (error.code === 'PGRST116') {
+                        // Admin não encontrado, usar credenciais locais
+                        if (user === ADMIN_CREDENTIALS.user && password === ADMIN_CREDENTIALS.password) {
+                            // Criar admin no Supabase se não existir
+                            await supabase
+                                .from('admins')
+                                .upsert([
+                                    {
+                                        username: user,
+                                        password: password,
+                                        created_at: new Date().toISOString()
+                                    }
+                                ]);
+
+                            // Criar sessão local
+                            const session = {
+                                user: user,
+                                loginTime: new Date().toISOString(),
+                                expiresAt: new Date().getTime() + (24 * 60 * 60 * 1000) // 24 horas
+                            };
+                            localStorage.setItem('admin_session', JSON.stringify(session));
+                            
+                            window.location.href = 'admin.html';
+                        } else {
+                            throw new Error('Credenciais inválidas');
+                        }
+                    } else {
+                        throw error;
+                    }
+                } else if (data) {
+                    // Credenciais válidas do Supabase
+                    const session = {
+                        user: data.username,
+                        loginTime: new Date().toISOString(),
+                        expiresAt: new Date().getTime() + (24 * 60 * 60 * 1000) // 24 horas
+                    };
+                    localStorage.setItem('admin_session', JSON.stringify(session));
+                    
+                    window.location.href = 'admin.html';
+                }
+            } catch (error) {
+                console.error('Erro no login:', error);
                 errorDiv.textContent = 'Usuário ou senha incorretos!';
                 errorDiv.classList.add('active');
                 document.getElementById('adminPassword').value = '';
+                
+                // Restaurar botão
+                loginBtn.innerHTML = originalText;
+                loginBtn.disabled = false;
             }
         }
 
@@ -577,12 +629,13 @@
         // LOGIN ALUNO
         // ========================================
 
-        function loginStudent(event) {
+        async function loginStudent(event) {
             event.preventDefault();
 
             const studentId = document.getElementById('studentSelect').value;
             const password = document.getElementById('studentPassword').value.trim();
             const errorDiv = document.getElementById('studentError');
+            const loginBtn = document.getElementById('studentLoginBtn');
 
             errorDiv.classList.remove('active');
 
@@ -592,30 +645,52 @@
                 return;
             }
 
-            const students = JSON.parse(localStorage.getItem(STUDENTS_STORAGE_KEY) || '[]');
-            const student = students.find(s => s.id === studentId);
+            // Mostrar loading
+            const originalText = loginBtn.innerHTML;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
+            loginBtn.disabled = true;
 
-            if (!student) {
-                errorDiv.textContent = 'Aluno não encontrado!';
-                errorDiv.classList.add('active');
-                return;
-            }
+            try {
+                // Buscar aluno no Supabase
+                const { data: aluno, error } = await supabase
+                    .from('alunos')
+                    .select('*')
+                    .eq('id', studentId)
+                    .single();
 
-            // Senha = últimos 6 dígitos do ID
-            const correctPassword = student.id.slice(-6);
+                if (error) {
+                    throw new Error('Aluno não encontrado!');
+                }
 
-            if (password === correctPassword) {
-                localStorage.setItem(STUDENT_KEY, JSON.stringify({
-                    id: studentId,
-                    name: student.name,
-                    loginTime: new Date().toISOString()
-                }));
+                if (!aluno) {
+                    throw new Error('Aluno não encontrado!');
+                }
 
-                window.location.href = `treino-aluno.html?id=${studentId}`;
-            } else {
-                errorDiv.textContent = 'Senha incorreta! Use os últimos 6 dígitos do seu ID.';
+                // Verificar senha (últimos 6 dígitos do ID)
+                const correctPassword = aluno.id.toString().slice(-6);
+
+                if (password === correctPassword) {
+                    // Criar sessão
+                    const session = {
+                        id: aluno.id,
+                        name: aluno.nome,
+                        loginTime: new Date().toISOString(),
+                        expiresAt: new Date().getTime() + (24 * 60 * 60 * 1000) // 24 horas
+                    };
+                    localStorage.setItem('student_session', JSON.stringify(session));
+
+                    window.location.href = `treino-aluno.html?id=${aluno.id}`;
+                } else {
+                    throw new Error('Senha incorreta! Use os últimos 6 dígitos do seu ID.');
+                }
+            } catch (error) {
+                errorDiv.textContent = error.message;
                 errorDiv.classList.add('active');
                 document.getElementById('studentPassword').value = '';
+                
+                // Restaurar botão
+                loginBtn.innerHTML = originalText;
+                loginBtn.disabled = false;
             }
         }
 
@@ -623,7 +698,7 @@
         // ESQUECI A SENHA
         // ========================================
 
-        function forgotPassword() {
+        async function forgotPassword() {
             const studentId = document.getElementById('studentSelect').value;
             const errorDiv = document.getElementById('studentError');
             const successDiv = document.getElementById('studentSuccess');
@@ -637,101 +712,83 @@
                 return;
             }
 
-            const students = JSON.parse(localStorage.getItem(STUDENTS_STORAGE_KEY) || '[]');
-            const student = students.find(s => s.id === studentId);
+            try {
+                // Buscar aluno no Supabase
+                const { data: aluno, error } = await supabase
+                    .from('alunos')
+                    .select('*')
+                    .eq('id', studentId)
+                    .single();
 
-            if (!student) {
-                errorDiv.textContent = 'Aluno não encontrado!';
+                if (error || !aluno) {
+                    throw new Error('Aluno não encontrado!');
+                }
+
+                // Mensagem para enviar via WhatsApp
+                const message = `Olá! Sou *${aluno.nome}* e esqueci minha senha de acesso ao sistema de treinos. Meu ID é ${aluno.id}. Pode me ajudar? 🏋️`;
+                
+                // Codificar a mensagem para URL
+                const encodedMessage = encodeURIComponent(message);
+                
+                // Criar link do WhatsApp
+                const whatsappUrl = `https://wa.me/${ADMIN_WHATSAPP}?text=${encodedMessage}`;
+                
+                // Abrir WhatsApp em nova aba
+                window.open(whatsappUrl, '_blank');
+                
+                // Mostrar mensagem de sucesso
+                successDiv.textContent = '✅ Solicitação enviada! O professor receberá sua mensagem no WhatsApp.';
+                successDiv.classList.add('active');
+            } catch (error) {
+                errorDiv.textContent = error.message;
                 errorDiv.classList.add('active');
-                return;
             }
-            
-            // Mensagem para enviar via WhatsApp
-            const message = `Olá! Sou *${student.name}* e esqueci minha senha de acesso ao sistema de treinos. Meu ID é ${student.id}. Pode me ajudar? 🏋️`;
-            
-            // Codificar a mensagem para URL
-            const encodedMessage = encodeURIComponent(message);
-            
-            // Criar link do WhatsApp
-            const whatsappUrl = `https://wa.me/${ADMIN_WHATSAPP}?text=${encodedMessage}`;
-            
-            // Abrir WhatsApp em nova aba
-            window.open(whatsappUrl, '_blank');
-            
-            // Mostrar mensagem de sucesso
-            successDiv.textContent = '✅ Solicitação enviada! O professor receberá sua mensagem no WhatsApp.';
-            successDiv.classList.add('active');
         }
 
         // ========================================
         // CARREGAR LISTA DE ALUNOS
         // ========================================
 
-        function loadStudentsList() {
-            const students = JSON.parse(localStorage.getItem(STUDENTS_STORAGE_KEY) || '[]');
+        async function loadStudentsList() {
             const select = document.getElementById('studentSelect');
-
             select.innerHTML = '<option value="">-- Escolha seu nome --</option>';
 
-            students.forEach(student => {
-                const option = document.createElement('option');
-                option.value = student.id;
-                option.textContent = student.name;
-                select.appendChild(option);
-            });
+            try {
+                // Buscar alunos no Supabase
+                const { data: alunos, error } = await supabase
+                    .from('alunos')
+                    .select('*')
+                    .order('nome');
 
-            if (students.length === 0) {
+                if (error) {
+                    console.error('Erro ao carregar alunos:', error);
+                    const option = document.createElement('option');
+                    option.textContent = 'Erro ao carregar alunos';
+                    option.disabled = true;
+                    select.appendChild(option);
+                    return;
+                }
+
+                if (!alunos || alunos.length === 0) {
+                    const option = document.createElement('option');
+                    option.textContent = 'Nenhum aluno cadastrado ainda';
+                    option.disabled = true;
+                    select.appendChild(option);
+                    return;
+                }
+
+                alunos.forEach(aluno => {
+                    const option = document.createElement('option');
+                    option.value = aluno.id;
+                    option.textContent = aluno.nome;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Erro:', error);
                 const option = document.createElement('option');
-                option.textContent = 'Nenhum aluno cadastrado ainda';
+                option.textContent = 'Erro ao carregar alunos';
                 option.disabled = true;
                 select.appendChild(option);
-            }
-        }
-
-        // ========================================
-        // IMPORTAR BACKUP DO LOGIN
-        // ========================================
-
-        function importBackupFromLogin() {
-            const backupCode = prompt('Cole o código de backup para importar alunos e treinos:');
-            
-            if (!backupCode) {
-                return;
-            }
-            
-            try {
-                // Decodificar Base64
-                const dataString = decodeURIComponent(escape(atob(backupCode)));
-                const data = JSON.parse(dataString);
-                
-                if (confirm(`Deseja importar dados de ${data.students.length} aluno(s)?`)) {
-                    // Salvar dados importados
-                    localStorage.setItem(STUDENTS_STORAGE_KEY, JSON.stringify(data.students || []));
-                    localStorage.setItem(TRAININGS_STORAGE_KEY, JSON.stringify(data.trainings || {}));
-                    localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(data.progress || {}));
-                    localStorage.setItem('italoDefaultTrainings', JSON.stringify(data.defaultTrainings || {}));
-                    
-                    // Salvar como backup também
-                    localStorage.setItem(BACKUP_KEY, JSON.stringify(data));
-                    
-                    // Mostrar mensagem de sucesso
-                    const successDiv = document.getElementById('adminError');
-                    successDiv.textContent = '✅ Dados importados com sucesso! Recarregando...';
-                    successDiv.style.background = '#d1fae5';
-                    successDiv.style.color = '#059669';
-                    successDiv.style.borderLeftColor = '#059669';
-                    successDiv.classList.add('active');
-                    
-                    // Recarregar a página para atualizar a lista
-                    setTimeout(() => {
-                        location.reload();
-                    }, 2000);
-                }
-            } catch (error) {
-                const errorDiv = document.getElementById('adminError');
-                errorDiv.textContent = '❌ Erro: Código de backup inválido!';
-                errorDiv.classList.add('active');
-                console.error('Erro ao importar backup:', error);
             }
         }
 
@@ -746,7 +803,6 @@
         }
 
         function showToast(message, type = 'success') {
-            // Criar container de toast se não existir
             let container = document.getElementById('toastContainer');
             if (!container) {
                 container = document.createElement('div');

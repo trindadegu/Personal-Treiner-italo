@@ -6,6 +6,7 @@
     <meta name="description" content="Meu Treino - Italo Ruan Personal Trainer">
     <title>Meu Treino</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
 
@@ -33,38 +34,70 @@
             background-color: var(--light-bg);
             color: var(--dark-text);
             line-height: 1.6;
-            padding-bottom: 80px; /* Espaço para o footer fixo */
+            padding-top: 120px;
+            padding-bottom: 20px;
         }
 
         .header {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
-            padding: 1.5rem 1rem;
-            text-align: center;
+            padding: 1rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
             box-shadow: var(--shadow);
-            position: relative;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
         }
 
         .header h1 {
             font-family: 'Poppins', sans-serif;
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+            margin-bottom: 0.25rem;
         }
 
         .header p {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             opacity: 0.9;
         }
 
-        .btn-menu-toggle {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
+        .header-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-header {
             background: #ffffff30;
             color: white;
             border: 1px solid #ffffff50;
-            padding: 0.5rem 0.75rem;
-            border-radius: 8px;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            white-space: nowrap;
+        }
+
+        .btn-header:hover {
+            background: #ffffff50;
+        }
+
+        .btn-menu-toggle {
+            background: #ffffff30;
+            color: white;
+            border: 1px solid #ffffff50;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 0.9rem;
             transition: var(--transition);
@@ -83,16 +116,22 @@
             padding: 1rem;
         }
 
+        .days-menu-container {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
         .days-selector {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 0.5rem;
-            margin-bottom: 1.5rem;
             background: white;
             border-radius: 12px;
             padding: 0.75rem;
             box-shadow: var(--shadow);
-            position: relative;
+            transition: var(--transition);
+            max-height: 500px;
+            overflow: hidden;
         }
 
         .day-btn {
@@ -224,21 +263,21 @@
         }
 
         .exercise-row.completed {
-            opacity: 0.7;
             background: #f0f9ff;
         }
 
         .exercise-row.completed .exercise-name {
-            text-decoration: line-through;
-            color: var(--gray-text);
+            color: var(--secondary-color);
+            font-weight: 700;
         }
 
         .exercise-checkbox {
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             cursor: pointer;
             accent-color: var(--secondary-color);
             margin-right: 0.5rem;
+            transform: scale(1.2);
         }
 
         .exercise-name {
@@ -247,6 +286,7 @@
             display: flex;
             align-items: center;
             font-size: 0.85rem;
+            transition: var(--transition);
         }
 
         .video-link {
@@ -277,92 +317,70 @@
             font-size: 0.9rem;
         }
 
-        .footer {
-            background: white;
-            padding: 1rem;
-            text-align: center;
-            border-top: 2px solid var(--border-color);
-            margin-top: 2rem;
+        /* Toast notification */
+        .toast {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .footer-actions {
-            display: flex;
-            gap: 0.75rem;
-            justify-content: center;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-
-        .btn-logout {
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
             background: var(--danger-color);
             color: white;
-            border: none;
-            padding: 0.75rem 1rem;
+            padding: 0.75rem 1.5rem;
             border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: var(--transition);
-            display: inline-flex;
+            z-index: 10000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.3s ease;
+            display: flex;
             align-items: center;
             gap: 0.5rem;
-            flex: 1;
-            justify-content: center;
-            font-size: 0.85rem;
-        }
-
-        .btn-logout:hover {
-            background: #b91c1c;
-            transform: translateY(-2px);
-        }
-
-        .btn-whatsapp {
-            background: #25d366;
-            color: white;
-            border: none;
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
             font-weight: 600;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            flex: 1;
-            justify-content: center;
-            font-size: 0.85rem;
         }
 
-        .btn-whatsapp:hover {
-            background: #1fa857;
-            transform: translateY(-2px);
+        .toast.success {
+            background: var(--secondary-color);
         }
 
-        /* Mobile First - Telas pequenas */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        /* Estados mobile */
         @media (max-width: 768px) {
+            body {
+                padding-top: 140px;
+            }
+
             .header {
-                padding: 1.25rem 1rem;
+                padding: 0.75rem;
             }
             
             .header h1 {
-                font-size: 1.3rem;
-                margin-bottom: 0.25rem;
+                font-size: 1.2rem;
             }
             
             .header p {
-                font-size: 0.85rem;
+                font-size: 0.8rem;
             }
             
-            .btn-menu-toggle {
-                top: 0.75rem;
-                right: 0.75rem;
-                padding: 0.4rem 0.6rem;
-                font-size: 0.8rem;
+            .btn-header span {
+                display: none;
+            }
+            
+            .btn-header {
+                padding: 0.5rem;
+                font-size: 0.9rem;
             }
             
             .btn-menu-toggle span {
@@ -378,6 +396,14 @@
                 gap: 0.4rem;
                 padding: 0.6rem;
                 margin-bottom: 1rem;
+                max-height: 0;
+                padding: 0;
+                overflow: hidden;
+            }
+            
+            .days-selector.active {
+                max-height: 500px;
+                padding: 0.6rem;
             }
             
             .day-btn {
@@ -411,33 +437,20 @@
             }
             
             .exercise-checkbox {
-                width: 16px;
-                height: 16px;
+                width: 18px;
+                height: 18px;
+                transform: scale(1.1);
             }
             
             .video-link {
                 padding: 0.35rem 0.6rem;
                 font-size: 0.75rem;
             }
-            
-            .footer {
-                padding: 0.75rem;
-            }
-            
-            .footer-actions {
-                gap: 0.5rem;
-            }
-            
-            .btn-logout,
-            .btn-whatsapp {
-                padding: 0.6rem 0.75rem;
-                font-size: 0.8rem;
-            }
         }
 
         @media (max-width: 480px) {
             .header h1 {
-                font-size: 1.2rem;
+                font-size: 1.1rem;
             }
             
             .container {
@@ -447,6 +460,10 @@
             .days-selector {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 0.3rem;
+                padding: 0.5rem;
+            }
+            
+            .days-selector.active {
                 padding: 0.5rem;
             }
             
@@ -504,26 +521,15 @@
                 padding: 0.3rem 0.5rem;
                 font-size: 0.7rem;
             }
-            
-            .footer-actions {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-            
-            .btn-logout,
-            .btn-whatsapp {
-                padding: 0.75rem;
-                font-size: 0.85rem;
-            }
         }
 
         @media (max-width: 360px) {
             .header h1 {
-                font-size: 1.1rem;
+                font-size: 1rem;
             }
             
             .header p {
-                font-size: 0.8rem;
+                font-size: 0.75rem;
             }
             
             .days-selector {
@@ -546,57 +552,40 @@
             }
         }
 
-        /* Estados especiais para mobile */
-        .days-selector.mobile-collapsed {
-            display: none;
-        }
-
-        .days-selector.mobile-expanded {
-            display: grid;
-            position: absolute;
-            top: 100%;
-            left: 0.75rem;
-            right: 0.75rem;
-            z-index: 100;
-            box-shadow: var(--shadow-hover);
-        }
-
-        /* Scrollbar personalizado para tabelas */
-        .exercises-container::-webkit-scrollbar {
-            height: 6px;
-        }
-
-        .exercises-container::-webkit-scrollbar-track {
-            background: var(--border-color);
-            border-radius: 3px;
-        }
-
-        .exercises-container::-webkit-scrollbar-thumb {
-            background: var(--primary-color);
-            border-radius: 3px;
-        }
-
-        .exercises-container::-webkit-scrollbar-thumb:hover {
-            background: #1e3a8a;
-        }
-
-        /* Melhorias de acessibilidade */
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                transition: none !important;
-                animation: none !important;
+        /* Animação para o menu */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
 
-        /* High contrast mode support */
-        @media (prefers-contrast: high) {
-            .exercise-row.completed {
-                background: #e0e0e0;
-            }
-            
-            .video-link {
-                border: 2px solid currentColor;
-            }
+        .days-selector.active {
+            animation: slideDown 0.3s ease;
+        }
+
+        /* Estilo para checkbox marcado */
+        .exercise-checkbox:checked {
+            filter: hue-rotate(120deg) saturate(1.5);
+        }
+
+        /* Loading spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,0,0,0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -604,17 +593,36 @@
 <body>
     <!-- Header -->
     <div class="header">
-        <h1>Meu Treino</h1>
-        <p id="studentName">Carregando...</p>
-        <button class="btn-menu-toggle" onclick="toggleDaysSelector()" aria-label="Alternar menu de dias">
-            <i class="fas fa-calendar-alt"></i>
-            <span>Dias</span>
-        </button>
+        <div class="header-top">
+            <div>
+                <h1>Meu Treino</h1>
+                <p id="studentName">Carregando...</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-header" onclick="sendWhatsApp()" title="Pedir ajuda">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>Ajuda</span>
+                </button>
+                <button class="btn-header" onclick="logout()" title="Sair do sistema">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Sair</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Menu Hamburger para dias -->
+        <div class="days-menu-container">
+            <button class="btn-menu-toggle" onclick="toggleDaysMenu()" aria-label="Alternar menu de dias">
+                <i class="fas fa-calendar-alt"></i>
+                <span id="currentDayText">Segunda</span>
+                <i class="fas fa-chevron-down" id="menuIcon"></i>
+            </button>
+        </div>
     </div>
 
     <!-- Container Principal -->
     <div class="container">
-        <!-- Seletor de Dias -->
+        <!-- Seletor de Dias (Menu Hamburger) -->
         <div class="days-selector" id="daysSelector">
             <button class="day-btn active" onclick="selectDay('segunda')" aria-label="Treino de segunda-feira">
                 Segunda
@@ -667,278 +675,325 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <div class="footer">
-        <div class="footer-actions">
-            <button class="btn-whatsapp" onclick="sendWhatsApp()">
-                <i class="fab fa-whatsapp"></i> Dúvida?
-            </button>
-            <button class="btn-logout" onclick="logout()">
-                <i class="fas fa-sign-out-alt"></i> Sair
-            </button>
-        </div>
-    </div>
-
     <script>
         // ========================================
-        // CONFIGURAÇÕES
+        // CONFIGURAÇÕES SUPABASE
         // ========================================
 
-        const STUDENT_KEY = 'italoStudentLogin';
-        const TRAININGS_KEY = 'italoRuanTrainings';
-        const STUDENTS_KEY = 'italoRuanStudents';
-        const PROGRESS_KEY = 'studentProgress';
-        const ADMIN_WHATSAPP = '5511948773263';
-        const BACKUP_KEY = 'italoBackupData';
+        const SUPABASE_URL = 'https://idwtktaypxsomnqlmjdp.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkd3RrdGF5cHhzb21ucWxtamRwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU2ODQ4NjIsImV4cCI6MjA4MTI2MDg2Mn0.NqqhknttW9VfIb4sr3NkpTRemV3_YohxK093Pjhm8v0';
         
-        // CHAVE DE SINCRONIZAÇÃO AUTOMÁTICA
-        const ACADEMY_ID = 'italo_ruan_academy_2024';
+        // Inicializar Supabase
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Configurações
+        const ADMIN_WHATSAPP = '5511948773263';
 
         let currentStudent = null;
         let currentDay = 'segunda';
         let studentTrainings = null;
+        let studentProgress = {};
         let isDaysMenuOpen = false;
+        let isUpdatingProgress = false;
 
         // ========================================
-        // SISTEMA DE SINCRONIZAÇÃO AUTOMÁTICA
+        // FUNÇÕES SUPABASE - VERSÃO CORRIGIDA
         // ========================================
 
-        function loadSyncedDataForStudent() {
-            // Carrega dados sincronizados para o aluno
-            const syncedStudents = localStorage.getItem(`${ACADEMY_ID}_students`);
-            const syncedTrainings = localStorage.getItem(`${ACADEMY_ID}_trainings`);
-            const syncedDefaultTrainings = localStorage.getItem(`${ACADEMY_ID}_default_trainings`);
+        async function getStudentData(studentId) {
+            console.log('getStudentData chamado para aluno:', studentId);
             
-            let loadedData = false;
-            
-            if (syncedStudents) {
-                localStorage.setItem(STUDENTS_KEY, syncedStudents);
-                loadedData = true;
+            try {
+                // Buscar dados do aluno
+                const { data: aluno, error: alunoError } = await supabase
+                    .from('alunos')
+                    .select('*')
+                    .eq('id', studentId)
+                    .single();
+                
+                if (alunoError) {
+                    console.error('Erro ao buscar aluno:', alunoError);
+                    throw alunoError;
+                }
+
+                console.log('Aluno encontrado:', aluno);
+
+                // Buscar treino do aluno
+                const { data: treinoData, error: treinoError } = await supabase
+                    .from('treinos')
+                    .select('*')
+                    .eq('aluno_id', studentId)
+                    .single();
+
+                console.log('Treino encontrado:', treinoData, 'Erro:', treinoError);
+
+                // Buscar progresso do aluno
+                const { data: progressoData, error: progressoError } = await supabase
+                    .from('progresso')
+                    .select('*')
+                    .eq('aluno_id', studentId)
+                    .single();
+
+                console.log('Progresso encontrado:', progressoData, 'Erro:', progressoError);
+
+                // Determinar qual treino usar
+                let treino;
+                if (!treinoError && treinoData && treinoData.treino) {
+                    treino = treinoData.treino;
+                    console.log('Usando treino personalizado');
+                } else {
+                    treino = await getDefaultTraining();
+                    console.log('Usando treino padrão:', treino);
+                }
+
+                return {
+                    aluno,
+                    treino: treino,
+                    progresso: progressoData?.progresso || {}
+                };
+            } catch (error) {
+                console.error('Erro ao buscar dados do aluno:', error);
+                return {
+                    aluno: null,
+                    treino: await getDefaultTraining(),
+                    progresso: {}
+                };
             }
-            if (syncedTrainings) {
-                localStorage.setItem(TRAININGS_KEY, syncedTrainings);
-                loadedData = true;
+        }
+
+        async function updateProgress(studentId, day, exerciseIndex, completed) {
+            if (isUpdatingProgress) return false;
+            isUpdatingProgress = true;
+
+            console.log('Iniciando updateProgress:', { studentId, day, exerciseIndex, completed });
+
+            try {
+                // 1. Buscar progresso existente
+                const { data: existingProgress, error: fetchError } = await supabase
+                    .from('progresso')
+                    .select('id, progresso')
+                    .eq('aluno_id', studentId)
+                    .single();
+
+                console.log('Progresso existente:', existingProgress, 'Erro:', fetchError);
+
+                let progresso = {};
+                
+                // Se tem dados, usar eles
+                if (!fetchError && existingProgress && existingProgress.progresso) {
+                    progresso = typeof existingProgress.progresso === 'object' 
+                        ? JSON.parse(JSON.stringify(existingProgress.progresso))
+                        : {};
+                } else if (fetchError && fetchError.code !== 'PGRST116') {
+                    // Se é outro erro além de "não encontrado", lançar
+                    throw fetchError;
+                }
+
+                // 2. Inicializar estrutura para o dia
+                if (!progresso[day] || !Array.isArray(progresso[day])) {
+                    progresso[day] = [];
+                }
+
+                // 3. Converter índice para número
+                const indexNum = parseInt(exerciseIndex);
+                
+                // 4. Verificar se já existe
+                const currentIndex = progresso[day].indexOf(indexNum);
+                
+                console.log('Estado atual:', {
+                    day: day,
+                    dayProgress: progresso[day],
+                    indexNum: indexNum,
+                    currentIndex: currentIndex
+                });
+
+                if (completed) {
+                    // Adicionar se não existir
+                    if (currentIndex === -1) {
+                        progresso[day].push(indexNum);
+                        progresso[day].sort((a, b) => a - b);
+                        console.log('Adicionado:', progresso[day]);
+                    }
+                } else {
+                    // Remover se existir
+                    if (currentIndex > -1) {
+                        progresso[day].splice(currentIndex, 1);
+                        console.log('Removido:', progresso[day]);
+                    }
+                }
+
+                // 5. Preparar dados para upsert
+                const progressData = {
+                    aluno_id: studentId,
+                    progresso: progresso,
+                    updated_at: new Date().toISOString()
+                };
+
+                // Se já tem ID, adicionar ao objeto
+                if (existingProgress && existingProgress.id) {
+                    progressData.id = existingProgress.id;
+                }
+
+                console.log('Dados para upsert:', progressData);
+
+                // 6. Fazer upsert
+                const { data, error } = await supabase
+                    .from('progresso')
+                    .upsert([progressData], { 
+                        onConflict: 'aluno_id'
+                    });
+
+                if (error) {
+                    console.error('Erro Supabase:', error);
+                    throw new Error(`Supabase error: ${error.message}`);
+                }
+
+                console.log('Upsert bem-sucedido:', data);
+
+                // 7. Atualizar localmente
+                studentProgress = progresso;
+                
+                return true;
+            } catch (error) {
+                console.error('Erro completo em updateProgress:', error);
+                return false;
+            } finally {
+                isUpdatingProgress = false;
             }
-            if (syncedDefaultTrainings) {
-                localStorage.setItem('italoDefaultTrainings', syncedDefaultTrainings);
-                loadedData = true;
+        }
+
+        async function getProgress(studentId) {
+            try {
+                const { data, error } = await supabase
+                    .from('progresso')
+                    .select('*')
+                    .eq('aluno_id', studentId)
+                    .single();
+                
+                if (error) {
+                    if (error.code === 'PGRST116') {
+                        // Não encontrado, retornar objeto vazio
+                        return {};
+                    }
+                    throw error;
+                }
+                
+                // Garantir que retornamos um objeto válido
+                if (data && data.progresso) {
+                    return typeof data.progresso === 'object' ? data.progresso : {};
+                }
+                
+                return {};
+            } catch (error) {
+                console.error('Erro ao buscar progresso:', error);
+                return {};
             }
-            
-            if (loadedData) {
-                console.log('Dados sincronizados carregados para aluno');
-            }
-            
-            return loadedData;
         }
 
         // ========================================
         // INICIALIZAÇÃO
         // ========================================
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // CARREGA DADOS SINCRONIZADOS PRIMEIRO
-            loadSyncedDataForStudent();
-            
-            checkStudentLogin();
-            loadStudentData();
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('DOM carregado, iniciando...');
+            await checkStudentLogin();
+            await loadStudentData();
             selectDay('segunda');
-            setupMobileMenu();
             
-            // Monitora mudanças no storage (sincronização em tempo real)
-            window.addEventListener('storage', function(e) {
-                if (e.key && e.key.startsWith(ACADEMY_ID)) {
-                    console.log('Dados atualizados em outro dispositivo, recarregando...');
-                    loadSyncedDataForStudent();
-                    loadStudentData();
-                    loadDayTraining();
-                }
-            });
+            // Monitorar mudanças em tempo real
+            setupRealtimeUpdates();
         });
-
-        // ========================================
-        // CONFIGURAÇÃO DO MENU MOBILE
-        // ========================================
-
-        function setupMobileMenu() {
-            // Fechar menu ao clicar fora (apenas mobile)
-            if (window.innerWidth <= 768) {
-                document.addEventListener('click', function(event) {
-                    const daysSelector = document.getElementById('daysSelector');
-                    const menuToggle = document.querySelector('.btn-menu-toggle');
-                    
-                    if (isDaysMenuOpen && 
-                        !daysSelector.contains(event.target) && 
-                        !menuToggle.contains(event.target)) {
-                        toggleDaysSelector();
-                    }
-                });
-            }
-        }
-
-        function toggleDaysSelector() {
-            const daysSelector = document.getElementById('daysSelector');
-            if (window.innerWidth <= 768) {
-                if (isDaysMenuOpen) {
-                    daysSelector.classList.remove('mobile-expanded');
-                    daysSelector.classList.add('mobile-collapsed');
-                } else {
-                    daysSelector.classList.remove('mobile-collapsed');
-                    daysSelector.classList.add('mobile-expanded');
-                }
-                isDaysMenuOpen = !isDaysMenuOpen;
-            }
-        }
 
         // ========================================
         // VERIFICAÇÃO DE LOGIN
         // ========================================
 
-        function checkStudentLogin() {
-            const studentLogin = localStorage.getItem(STUDENT_KEY);
+        async function checkStudentLogin() {
+            const studentSession = localStorage.getItem('student_session');
             
-            if (!studentLogin) {
+            if (!studentSession) {
                 window.location.href = 'login.html';
                 return;
             }
 
-            currentStudent = JSON.parse(studentLogin);
-            document.getElementById('studentName').textContent = currentStudent.name;
+            try {
+                const session = JSON.parse(studentSession);
+                const currentTime = new Date().getTime();
+                
+                if (session.expiresAt < currentTime) {
+                    localStorage.removeItem('student_session');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                currentStudent = {
+                    id: session.id,
+                    name: session.name
+                };
+                
+                document.getElementById('studentName').textContent = currentStudent.name;
+                console.log('Aluno logado:', currentStudent);
+            } catch (error) {
+                console.error('Erro ao verificar login:', error);
+                localStorage.removeItem('student_session');
+                window.location.href = 'login.html';
+            }
         }
 
         // ========================================
         // CARREGAMENTO DE DADOS
         // ========================================
 
-        function loadStudentData() {
-            const trainings = JSON.parse(localStorage.getItem(TRAININGS_KEY) || '{}');
-            studentTrainings = trainings[currentStudent.id] || {};
+        async function loadStudentData() {
+            if (!currentStudent) {
+                console.error('Nenhum aluno logado');
+                return;
+            }
             
-            if (Object.keys(studentTrainings).length === 0) {
-                loadDefaultTrainings();
+            console.log('Carregando dados do aluno:', currentStudent.id);
+            
+            try {
+                const data = await getStudentData(currentStudent.id);
+                studentTrainings = data.treino;
+                studentProgress = data.progresso || {};
+                
+                console.log('Dados carregados:', {
+                    aluno: data.aluno,
+                    treino: studentTrainings,
+                    progresso: studentProgress
+                });
+
+                // Verificar se os treinos estão carregados
+                if (!studentTrainings) {
+                    console.error('Treinos não carregados!');
+                    studentTrainings = await getDefaultTraining();
+                }
+
+                console.log('Treinos após verificação:', studentTrainings);
+            } catch (error) {
+                console.error('Erro ao carregar dados do aluno:', error);
+                studentTrainings = await getDefaultTraining();
+                studentProgress = {};
             }
         }
 
-        function loadDefaultTrainings() {
-            // Tenta carregar do backup primeiro
-            const backupData = localStorage.getItem(BACKUP_KEY);
-            if (backupData) {
-                try {
-                    const data = JSON.parse(backupData);
-                    const defaultTrainings = data.defaultTrainings;
-                    
-                    if (defaultTrainings && Object.keys(defaultTrainings).length > 0) {
-                        studentTrainings = defaultTrainings;
-                        return;
-                    }
-                } catch (error) {
-                    console.error('Erro ao carregar treinos do backup:', error);
-                }
-            }
-            
-            // Tenta carregar da sincronização
-            const syncedDefaultTrainings = localStorage.getItem(`${ACADEMY_ID}_default_trainings`);
-            if (syncedDefaultTrainings) {
-                try {
-                    const defaultTrainings = JSON.parse(syncedDefaultTrainings);
-                    if (defaultTrainings && Object.keys(defaultTrainings).length > 0) {
-                        studentTrainings = defaultTrainings;
-                        return;
-                    }
-                } catch (error) {
-                    console.error('Erro ao carregar treinos sincronizados:', error);
-                }
-            }
-            
-            // Treino padrão caso não haja treino específico
-            const defaultTrainings = {
-                segunda: {
-                    focus: 'PEITO + TRÍCEPS + OMBRO',
-                    exercises: [
-                        {
-                            name: 'Supino reto com halteres',
-                            series: '4',
-                            reps: '20-15-12-10',
-                            video: ''
-                        },
-                        {
-                            name: 'Supino inclinado com halteres',
-                            series: '4',
-                            reps: '10',
-                            video: ''
-                        }
-                    ]
-                },
-                terca: {
-                    focus: 'PERNAS - QUADRÍCEPS',
-                    exercises: [
-                        {
-                            name: 'Agachamento livre com barra',
-                            series: '4',
-                            reps: '10',
-                            video: ''
-                        },
-                        {
-                            name: 'Leg press 45',
-                            series: '4',
-                            reps: '10',
-                            video: ''
-                        }
-                    ]
-                },
-                quarta: {
-                    focus: 'COSTAS + BÍCEPS',
-                    exercises: [
-                        {
-                            name: 'Puxada pela frente com pegada aberta',
-                            series: '4',
-                            reps: '20-15-12-10',
-                            video: ''
-                        },
-                        {
-                            name: 'Remada curvada com barra',
-                            series: '4',
-                            reps: '10',
-                            video: ''
-                        }
-                    ]
-                },
-                quinta: {
-                    focus: 'PERNAS',
-                    exercises: [
-                        {
-                            name: 'Agachamento sumô',
-                            series: '4',
-                            reps: '10',
-                            video: ''
-                        },
-                        {
-                            name: 'Levantamento terra',
-                            series: '4',
-                            reps: '10',
-                            video: ''
-                        }
-                    ]
-                },
-                sexta: {
-                    focus: 'OMBROS + ABDOMEN',
-                    exercises: [
-                        {
-                            name: 'Desenvolvimento máquina',
-                            series: '4',
-                            reps: '10',
-                            video: ''
-                        },
-                        {
-                            name: 'Elevação lateral',
-                            series: '4',
-                            reps: '10',
-                            video: ''
-                        }
-                    ]
-                }
-            };
+        // ========================================
+        // MENU HAMBURGER PARA DIAS
+        // ========================================
 
-            studentTrainings = defaultTrainings;
+        function toggleDaysMenu() {
+            const daysSelector = document.getElementById('daysSelector');
+            const menuIcon = document.getElementById('menuIcon');
+            
+            if (isDaysMenuOpen) {
+                daysSelector.classList.remove('active');
+                menuIcon.className = 'fas fa-chevron-down';
+            } else {
+                daysSelector.classList.add('active');
+                menuIcon.className = 'fas fa-chevron-up';
+            }
+            
+            isDaysMenuOpen = !isDaysMenuOpen;
         }
 
         // ========================================
@@ -946,8 +1001,20 @@
         // ========================================
 
         function selectDay(day) {
+            console.log('Selecionando dia:', day);
             currentDay = day;
             
+            // Atualizar texto do botão
+            const dayNames = {
+                segunda: 'Segunda',
+                terca: 'Terça',
+                quarta: 'Quarta',
+                quinta: 'Quinta',
+                sexta: 'Sexta'
+            };
+            document.getElementById('currentDayText').textContent = dayNames[day];
+            
+            // Atualizar botões ativos
             document.querySelectorAll('.day-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
@@ -957,15 +1024,17 @@
                 dayBtn.classList.add('active');
             }
             
-            // Fechar o seletor no mobile após a seleção
+            // Fechar o menu no mobile após a seleção
             if (window.innerWidth <= 768 && isDaysMenuOpen) {
-                toggleDaysSelector();
+                toggleDaysMenu();
             }
             
             loadDayTraining();
         }
 
         function loadDayTraining() {
+            console.log('loadDayTraining chamado para dia:', currentDay);
+            
             const dayNames = {
                 segunda: 'Segunda-feira',
                 terca: 'Terça-feira',
@@ -974,33 +1043,61 @@
                 sexta: 'Sexta-feira'
             };
 
-            const training = studentTrainings[currentDay] || { focus: 'Sem treino', exercises: [] };
+            // Verificar se studentTrainings existe
+            if (!studentTrainings) {
+                console.error('studentTrainings é null/undefined');
+                document.getElementById('dayTitle').textContent = dayNames[currentDay];
+                document.getElementById('focusArea').textContent = 'Erro ao carregar treino';
+                document.getElementById('exercisesTableBody').innerHTML = 
+                    '<tr><td colspan="5" class="no-exercises">Erro ao carregar exercícios</td></tr>';
+                updateProgressUI();
+                return;
+            }
+
+            const training = studentTrainings[currentDay];
+            
+            if (!training) {
+                console.error('Não há treino para o dia:', currentDay);
+                document.getElementById('dayTitle').textContent = dayNames[currentDay];
+                document.getElementById('focusArea').textContent = 'Sem treino definido';
+                document.getElementById('exercisesTableBody').innerHTML = 
+                    '<tr><td colspan="5" class="no-exercises">Nenhum treino definido para este dia</td></tr>';
+                updateProgressUI();
+                return;
+            }
+
+            console.log('Treino carregado para', currentDay, ':', training);
 
             document.getElementById('dayTitle').textContent = dayNames[currentDay];
-            document.getElementById('focusArea').textContent = training.focus;
+            document.getElementById('focusArea').textContent = training.focus || 'Sem foco definido';
 
             const tbody = document.getElementById('exercisesTableBody');
             tbody.innerHTML = '';
 
             if (!training.exercises || training.exercises.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" class="no-exercises">Nenhum exercício para este dia</td></tr>';
-                updateProgress();
+                updateProgressUI();
                 return;
             }
 
             training.exercises.forEach((exercise, index) => {
                 const isCompleted = isExerciseCompleted(index);
+                console.log(`Exercício ${index}: ${exercise.name}, completed: ${isCompleted}`);
+                
                 const row = document.createElement('tr');
                 row.className = `exercise-row ${isCompleted ? 'completed' : ''}`;
                 
                 row.innerHTML = `
                     <td>
                         <input type="checkbox" class="exercise-checkbox" ${isCompleted ? 'checked' : ''} 
-                               onchange="toggleExercise(${index})" 
-                               aria-label="${isCompleted ? 'Desmarcar' : 'Marcar'} exercício ${exercise.name} como completo">
+                               onchange="toggleExercise(${index}, this)" 
+                               aria-label="${isCompleted ? 'Desmarcar' : 'Marcar'} exercício ${exercise.name} como completo"
+                               id="exercise-${currentDay}-${index}">
                     </td>
                     <td>
-                        <span class="exercise-name">${exercise.name || exercise}</span>
+                        <label for="exercise-${currentDay}-${index}" class="exercise-name">
+                            ${exercise.name || exercise}
+                        </label>
                     </td>
                     <td>${exercise.series || '-'}</td>
                     <td>${exercise.reps || '-'}</td>
@@ -1017,52 +1114,105 @@
                 tbody.appendChild(row);
             });
 
-            updateProgress();
+            updateProgressUI();
         }
-
-        // ========================================
-        // GERENCIAMENTO DE PROGRESSO
-        // ========================================
 
         function isExerciseCompleted(index) {
-            const progress = JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}');
-            const studentProgress = progress[currentStudent.id] || {};
-            const dayProgress = studentProgress[currentDay] || [];
-            return dayProgress.includes(index);
-        }
-
-        function toggleExercise(index) {
-            const progress = JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}');
-            if (!progress[currentStudent.id]) {
-                progress[currentStudent.id] = {};
+            if (!studentProgress || !studentProgress[currentDay]) {
+                return false;
             }
-            if (!progress[currentStudent.id][currentDay]) {
-                progress[currentStudent.id][currentDay] = [];
-            }
-
-            const dayProgress = progress[currentStudent.id][currentDay];
-            const idx = dayProgress.indexOf(index);
-
-            if (idx > -1) {
-                dayProgress.splice(idx, 1);
-            } else {
-                dayProgress.push(index);
-            }
-
-            localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
-            loadDayTraining();
             
-            // Feedback tátil (vibração se suportado)
-            if (navigator.vibrate) {
-                navigator.vibrate(50);
+            const dayProgress = studentProgress[currentDay];
+            const indexNum = parseInt(index);
+            
+            // Verificar se o índice existe no array
+            return Array.isArray(dayProgress) && dayProgress.includes(indexNum);
+        }
+
+        // ========================================
+        // GERENCIAMENTO DE PROGRESSO - CORRIGIDO
+        // ========================================
+
+        async function toggleExercise(index, checkbox) {
+            console.log('toggleExercise chamado:', { index, checked: checkbox.checked });
+            
+            if (!currentStudent) {
+                showToast('Erro: Aluno não identificado', 'error');
+                return;
+            }
+            
+            const completed = checkbox.checked;
+            const row = checkbox.closest('tr');
+            
+            // Feedback visual imediato
+            if (completed) {
+                row.classList.add('completed');
+            } else {
+                row.classList.remove('completed');
+            }
+            
+            // Desabilitar checkbox durante a atualização
+            checkbox.disabled = true;
+            
+            try {
+                // Atualizar no Supabase
+                console.log('Chamando updateProgress...');
+                const success = await updateProgress(currentStudent.id, currentDay, index, completed);
+                
+                if (success) {
+                    console.log('updateProgress bem-sucedido');
+                    
+                    // Atualizar barra de progresso
+                    updateProgressUI();
+                    
+                    // Feedback tátil
+                    if (navigator.vibrate) {
+                        navigator.vibrate(30);
+                    }
+                    
+                    showToast('Progresso salvo!', 'success');
+                } else {
+                    console.log('updateProgress falhou');
+                    // Reverter se falhar
+                    checkbox.checked = !completed;
+                    if (completed) {
+                        row.classList.remove('completed');
+                    } else {
+                        row.classList.add('completed');
+                    }
+                    showToast('Erro ao salvar progresso', 'error');
+                }
+            } catch (error) {
+                console.error('Erro completo em toggleExercise:', error);
+                // Reverter em caso de erro
+                checkbox.checked = !completed;
+                if (completed) {
+                    row.classList.remove('completed');
+                } else {
+                    row.classList.add('completed');
+                }
+                showToast('Erro: ' + error.message, 'error');
+            } finally {
+                // Reabilitar checkbox
+                checkbox.disabled = false;
             }
         }
 
-        function updateProgress() {
-            const training = studentTrainings[currentDay] || { exercises: [] };
+        function updateProgressUI() {
+            console.log('updateProgressUI chamado');
+            
+            if (!studentTrainings || !studentTrainings[currentDay]) {
+                console.log('Sem treino para este dia');
+                return;
+            }
+            
+            const training = studentTrainings[currentDay];
             const total = training.exercises ? training.exercises.length : 0;
-            const completed = Array.from(document.querySelectorAll('.exercise-checkbox:checked')).length;
+            const dayProgress = studentProgress[currentDay] || [];
+            const completed = Array.isArray(dayProgress) ? dayProgress.length : 0;
             const percentage = total > 0 ? (completed / total) * 100 : 0;
+
+            console.log('Estatísticas:', { total, completed, percentage, dayProgress });
 
             document.getElementById('progressFill').style.width = percentage + '%';
             document.getElementById('progressText').textContent = `${completed} / ${total} exercícios completos`;
@@ -1073,6 +1223,11 @@
         // ========================================
 
         function sendWhatsApp() {
+            if (!currentStudent) {
+                showToast('Por favor, faça login primeiro', 'error');
+                return;
+            }
+            
             const dayName = currentDay.charAt(0).toUpperCase() + currentDay.slice(1);
             const message = encodeURIComponent(`Olá, Italo Ruan! Estou com uma dúvida sobre o meu treino (${dayName}) no aplicativo. Meu nome é ${currentStudent.name}.`);
             window.open(`https://wa.me/${ADMIN_WHATSAPP}?text=${message}`, '_blank');
@@ -1080,14 +1235,170 @@
 
         function logout() {
             if (confirm('Tem certeza que deseja sair?')) {
-                localStorage.removeItem(STUDENT_KEY);
+                localStorage.removeItem('student_session');
                 window.location.href = 'login.html';
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            // Remover toast existente
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+            
+            // Criar novo toast
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Remover após 3 segundos
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.remove();
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // ========================================
+        // ATUALIZAÇÃO EM TEMPO REAL
+        // ========================================
+
+        function setupRealtimeUpdates() {
+            if (!currentStudent) return;
+            
+            try {
+                // Inscrever-se para atualizações em tempo real do treino
+                const treinosSubscription = supabase
+                    .channel(`treinos-${currentStudent.id}`)
+                    .on('postgres_changes', 
+                        { 
+                            event: '*', 
+                            schema: 'public', 
+                            table: 'treinos',
+                            filter: `aluno_id=eq.${currentStudent.id}`
+                        }, 
+                        async (payload) => {
+                            console.log('Treino atualizado via realtime:', payload);
+                            if (payload.new && payload.new.treino) {
+                                studentTrainings = payload.new.treino;
+                                loadDayTraining();
+                            }
+                        }
+                    )
+                    .subscribe();
+
+                // Inscrever-se para atualizações em tempo real do progresso
+                const progressoSubscription = supabase
+                    .channel(`progresso-${currentStudent.id}`)
+                    .on('postgres_changes', 
+                        { 
+                            event: '*', 
+                            schema: 'public', 
+                            table: 'progresso',
+                            filter: `aluno_id=eq.${currentStudent.id}`
+                        }, 
+                        async (payload) => {
+                            console.log('Progresso atualizado via realtime:', payload);
+                            if (payload.new && payload.new.progresso) {
+                                studentProgress = payload.new.progresso;
+                                loadDayTraining();
+                            }
+                        }
+                    )
+                    .subscribe();
+
+                // Armazenar subscriptions
+                window.subscriptions = [treinosSubscription, progressoSubscription];
+                
+                console.log('Realtime subscriptions ativadas para aluno:', currentStudent.id);
+            } catch (error) {
+                console.error('Erro ao configurar realtime:', error);
+            }
+        }
+
+        // ========================================
+        // FUNÇÕES AUXILIARES
+        // ========================================
+
+        async function getDefaultTraining() {
+            try {
+                const { data, error } = await supabase
+                    .from('treinos_padroes')
+                    .select('*')
+                    .single();
+                
+                if (error) {
+                    console.log('Usando treino padrão local:', error);
+                    return {
+                        segunda: {
+                            focus: 'PEITO + TRÍCEPS + OMBRO',
+                            exercises: [
+                                { name: 'Supino reto com halteres', series: '4', reps: '20-15-12-10', video: '' },
+                                { name: 'Supino inclinado com halteres', series: '4', reps: '10', video: '' }
+                            ]
+                        },
+                        terca: {
+                            focus: 'PERNAS - QUADRÍCEPS',
+                            exercises: [
+                                { name: 'Agachamento livre com barra', series: '4', reps: '10', video: '' },
+                                { name: 'Leg press 45', series: '4', reps: '10', video: '' }
+                            ]
+                        },
+                        quarta: {
+                            focus: 'COSTAS + BÍCEPS',
+                            exercises: [
+                                { name: 'Puxada pela frente com pegada aberta', series: '4', reps: '20-15-12-10', video: '' },
+                                { name: 'Remada curvada com barra', series: '4', reps: '10', video: '' }
+                            ]
+                        },
+                        quinta: {
+                            focus: 'PERNAS',
+                            exercises: [
+                                { name: 'Agachamento sumô', series: '4', reps: '10', video: '' },
+                                { name: 'Levantamento terra', series: '4', reps: '10', video: '' }
+                            ]
+                        },
+                        sexta: {
+                            focus: 'OMBROS + ABDOMEN',
+                            exercises: [
+                                { name: 'Desenvolvimento máquina', series: '4', reps: '10', video: '' },
+                                { name: 'Elevação lateral', series: '4', reps: '10', video: '' }
+                            ]
+                        }
+                    };
+                }
+                console.log('Treino padrão carregado do Supabase:', data.treino);
+                return data.treino || {};
+            } catch (error) {
+                console.error('Erro ao buscar treino padrão:', error);
+                return {};
             }
         }
 
         // ========================================
         // MELHORIAS DE USABILIDADE
         // ========================================
+
+        // Fechar menu ao clicar fora (mobile)
+        document.addEventListener('click', function(event) {
+            const daysSelector = document.getElementById('daysSelector');
+            const menuToggle = document.querySelector('.btn-menu-toggle');
+            
+            if (isDaysMenuOpen && 
+                !daysSelector.contains(event.target) && 
+                !menuToggle.contains(event.target)) {
+                toggleDaysMenu();
+            }
+        });
 
         // Swipe para trocar dias (mobile)
         let touchStartX = 0;
@@ -1112,17 +1423,15 @@
             const currentIndex = days.indexOf(currentDay);
 
             if (swipeDistance > 0 && currentIndex > 0) {
-                // Swipe direito - dia anterior
                 selectDay(days[currentIndex - 1]);
             } else if (swipeDistance < 0 && currentIndex < days.length - 1) {
-                // Swipe esquerdo - próximo dia
                 selectDay(days[currentIndex + 1]);
             }
         }
 
         // Atalhos de teclado
         document.addEventListener('keydown', (e) => {
-            if (e.target.tagName === 'INPUT') return; // Não interferir em inputs
+            if (e.target.tagName === 'INPUT') return;
 
             const days = ['segunda', 'terca', 'quarta', 'quinta', 'sexta'];
             const currentIndex = days.indexOf(currentDay);
@@ -1140,19 +1449,18 @@
                     break;
                 case 'Escape':
                     if (isDaysMenuOpen) {
-                        toggleDaysSelector();
+                        toggleDaysMenu();
                     }
                     break;
             }
         });
 
-        // Otimização para performance
-        window.addEventListener('resize', () => {
-            // Reset menu state on resize
-            const daysSelector = document.getElementById('daysSelector');
-            if (window.innerWidth > 768) {
-                daysSelector.classList.remove('mobile-collapsed', 'mobile-expanded');
-                isDaysMenuOpen = false;
+        // Limpar subscriptions ao sair
+        window.addEventListener('beforeunload', () => {
+            if (window.subscriptions) {
+                window.subscriptions.forEach(sub => {
+                    supabase.removeChannel(sub);
+                });
             }
         });
     </script>

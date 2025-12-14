@@ -6,6 +6,7 @@
     <meta name="description" content="Painel de Administração - Italo Ruan Personal Trainer">
     <title>Painel de Administração - Italo Ruan</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
 
@@ -1058,6 +1059,31 @@
         .exercises-table {
             margin-bottom: 0;
         }
+        /* Estilo para o modal personalizado */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 1rem;
+}
+
+.modal-content-small {
+    background: var(--light-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: var(--shadow-hover);
+    animation: slideIn 0.3s ease;
+}
+
     </style>
 </head>
 
@@ -1205,6 +1231,10 @@
                     <button class="btn btn-primary" onclick="applyDefaultTrainingToAll()">
                         <i class="fas fa-users"></i> Aplicar a Todos os Alunos
                     </button>
+                    <button class="btn btn-secondary" onclick="applyDefaultTrainingToSpecificStudent()">
+    <i class="fas fa-user-check"></i> Aplicar a Aluno Específico
+</button>
+
                 </div>
                 <div class="edit-training-container">
                     <div class="days-tabs" id="defaultDaysTabs">
@@ -1336,94 +1366,243 @@
 
     <script>
         // ========================================
-        // CONFIGURAÇÕES
+        // CONFIGURAÇÕES SUPABASE
         // ========================================
 
-        const ADMIN_KEY = 'italoAdminLogin';
-        const STUDENTS_STORAGE_KEY = 'italoRuanStudents';
-        const TRAININGS_STORAGE_KEY = 'italoRuanTrainings';
-        const PROGRESS_STORAGE_KEY = 'studentProgress';
-        const ADMIN_CREDENTIALS_KEY = 'italoAdminCredentials';
-        const THEME_KEY = 'appTheme';
-        const DEFAULT_TRAININGS_KEY = 'italoDefaultTrainings';
-        const BACKUP_KEY = 'italoBackupData';
+        const SUPABASE_URL = 'https://idwtktaypxsomnqlmjdp.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkd3RrdGF5cHhzb21ucWxtamRwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU2ODQ4NjIsImV4cCI6MjA4MTI2MDg2Mn0.NqqhknttW9VfIb4sr3NkpTRemV3_YohxK093Pjhm8v0';
+        
+        // Inicializar Supabase
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        let currentAdminCredentials = {
+        // Configurações
+        const THEME_KEY = 'appTheme';
+        const ADMIN_CREDENTIALS = {
             user: 'italo',
             password: 'italoruan123'
         };
 
         let currentStudent = null;
         let currentDay = 'segunda';
+        let currentDefaultTraining = null;
+
+        // ========================================
+        // FUNÇÕES SUPABASE
+        // ========================================
+
+        // ALUNOS
+        async function getStudents() {
+            try {
+                const { data, error } = await supabase
+                    .from('alunos')
+                    .select('*')
+                    .order('nome');
+                
+                if (error) throw error;
+                return data || [];
+            } catch (error) {
+                console.error('Erro ao buscar alunos:', error);
+                showToast('Erro ao carregar alunos: ' + error.message, 'error');
+                return [];
+            }
+        }
+
+        async function saveStudent(aluno) {
+            try {
+                const { data, error } = await supabase
+                    .from('alunos')
+                    .upsert([aluno]);
+                
+                if (error) throw error;
+                return data;
+            } catch (error) {
+                console.error('Erro ao salvar aluno:', error);
+                throw error;
+            }
+        }
+
+        async function deleteStudentFromSupabase(id) {
+            try {
+                const { error } = await supabase
+                    .from('alunos')
+                    .delete()
+                    .eq('id', id);
+                
+                if (error) throw error;
+                return true;
+            } catch (error) {
+                console.error('Erro ao deletar aluno:', error);
+                throw error;
+            }
+        }
+
+        // TREINOS
+        async function getTraining(alunoId) {
+            try {
+                const { data, error } = await supabase
+                    .from('treinos')
+                    .select('*')
+                    .eq('aluno_id', alunoId)
+                    .single();
+                
+                if (error) {
+                    if (error.code === 'PGRST116') {
+                        return initializeEmptyTraining();
+                    }
+                    throw error;
+                }
+                return data.treino || initializeEmptyTraining();
+            } catch (error) {
+                console.error('Erro ao buscar treino:', error);
+                return initializeEmptyTraining();
+            }
+        }
+
+        async function saveTraining(alunoId, treino) {
+            try {
+                const trainingData = {
+                    aluno_id: alunoId,
+                    treino: treino,
+                    updated_at: new Date().toISOString()
+                };
+
+                const { data, error } = await supabase
+                    .from('treinos')
+                    .upsert([trainingData], { onConflict: 'aluno_id' });
+                
+                if (error) throw error;
+                return data;
+            } catch (error) {
+                console.error('Erro ao salvar treino:', error);
+                throw error;
+            }
+        }
+
+        function initializeEmptyTraining() {
+            const days = ['segunda', 'terca', 'quarta', 'quinta', 'sexta'];
+            const newTraining = {};
+            
+            days.forEach(day => {
+                newTraining[day] = {
+                    focus: 'Nenhum foco definido',
+                    exercises: []
+                };
+            });
+            
+            return newTraining;
+        }
+
+        // TREINOS PADRÃO
+        async function getDefaultTraining() {
+            try {
+                const { data, error } = await supabase
+                    .from('treinos_padroes')
+                    .select('*')
+                    .single();
+                
+                if (error) {
+                    if (error.code === 'PGRST116') {
+                        return initializeDefaultTrainings();
+                    }
+                    throw error;
+                }
+                return data.treino || initializeDefaultTrainings();
+            } catch (error) {
+                console.error('Erro ao buscar treino padrão:', error);
+                return initializeDefaultTrainings();
+            }
+        }
+
+        async function saveDefaultTraining(treino) {
+            try {
+                const trainingData = {
+                    treino: treino,
+                    updated_at: new Date().toISOString()
+                };
+
+                const { data, error } = await supabase
+                    .from('treinos_padroes')
+                    .upsert([trainingData]);
+                
+                if (error) throw error;
+                return data;
+            } catch (error) {
+                console.error('Erro ao salvar treino padrão:', error);
+                throw error;
+            }
+        }
+
+        // PROGRESSO
+        async function getProgress(alunoId = null) {
+            try {
+                let query = supabase
+                    .from('progresso')
+                    .select('*');
+                
+                if (alunoId) {
+                    query = query.eq('aluno_id', alunoId);
+                }
+
+                const { data, error } = await query;
+                
+                if (error) {
+                    if (error.code === 'PGRST116') {
+                        return alunoId ? { [alunoId]: {} } : {};
+                    }
+                    throw error;
+                }
+
+                // Formatar dados
+                const progressMap = {};
+                data.forEach(item => {
+                    progressMap[item.aluno_id] = item.progresso || {};
+                });
+
+                return alunoId ? (progressMap[alunoId] || {}) : progressMap;
+            } catch (error) {
+                console.error('Erro ao buscar progresso:', error);
+                return alunoId ? {} : {};
+            }
+        }
+
+        async function saveProgress(alunoId, progresso) {
+            try {
+                const progressData = {
+                    aluno_id: alunoId,
+                    progresso: progresso,
+                    updated_at: new Date().toISOString()
+                };
+
+                const { data, error } = await supabase
+                    .from('progresso')
+                    .upsert([progressData], { onConflict: 'aluno_id' });
+                
+                if (error) throw error;
+                return data;
+            } catch (error) {
+                console.error('Erro ao salvar progresso:', error);
+                throw error;
+            }
+        }
 
         // ========================================
         // INICIALIZAÇÃO
         // ========================================
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             loadTheme();
-            checkAdminLogin();
-            loadAdminCredentials();
+            await checkAdminLogin();
+            await loadAdminCredentials();
             
-            // Tenta restaurar backup automaticamente
-            if (!restoreFromAutoBackup()) {
-                // Se não houver backup, carrega dados normais
-                loadStudents();
-                loadStudentsForTrainingEdit();
-                loadStudentsForProgress();
-                setupDaysTabs();
-                initializeDefaultTrainingsTab();
-            }
-            
-            // Cria backup inicial
-            createAutoBackup();
+            // Carregar dados iniciais
+            await loadStudents();
+            await loadStudentsForTrainingEdit();
+            await loadStudentsForProgress();
+            setupDaysTabs();
+            await initializeDefaultTrainingsTab();
             
             switchTab('dashboard');
         });
-
-        // ========================================
-        // SISTEMA DE BACKUP AUTOMÁTICO
-        // ========================================
-
-        function createAutoBackup() {
-            const backupData = {
-                students: getStudents(),
-                trainings: getTrainings(),
-                progress: getProgress(),
-                defaultTrainings: getDefaultTrainings(),
-                timestamp: new Date().toISOString()
-            };
-            
-            localStorage.setItem(BACKUP_KEY, JSON.stringify(backupData));
-        }
-
-        function restoreFromAutoBackup() {
-            const backupData = localStorage.getItem(BACKUP_KEY);
-            if (!backupData) return false;
-            
-            try {
-                const data = JSON.parse(backupData);
-                
-                // Restaura os dados
-                saveStudents(data.students || []);
-                saveTrainings(data.trainings || {});
-                localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(data.progress || {}));
-                saveDefaultTrainings(data.defaultTrainings || {});
-                
-                // Carrega os dados restaurados
-                loadStudents();
-                loadStudentsForTrainingEdit();
-                loadStudentsForProgress();
-                setupDaysTabs();
-                initializeDefaultTrainingsTab();
-                
-                console.log('Backup restaurado automaticamente');
-                return true;
-            } catch (error) {
-                console.error('Erro ao restaurar backup:', error);
-                return false;
-            }
-        }
 
         // ========================================
         // GERENCIAMENTO DE TEMA
@@ -1452,75 +1631,76 @@
         }
 
         // ========================================
-        // PERSISTÊNCIA DE DADOS
-        // ========================================
-
-        function getStudents() {
-            return JSON.parse(localStorage.getItem(STUDENTS_STORAGE_KEY) || '[]');
-        }
-
-        function saveStudents(students) {
-            localStorage.setItem(STUDENTS_STORAGE_KEY, JSON.stringify(students));
-            createAutoBackup(); // Backup automático
-        }
-
-        function getTrainings() {
-            return JSON.parse(localStorage.getItem(TRAININGS_STORAGE_KEY) || '{}');
-        }
-
-        function saveTrainings(trainings) {
-            localStorage.setItem(TRAININGS_STORAGE_KEY, JSON.stringify(trainings));
-            createAutoBackup(); // Backup automático
-        }
-
-        function getProgress() {
-            return JSON.parse(localStorage.getItem(PROGRESS_STORAGE_KEY) || '{}');
-        }
-
-        function getDefaultTrainings() {
-            return JSON.parse(localStorage.getItem(DEFAULT_TRAININGS_KEY) || '{}');
-        }
-
-        function saveDefaultTrainings(trainings) {
-            localStorage.setItem(DEFAULT_TRAININGS_KEY, JSON.stringify(trainings));
-            createAutoBackup(); // Backup automático
-        }
-
-        // ========================================
         // ADMIN LOGIN
         // ========================================
 
-        function checkAdminLogin() {
-            const adminLogin = localStorage.getItem(ADMIN_KEY);
-            if (!adminLogin) {
+        async function checkAdminLogin() {
+            const adminSession = localStorage.getItem('admin_session');
+            if (!adminSession) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const session = JSON.parse(adminSession);
+                const currentTime = new Date().getTime();
+                
+                if (session.expiresAt < currentTime) {
+                    localStorage.removeItem('admin_session');
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                localStorage.removeItem('admin_session');
                 window.location.href = 'login.html';
             }
         }
 
         function logoutAdmin() {
-            localStorage.removeItem(ADMIN_KEY);
+            localStorage.removeItem('admin_session');
             window.location.href = 'login.html';
         }
 
-        function loadAdminCredentials() {
-            const savedCredentials = localStorage.getItem(ADMIN_CREDENTIALS_KEY);
-            if (savedCredentials) {
-                currentAdminCredentials = JSON.parse(savedCredentials);
+        async function loadAdminCredentials() {
+            try {
+                const { data, error } = await supabase
+                    .from('admins')
+                    .select('*')
+                    .eq('username', 'italo')
+                    .single();
+
+                if (!error && data) {
+                    document.getElementById('adminUserSetting').value = data.username;
+                } else {
+                    document.getElementById('adminUserSetting').value = 'italo';
+                }
+            } catch (error) {
+                document.getElementById('adminUserSetting').value = 'italo';
             }
-            document.getElementById('adminUserSetting').value = currentAdminCredentials.user;
         }
 
-        function saveAdminSettings() {
+        async function saveAdminSettings() {
             const newPassword = document.getElementById('adminPasswordSetting').value.trim();
             
             if (newPassword) {
-                currentAdminCredentials.password = newPassword;
-                showToast('Senha de Admin alterada com sucesso!', 'success');
+                try {
+                    await supabase
+                        .from('admins')
+                        .upsert([
+                            {
+                                username: 'italo',
+                                password: newPassword,
+                                updated_at: new Date().toISOString()
+                            }
+                        ]);
+
+                    showToast('Senha de Admin alterada com sucesso!', 'success');
+                    document.getElementById('adminPasswordSetting').value = '';
+                } catch (error) {
+                    showToast('Erro ao salvar senha: ' + error.message, 'error');
+                }
+            } else {
+                showToast('Digite uma nova senha para alterar', 'error');
             }
-            
-            localStorage.setItem(ADMIN_CREDENTIALS_KEY, JSON.stringify(currentAdminCredentials));
-            document.getElementById('adminPasswordSetting').value = '';
-            createAutoBackup(); // Backup automático
         }
 
         // ========================================
@@ -1532,7 +1712,7 @@
             sidebar.classList.toggle('active');
         }
 
-        function switchTab(tabName) {
+        async function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
@@ -1549,54 +1729,55 @@
             }
 
             if (tabName === 'students') {
-                loadStudents();
+                await loadStudents();
             } else if (tabName === 'dashboard') {
-                document.getElementById('totalStudents').textContent = getStudents().length;
+                const students = await getStudents();
+                document.getElementById('totalStudents').textContent = students.length;
             } else if (tabName === 'progress') {
-                loadProgressOverview();
+                await loadProgressOverview();
             } else if (tabName === 'default-trainings') {
-                initializeDefaultTrainingsTab();
+                await initializeDefaultTrainingsTab();
             }
-            
-            // Cria backup sempre que mudar de aba (para sincronização)
-            createAutoBackup();
         }
 
         // ========================================
         // GERENCIAMENTO DE ALUNOS
         // ========================================
 
-        function loadStudents() {
-            const students = getStudents();
-            const studentsGrid = document.getElementById('studentsGrid');
-            studentsGrid.innerHTML = '';
+        async function loadStudents() {
+            try {
+                const students = await getStudents();
+                const studentsGrid = document.getElementById('studentsGrid');
+                studentsGrid.innerHTML = '';
 
-            if (students.length === 0) {
-                studentsGrid.innerHTML = '<p style="text-align: center; grid-column: 1 / -1; color: var(--gray-text);">Nenhum aluno cadastrado.</p>';
-                return;
+                if (students.length === 0) {
+                    studentsGrid.innerHTML = '<p style="text-align: center; grid-column: 1 / -1; color: var(--gray-text);">Nenhum aluno cadastrado.</p>';
+                    return;
+                }
+
+                students.forEach(student => {
+                    const card = document.createElement('div');
+                    card.className = 'student-card';
+                    card.innerHTML = `
+                        <div class="student-avatar">${student.nome.charAt(0).toUpperCase()}</div>
+                        <h4>${student.nome}</h4>
+                        <p>ID: ${student.id}</p>
+                        <p style="font-size: 0.9rem; color: var(--secondary-color); margin-bottom: 1rem;">Senha: ${student.id.toString().slice(-6)}</p>
+                        <div class="student-actions">
+                            <button class="btn btn-danger btn-action" onclick="deleteStudentHandler('${student.id}')">
+                                <i class="fas fa-trash-alt"></i> Excluir
+                            </button>
+                        </div>
+                    `;
+                    studentsGrid.appendChild(card);
+                });
+                
+                await loadStudentsForTrainingEdit();
+                await loadStudentsForProgress();
+                document.getElementById('totalStudents').textContent = students.length;
+            } catch (error) {
+                showToast('Erro ao carregar alunos: ' + error.message, 'error');
             }
-
-            students.forEach(student => {
-                const card = document.createElement('div');
-                card.className = 'student-card';
-                card.innerHTML = `
-                    <div class="student-avatar">${student.name.charAt(0).toUpperCase()}</div>
-                    <h4>${student.name}</h4>
-                    <p>ID: ${student.id}</p>
-                    <p style="font-size: 0.9rem; color: var(--secondary-color); margin-bottom: 1rem;">Senha: ${student.id.slice(-6)}</p>
-                    <div class="student-actions">
-                        <button class="btn btn-danger btn-action" onclick="deleteStudent('${student.id}')">
-                            <i class="fas fa-trash-alt"></i> Excluir
-                        </button>
-                    </div>
-                `;
-                studentsGrid.appendChild(card);
-            });
-            
-            // Atualiza a lista de alunos para edição de treino
-            loadStudentsForTrainingEdit();
-            loadStudentsForProgress();
-            document.getElementById('totalStudents').textContent = students.length;
         }
 
         function openAddStudentModal() {
@@ -1608,107 +1789,102 @@
             openModal('studentModal');
         }
 
-        function saveNewStudent(event) {
+        async function saveNewStudent(event) {
             event.preventDefault();
             const name = document.getElementById('studentNameModal').value.trim();
             
-            const students = getStudents();
-            
-            // Gera um ID único com timestamp
-            const newId = 'aluno_' + Date.now().toString();
-            
-            const newStudent = {
-                id: newId,
-                name: name,
-                createdAt: new Date().toISOString()
-            };
+            if (!name) {
+                showToast('Digite o nome do aluno', 'error');
+                return;
+            }
 
-            students.push(newStudent);
-            saveStudents(students);
-            
-            // Inicializa o treino do novo aluno
-            initializeStudentTraining(newId);
-
-            loadStudents();
-            closeModal('studentModal');
-            showToast(`Aluno adicionado com sucesso! ID: ${newId} - Senha: ${newId.slice(-6)}`, 'success');
-        }
-
-        function deleteStudent(id) {
-            if (confirm('Tem certeza que deseja excluir este aluno e todos os seus dados de treino?')) {
-                let students = getStudents();
-                students = students.filter(s => s.id !== id);
-                saveStudents(students);
+            try {
+                // Gerar ID único
+                const newId = 'aluno_' + Date.now().toString();
                 
-                // Remove os treinos do aluno
-                let trainings = getTrainings();
-                delete trainings[id];
-                saveTrainings(trainings);
+                const newStudent = {
+                    id: newId,
+                    nome: name,
+                    created_at: new Date().toISOString()
+                };
 
-                loadStudents();
-                showToast('Aluno excluído com sucesso!', 'success');
+                await saveStudent(newStudent);
+                
+                // Inicializar treino vazio para o novo aluno
+                await saveTraining(newId, initializeEmptyTraining());
+
+                await loadStudents();
+                closeModal('studentModal');
+                showToast(`Aluno adicionado com sucesso! ID: ${newId} - Senha: ${newId.slice(-6)}`, 'success');
+            } catch (error) {
+                showToast('Erro ao adicionar aluno: ' + error.message, 'error');
             }
         }
-        
-        function initializeStudentTraining(studentId) {
-            const trainings = getTrainings();
-            
-            // Verifica se o aluno já tem treino
-            if (trainings[studentId]) return;
 
-            const days = ['segunda', 'terca', 'quarta', 'quinta', 'sexta'];
-            const newStudentTraining = {};
-            
-            days.forEach(day => {
-                newStudentTraining[day] = {
-                    focus: 'Nenhum foco definido',
-                    exercises: []
-                };
-            });
-
-            trainings[studentId] = newStudentTraining;
-            saveTrainings(trainings);
+        async function deleteStudentHandler(id) {
+            if (confirm('Tem certeza que deseja excluir este aluno e todos os seus dados de treino?')) {
+                try {
+                    await deleteStudentFromSupabase(id);
+                    
+                    // Deletar também treinos e progresso associados
+                    await supabase.from('treinos').delete().eq('aluno_id', id);
+                    await supabase.from('progresso').delete().eq('aluno_id', id);
+                    
+                    await loadStudents();
+                    showToast('Aluno excluído com sucesso!', 'success');
+                } catch (error) {
+                    showToast('Erro ao excluir aluno: ' + error.message, 'error');
+                }
+            }
         }
 
         // ========================================
         // EDIÇÃO DE TREINO POR ALUNO
         // ========================================
 
-        function loadStudentsForTrainingEdit() {
-            const students = getStudents();
-            const select = document.getElementById('studentToEditTraining');
-            const currentSelected = select.value;
-            
-            select.innerHTML = '<option value="">-- Selecione um Aluno --</option>';
-            
-            students.forEach(student => {
-                const option = document.createElement('option');
-                option.value = student.id;
-                option.textContent = student.name;
-                select.appendChild(option);
-            });
-            
-            // Tenta manter o aluno selecionado
-            if (currentSelected && students.some(s => s.id === currentSelected)) {
-                select.value = currentSelected;
-                loadStudentTraining(currentSelected);
-            } else {
-                document.getElementById('trainingEditorContainer').style.display = 'none';
+        async function loadStudentsForTrainingEdit() {
+            try {
+                const students = await getStudents();
+                const select = document.getElementById('studentToEditTraining');
+                const currentSelected = select.value;
+                
+                select.innerHTML = '<option value="">-- Selecione um Aluno --</option>';
+                
+                students.forEach(student => {
+                    const option = document.createElement('option');
+                    option.value = student.id;
+                    option.textContent = student.nome;
+                    select.appendChild(option);
+                });
+                
+                // Tenta manter o aluno selecionado
+                if (currentSelected && students.some(s => s.id === currentSelected)) {
+                    select.value = currentSelected;
+                    await loadStudentTraining(currentSelected);
+                } else {
+                    document.getElementById('trainingEditorContainer').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar alunos para edição:', error);
             }
         }
 
-        function loadStudentsForProgress() {
-            const students = getStudents();
-            const select = document.getElementById('studentProgressSelect');
-            
-            select.innerHTML = '<option value="">-- Todos os Alunos --</option>';
-            
-            students.forEach(student => {
-                const option = document.createElement('option');
-                option.value = student.id;
-                option.textContent = student.name;
-                select.appendChild(option);
-            });
+        async function loadStudentsForProgress() {
+            try {
+                const students = await getStudents();
+                const select = document.getElementById('studentProgressSelect');
+                
+                select.innerHTML = '<option value="">-- Todos os Alunos --</option>';
+                
+                students.forEach(student => {
+                    const option = document.createElement('option');
+                    option.value = student.id;
+                    option.textContent = student.nome;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Erro ao carregar alunos para progresso:', error);
+            }
         }
 
         function setupDaysTabs() {
@@ -1725,7 +1901,7 @@
             });
         }
 
-        function loadStudentTraining(studentId) {
+        async function loadStudentTraining(studentId) {
             currentStudent = studentId;
             const container = document.getElementById('trainingEditorContainer');
             
@@ -1735,35 +1911,48 @@
             }
 
             container.style.display = 'block';
-            selectDayToEdit(currentDay);
+            await selectDayToEdit(currentDay);
         }
 
-        function selectDayToEdit(day) {
+        async function selectDayToEdit(day) {
             currentDay = day;
             
             document.querySelectorAll('.day-tab').forEach(btn => {
                 btn.classList.remove('active');
             });
-            document.querySelector(`#daysTabs button:nth-child(${['segunda', 'terca', 'quarta', 'quinta', 'sexta'].indexOf(day) + 1})`).classList.add('active');
+            const dayIndex = ['segunda', 'terca', 'quarta', 'quinta', 'sexta'].indexOf(day);
+            if (dayIndex >= 0) {
+                document.querySelector(`#daysTabs button:nth-child(${dayIndex + 1})`).classList.add('active');
+            }
             
             document.getElementById('currentDayTitle').textContent = 'Treino de ' + day.charAt(0).toUpperCase() + day.slice(1);
             
-            loadDayTraining();
+            await loadDayTraining();
         }
 
-        function loadDayTraining() {
-            const trainings = getTrainings();
-            const dayTraining = trainings[currentStudent] ? trainings[currentStudent][currentDay] : null;
-            
-            if (!dayTraining) {
-                // Se não houver treino, inicializa um vazio
-                initializeStudentTraining(currentStudent);
-                loadDayTraining(); // Tenta carregar novamente
-                return;
-            }
+        async function loadDayTraining() {
+            if (!currentStudent) return;
 
-            document.getElementById('focusArea').value = dayTraining.focus || '';
-            loadExercisesToTable(dayTraining.exercises || []);
+            try {
+                const training = await getTraining(currentStudent);
+                const dayTraining = training[currentDay];
+                
+                if (!dayTraining) {
+                    // Inicializar treino vazio
+                    training[currentDay] = {
+                        focus: '',
+                        exercises: []
+                    };
+                    await saveTraining(currentStudent, training);
+                    await loadDayTraining();
+                    return;
+                }
+
+                document.getElementById('focusArea').value = dayTraining.focus || '';
+                loadExercisesToTable(dayTraining.exercises || []);
+            } catch (error) {
+                showToast('Erro ao carregar treino: ' + error.message, 'error');
+            }
         }
 
         // ========================================
@@ -1831,7 +2020,6 @@
                     tbody.appendChild(row);
                 });
             } else {
-                // Adiciona uma linha vazia se não houver exercícios
                 addExerciseRow();
             }
         }
@@ -1859,38 +2047,129 @@
             return exercises;
         }
 
-        function saveStudentTraining() {
-            const trainings = getTrainings();
-            const studentId = currentStudent;
-            
-            if (!trainings[studentId]) {
-                showToast('Erro: Treino do aluno não encontrado.', 'error');
+        async function saveStudentTraining() {
+            if (!currentStudent) {
+                showToast('Selecione um aluno primeiro', 'error');
                 return;
             }
-            
-            const dayTraining = trainings[studentId][currentDay];
-            
-            // 1. Coletar a área de foco
-            dayTraining.focus = document.getElementById('focusArea').value.trim();
-            
-            // 2. Coletar os exercícios da tabela
-            dayTraining.exercises = getExercisesFromTable();
-            
-            // 3. Salvar de volta no localStorage
-            saveTrainings(trainings);
-            
-            // 4. Atualizar a visualização e notificar
-            loadDayTraining(); // Recarrega o treino do dia atual
-            showToast(`Treino de ${currentDay} salvo com sucesso para o aluno!`, 'success');
+
+            try {
+                const currentTraining = await getTraining(currentStudent);
+                
+                currentTraining[currentDay] = {
+                    focus: document.getElementById('focusArea').value.trim(),
+                    exercises: getExercisesFromTable()
+                };
+
+                await saveTraining(currentStudent, currentTraining);
+                showToast(`Treino de ${currentDay} salvo com sucesso para o aluno!`, 'success');
+            } catch (error) {
+                showToast('Erro ao salvar treino: ' + error.message, 'error');
+            }
         }
 
         // ========================================
         // TREINOS PADRÃO
         // ========================================
 
-        function initializeDefaultTrainingsTab() {
+        // ========================================
+// APLICAR TREINO PADRÃO A ALUNO ESPECÍFICO
+// ========================================
+
+async function applyDefaultTrainingToSpecificStudent() {
+    try {
+        // Carregar alunos
+        const students = await getStudents();
+        if (students.length === 0) {
+            showToast('Nenhum aluno cadastrado!', 'error');
+            return;
+        }
+
+        // Criar modal para seleção
+        const modalContent = `
+            <div class="modal-header">
+                <h2>Aplicar Treino Padrão a Aluno Específico</h2>
+                <button class="modal-close" onclick="closeModal('customModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="specificStudentSelect">Selecione o aluno:</label>
+                    <select id="specificStudentSelect" class="form-input">
+                        ${students.map(student => 
+                            `<option value="${student.id}">${student.nome}</option>`
+                        ).join('')}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="replaceExisting" checked>
+                        Substituir treino atual do aluno
+                    </label>
+                </div>
+                <button class="btn btn-primary" onclick="confirmApplyToSpecificStudent()">
+                    <i class="fas fa-user-check"></i> Aplicar Treino
+                </button>
+            </div>
+        `;
+
+        // Criar ou atualizar modal
+        let modal = document.getElementById('customModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'customModal';
+            modal.className = 'modal';
+            modal.innerHTML = `<div class="modal-content">${modalContent}</div>`;
+            document.body.appendChild(modal);
+        } else {
+            modal.querySelector('.modal-content').innerHTML = modalContent;
+        }
+
+        openModal('customModal');
+    } catch (error) {
+        showToast('Erro ao carregar alunos: ' + error.message, 'error');
+    }
+}
+
+async function confirmApplyToSpecificStudent() {
+    try {
+        const studentId = document.getElementById('specificStudentSelect').value;
+        const replaceExisting = document.getElementById('replaceExisting').checked;
+        const defaultTraining = await getDefaultTraining();
+
+        if (!studentId) {
+            showToast('Selecione um aluno!', 'error');
+            return;
+        }
+
+        let currentTraining = {};
+        if (!replaceExisting) {
+            // Manter treino existente, apenas complementar
+            currentTraining = await getTraining(studentId);
+        }
+
+        // Mesclar ou substituir treinos
+        const finalTraining = replaceExisting 
+            ? defaultTraining 
+            : { ...currentTraining, ...defaultTraining };
+
+        // Salvar treino
+        await saveTraining(studentId, finalTraining);
+        
+        closeModal('customModal');
+        showToast('Treino padrão aplicado ao aluno com sucesso!', 'success');
+        
+        // Se o aluno atual estiver selecionado, atualizar a visualização
+        if (currentStudent === studentId) {
+            await loadStudentTraining(studentId);
+        }
+    } catch (error) {
+        showToast('Erro ao aplicar treino: ' + error.message, 'error');
+    }
+}
+
+        async function initializeDefaultTrainingsTab() {
             setupDefaultDaysTabs();
-            loadDefaultTraining();
+            await loadDefaultTraining();
         }
 
         function setupDefaultDaysTabs() {
@@ -1913,26 +2192,37 @@
             document.querySelectorAll('#defaultDaysTabs .day-tab').forEach(btn => {
                 btn.classList.remove('active');
             });
-            document.querySelector(`#defaultDaysTabs button:nth-child(${['segunda', 'terca', 'quarta', 'quinta', 'sexta'].indexOf(day) + 1})`).classList.add('active');
+            const dayIndex = ['segunda', 'terca', 'quarta', 'quinta', 'sexta'].indexOf(day);
+            if (dayIndex >= 0) {
+                document.querySelector(`#defaultDaysTabs button:nth-child(${dayIndex + 1})`).classList.add('active');
+            }
             
             document.getElementById('defaultCurrentDayTitle').textContent = 'Treino Padrão - ' + day.charAt(0).toUpperCase() + day.slice(1);
             
             loadDefaultTraining();
         }
 
-        function loadDefaultTraining() {
-            const defaultTrainings = getDefaultTrainings();
-            const dayTraining = defaultTrainings[currentDay];
-            
-            if (!dayTraining) {
-                // Se não houver treino padrão, inicializa um vazio
-                initializeDefaultTrainings();
-                loadDefaultTraining(); // Tenta carregar novamente
-                return;
-            }
+        async function loadDefaultTraining() {
+            try {
+                currentDefaultTraining = await getDefaultTraining();
+                const dayTraining = currentDefaultTraining[currentDay];
+                
+                if (!dayTraining) {
+                    // Inicializar treino padrão vazio
+                    currentDefaultTraining[currentDay] = {
+                        focus: '',
+                        exercises: []
+                    };
+                    await saveDefaultTraining(currentDefaultTraining);
+                    await loadDefaultTraining();
+                    return;
+                }
 
-            document.getElementById('defaultFocusArea').value = dayTraining.focus || '';
-            loadDefaultExercisesToTable(dayTraining.exercises || []);
+                document.getElementById('defaultFocusArea').value = dayTraining.focus || '';
+                loadDefaultExercisesToTable(dayTraining.exercises || []);
+            } catch (error) {
+                showToast('Erro ao carregar treino padrão: ' + error.message, 'error');
+            }
         }
 
         function initializeDefaultTrainings() {
@@ -2007,14 +2297,20 @@
                 }
             };
             
-            saveDefaultTrainings(defaultTrainings);
+            return defaultTrainings;
         }
 
-        function loadPredefinedTraining() {
+        async function loadPredefinedTraining() {
             if (confirm('Carregar treino pré-definido? Isso substituirá o treino atual deste dia.')) {
-                initializeDefaultTrainings();
-                loadDefaultTraining();
-                showToast('Treino pré-definido carregado com sucesso!', 'success');
+                try {
+                    const defaultTraining = initializeDefaultTrainings();
+                    currentDefaultTraining = defaultTraining;
+                    await saveDefaultTraining(defaultTraining);
+                    await loadDefaultTraining();
+                    showToast('Treino pré-definido carregado com sucesso!', 'success');
+                } catch (error) {
+                    showToast('Erro ao carregar treino pré-definido: ' + error.message, 'error');
+                }
             }
         }
 
@@ -2106,41 +2402,38 @@
             return exercises;
         }
 
-        function saveDefaultTraining() {
-            const defaultTrainings = getDefaultTrainings();
-            
-            if (!defaultTrainings[currentDay]) {
-                defaultTrainings[currentDay] = {};
+        async function saveDefaultTraining() {
+            try {
+                if (!currentDefaultTraining) {
+                    currentDefaultTraining = {};
+                }
+                
+                currentDefaultTraining[currentDay] = {
+                    focus: document.getElementById('defaultFocusArea').value.trim(),
+                    exercises: getDefaultExercisesFromTable()
+                };
+                
+                await saveDefaultTraining(currentDefaultTraining);
+                showToast(`Treino padrão de ${currentDay} salvo com sucesso!`, 'success');
+            } catch (error) {
+                showToast('Erro ao salvar treino padrão: ' + error.message, 'error');
             }
-            
-            const dayTraining = defaultTrainings[currentDay];
-            
-            dayTraining.focus = document.getElementById('defaultFocusArea').value.trim();
-            dayTraining.exercises = getDefaultExercisesFromTable();
-            
-            saveDefaultTrainings(defaultTrainings);
-            showToast(`Treino padrão de ${currentDay} salvo com sucesso!`, 'success');
         }
 
-        function applyDefaultTrainingToAll() {
+        async function applyDefaultTrainingToAll() {
             if (confirm('Aplicar treino padrão atual a TODOS os alunos? Isso substituirá os treinos existentes.')) {
-                const defaultTrainings = getDefaultTrainings();
-                const students = getStudents();
-                const trainings = getTrainings();
-                
-                students.forEach(student => {
-                    if (!trainings[student.id]) {
-                        trainings[student.id] = {};
+                try {
+                    const defaultTraining = await getDefaultTraining();
+                    const students = await getStudents();
+                    
+                    for (const student of students) {
+                        await saveTraining(student.id, defaultTraining);
                     }
                     
-                    // Aplica o treino padrão para todos os dias
-                    Object.keys(defaultTrainings).forEach(day => {
-                        trainings[student.id][day] = JSON.parse(JSON.stringify(defaultTrainings[day]));
-                    });
-                });
-                
-                saveTrainings(trainings);
-                showToast(`Treino padrão aplicado a ${students.length} aluno(s) com sucesso!`, 'success');
+                    showToast(`Treino padrão aplicado a ${students.length} aluno(s) com sucesso!`, 'success');
+                } catch (error) {
+                    showToast('Erro ao aplicar treino padrão: ' + error.message, 'error');
+                }
             }
         }
 
@@ -2148,140 +2441,163 @@
         // MONITORAMENTO DE PROGRESSO
         // ========================================
 
-        function loadStudentProgress(studentId) {
-            loadProgressOverview(studentId);
+        async function loadStudentProgress(studentId) {
+            await loadProgressOverview(studentId);
         }
 
-        function loadProgressOverview(selectedStudentId = null) {
-            const students = getStudents();
-            const trainings = getTrainings();
-            const progress = getProgress();
-            const progressGrid = document.getElementById('progressGrid');
-            progressGrid.innerHTML = '';
+        async function loadProgressOverview(selectedStudentId = null) {
+            try {
+                const students = await getStudents();
+                const progressGrid = document.getElementById('progressGrid');
+                progressGrid.innerHTML = '';
 
-            if (students.length === 0) {
-                progressGrid.innerHTML = '<p style="text-align: center; grid-column: 1 / -1; color: var(--gray-text);">Nenhum aluno cadastrado.</p>';
-                return;
-            }
+                if (students.length === 0) {
+                    progressGrid.innerHTML = '<p style="text-align: center; grid-column: 1 / -1; color: var(--gray-text);">Nenhum aluno cadastrado.</p>';
+                    return;
+                }
 
-            const studentsToShow = selectedStudentId 
-                ? students.filter(s => s.id === selectedStudentId)
-                : students;
+                const studentsToShow = selectedStudentId 
+                    ? students.filter(s => s.id === selectedStudentId)
+                    : students;
 
-            if (studentsToShow.length === 0) {
-                progressGrid.innerHTML = '<p style="text-align: center; grid-column: 1 / -1; color: var(--gray-text);">Nenhum aluno selecionado.</p>';
-                return;
-            }
+                if (studentsToShow.length === 0) {
+                    progressGrid.innerHTML = '<p style="text-align: center; grid-column: 1 / -1; color: var(--gray-text);">Nenhum aluno selecionado.</p>';
+                    return;
+                }
 
-            studentsToShow.forEach(student => {
-                const studentTrainings = trainings[student.id] || {};
-                const studentProgress = progress[student.id] || {};
-                
-                let totalExercises = 0;
-                let completedExercises = 0;
-                let progressByDay = {};
-
-                // Calcular estatísticas
-                Object.keys(studentTrainings).forEach(day => {
-                    const dayTraining = studentTrainings[day];
-                    const dayProgress = studentProgress[day] || [];
+                for (const student of studentsToShow) {
+                    const studentTrainings = await getTraining(student.id);
+                    const studentProgress = await getProgress(student.id);
                     
-                    if (dayTraining && dayTraining.exercises) {
-                        totalExercises += dayTraining.exercises.length;
-                        completedExercises += dayProgress.length;
+                    let totalExercises = 0;
+                    let completedExercises = 0;
+                    let progressByDay = {};
+
+                    // Calcular estatísticas
+                    Object.keys(studentTrainings).forEach(day => {
+                        const dayTraining = studentTrainings[day];
+                        const dayProgress = studentProgress[day] || [];
                         
-                        progressByDay[day] = {
-                            total: dayTraining.exercises.length,
-                            completed: dayProgress.length,
-                            exercises: dayTraining.exercises.map((exercise, index) => ({
-                                name: exercise.name,
-                                completed: dayProgress.includes(index),
-                                series: exercise.series,
-                                reps: exercise.reps
-                            }))
-                        };
-                    }
-                });
+                        if (dayTraining && dayTraining.exercises) {
+                            totalExercises += dayTraining.exercises.length;
+                            completedExercises += dayProgress.length;
+                            
+                            progressByDay[day] = {
+                                total: dayTraining.exercises.length,
+                                completed: dayProgress.length,
+                                exercises: dayTraining.exercises.map((exercise, index) => ({
+                                    name: exercise.name,
+                                    completed: dayProgress.includes(index),
+                                    series: exercise.series,
+                                    reps: exercise.reps
+                                }))
+                            };
+                        }
+                    });
 
-                const completionRate = totalExercises > 0 ? Math.round((completedExercises / totalExercises) * 100) : 0;
+                    const completionRate = totalExercises > 0 ? Math.round((completedExercises / totalExercises) * 100) : 0;
 
-                const progressCard = document.createElement('div');
-                progressCard.className = 'progress-card';
-                progressCard.innerHTML = `
-                    <h4>${student.name}</h4>
-                    <div class="progress-stats">
-                        <div class="stat-item">
-                            <div class="stat-value">${completionRate}%</div>
-                            <div class="stat-label">Concluído</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value">${completedExercises}</div>
-                            <div class="stat-label">de ${totalExercises}</div>
-                        </div>
-                    </div>
-                    <div class="progress-details">
-                        ${Object.keys(progressByDay).map(day => `
-                            <div style="margin-bottom: 1rem;">
-                                <strong>${day.charAt(0).toUpperCase() + day.slice(1)}</strong>
-                                <div style="font-size: 0.8rem; margin-top: 0.5rem;">
-                                    ${progressByDay[day].exercises.map(exercise => `
-                                        <div class="progress-item">
-                                            <span class="${exercise.completed ? 'completed-exercise' : 'pending-exercise'}">
-                                                ${exercise.completed ? '✅' : '⭕'} ${exercise.name}
-                                            </span>
-                                            <span>${exercise.series}x${exercise.reps}</span>
-                                        </div>
-                                    `).join('')}
-                                </div>
+                    const progressCard = document.createElement('div');
+                    progressCard.className = 'progress-card';
+                    progressCard.innerHTML = `
+                        <h4>${student.nome}</h4>
+                        <div class="progress-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">${completionRate}%</div>
+                                <div class="stat-label">Concluído</div>
                             </div>
-                        `).join('')}
-                    </div>
-                `;
-                progressGrid.appendChild(progressCard);
-            });
+                            <div class="stat-item">
+                                <div class="stat-value">${completedExercises}</div>
+                                <div class="stat-label">de ${totalExercises}</div>
+                            </div>
+                        </div>
+                        <div class="progress-details">
+                            ${Object.keys(progressByDay).map(day => `
+                                <div style="margin-bottom: 1rem;">
+                                    <strong>${day.charAt(0).toUpperCase() + day.slice(1)}</strong>
+                                    <div style="font-size: 0.8rem; margin-top: 0.5rem;">
+                                        ${progressByDay[day].exercises.map(exercise => `
+                                            <div class="progress-item">
+                                                <span class="${exercise.completed ? 'completed-exercise' : 'pending-exercise'}">
+                                                    ${exercise.completed ? '✅' : '⭕'} ${exercise.name}
+                                                </span>
+                                                <span>${exercise.series}x${exercise.reps}</span>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                    progressGrid.appendChild(progressCard);
+                }
+            } catch (error) {
+                showToast('Erro ao carregar progresso: ' + error.message, 'error');
+            }
         }
 
         // ========================================
         // GERENCIAMENTO DE DADOS
         // ========================================
 
-        function exportData() {
-            const data = {
-                adminCredentials: JSON.parse(localStorage.getItem(ADMIN_CREDENTIALS_KEY) || '{}'),
-                students: getStudents(),
-                trainings: getTrainings(),
-                progress: getProgress(),
-                defaultTrainings: getDefaultTrainings()
-            };
-            
-            const dataStr = JSON.stringify(data, null, 2);
-            const blob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'italo_ruan_data_backup.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            showToast('Dados exportados com sucesso!', 'success');
+        async function exportData() {
+            try {
+                const [students, defaultTraining, allProgress] = await Promise.all([
+                    getStudents(),
+                    getDefaultTraining(),
+                    getProgress()
+                ]);
+
+                // Buscar todos os treinos
+                const allTrainings = {};
+                for (const student of students) {
+                    const training = await getTraining(student.id);
+                    allTrainings[student.id] = training;
+                }
+
+                const data = {
+                    students: students,
+                    trainings: allTrainings,
+                    progress: allProgress,
+                    defaultTraining: defaultTraining,
+                    exportDate: new Date().toISOString()
+                };
+                
+                const dataStr = JSON.stringify(data, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `italo_ruan_backup_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showToast('Dados exportados com sucesso!', 'success');
+            } catch (error) {
+                showToast('Erro ao exportar dados: ' + error.message, 'error');
+            }
         }
 
-        function clearAllData() {
+        async function clearAllData() {
             if (confirm('ATENÇÃO: Você tem certeza que deseja limpar TODOS os dados (alunos, treinos, progresso)? Esta ação é irreversível.')) {
-                localStorage.removeItem(STUDENTS_STORAGE_KEY);
-                localStorage.removeItem(TRAININGS_STORAGE_KEY);
-                localStorage.removeItem(PROGRESS_STORAGE_KEY);
-                localStorage.removeItem(DEFAULT_TRAININGS_KEY);
-                localStorage.removeItem(BACKUP_KEY);
-                
-                loadStudents();
-                loadStudentsForTrainingEdit();
-                loadStudentsForProgress();
-                switchTab('dashboard');
-                showToast('Todos os dados foram limpos com sucesso!', 'success');
+                try {
+                    // Deletar todos os dados
+                    await supabase.from('progresso').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+                    await supabase.from('treinos').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+                    await supabase.from('alunos').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+                    await supabase.from('treinos_padroes').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+                    
+                    await loadStudents();
+                    await loadStudentsForTrainingEdit();
+                    await loadStudentsForProgress();
+                    switchTab('dashboard');
+                    showToast('Todos os dados foram limpos com sucesso!', 'success');
+                } catch (error) {
+                    showToast('Erro ao limpar dados: ' + error.message, 'error');
+                }
             }
         }
 
@@ -2309,9 +2625,6 @@
                 toast.remove();
             }, 5000);
         }
-
-
-
 
         
     </script>
