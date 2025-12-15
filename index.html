@@ -6,18 +6,35 @@
     <title>Italo Ruan - Sistema de Treinos</title>
     <meta name="description" content="Sistema de gerenciamento de treinos - Italo Ruan Personal Trainer">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #1e40af;
-            --secondary-color: #059669;
+            --primary-color: #4169e1;
+            --secondary-color: #5a82ff;
+            --accent-color: #fdfbd4;
             --danger-color: #dc2626;
-            --light-bg: #f8fafc;
-            --dark-text: #0f172a;
-            --gray-text: #475569;
+            --success-color: #059669;
+            --warning-color: #f59e0b;
+            --light-bg: #ffffff;
+            --dark-bg: #0f172a;
+            --dark-text: #1a202c;
+            --gray-text: #4a5568;
             --border-color: #e2e8f0;
             --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            --shadow-hover: 0 12px 24px rgba(30, 64, 175, 0.15);
+            --shadow-hover: 0 12px 24px rgba(65, 105, 225, 0.15);
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --gradient-primary: linear-gradient(135deg, #4169e1, #5a82ff);
+            --gradient-accent: linear-gradient(135deg, #fdfbd4, #fff9c9);
+            --gradient-dark: linear-gradient(135deg, #0f172a, #1e293b);
+            --border-radius: 12px;
+            --border-radius-lg: 20px;
+        }
+
+        [data-theme="dark"] {
+            --light-bg: var(--dark-bg);
+            --dark-text: #ffffff;
+            --border-color: #334155;
+            --accent-color: #2d3748;
         }
 
         * {
@@ -28,70 +45,212 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background: var(--gradient-accent);
             color: var(--dark-text);
             line-height: 1.6;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
+            transition: var(--transition);
         }
 
         .container {
             max-width: 1200px;
             width: 100%;
             margin: 0 auto;
+            padding: 2rem;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 3rem;
-            color: white;
+        /* Header */
+        .main-header {
+            background: var(--light-bg);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
         }
 
-        .header h1 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        [data-theme="dark"] .main-header {
+            background: rgba(15, 23, 42, 0.95);
         }
 
-        .header p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            max-width: 600px;
+        .nav-container {
+            max-width: 1200px;
             margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .card {
-            background: white;
-            border-radius: 16px;
-            padding: 2.5rem;
-            box-shadow: var(--shadow-hover);
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+        }
+
+        .brand-logo {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(65, 105, 225, 0.3);
+        }
+
+        .brand-text h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            line-height: 1.2;
+        }
+
+        .brand-text p {
+            font-size: 0.85rem;
+            color: var(--gray-text);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            padding: 10rem 0 4rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--gradient-primary);
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        .hero-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 800;
             margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--gray-text);
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            line-height: 1.8;
+        }
+
+        /* Cards */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
+        }
+
+        .feature-card {
+            background: var(--light-bg);
+            border-radius: var(--border-radius-lg);
+            padding: 2.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
             text-align: center;
         }
 
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--primary-color);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-primary);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: white;
+            font-size: 2rem;
+            box-shadow: 0 8px 20px rgba(65, 105, 225, 0.3);
+        }
+
+        .feature-card h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--dark-text);
+        }
+
+        .feature-card p {
+            color: var(--gray-text);
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+        }
+
+        /* Buttons */
         .btn {
             display: inline-flex;
             align-items: center;
             gap: 0.75rem;
             padding: 1rem 2rem;
-            border-radius: 12px;
+            border-radius: var(--border-radius);
             border: none;
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
             text-decoration: none;
-            font-size: 1.1rem;
-            margin: 0.5rem;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            z-index: -1;
+            opacity: 0;
+            transition: var(--transition);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color), #1e3a8a);
+            background: var(--gradient-primary);
             color: white;
-            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+            box-shadow: 0 4px 12px rgba(65, 105, 225, 0.3);
         }
 
         .btn-primary:hover {
@@ -99,40 +258,90 @@
             box-shadow: var(--shadow-hover);
         }
 
+        .btn-primary:hover::before {
+            opacity: 1;
+        }
+
         .btn-secondary {
-            background: linear-gradient(135deg, var(--secondary-color), #047857);
-            color: white;
-            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
         }
 
         .btn-secondary:hover {
+            background: var(--primary-color);
+            color: white;
             transform: translateY(-3px);
-            box-shadow: 0 12px 24px rgba(5, 150, 105, 0.2);
         }
 
         .btn-large {
             padding: 1.25rem 2.5rem;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
 
-        .sync-section {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 12px;
-            padding: 2rem;
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
             margin-top: 2rem;
+        }
+
+        /* Sync Section */
+        .sync-section {
+            background: var(--light-bg);
+            border-radius: var(--border-radius-lg);
+            padding: 3rem;
+            margin: 4rem 0;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .section-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
             text-align: center;
+            color: var(--dark-text);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--gray-text);
+            margin-bottom: 2rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+        }
+
+        .sync-code-container {
+            background: var(--accent-color);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .sync-code-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray-text);
+            margin-bottom: 0.5rem;
+            display: block;
         }
 
         .sync-code {
-            background: #f8fafc;
-            border: 2px dashed var(--border-color);
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-            font-family: monospace;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 1rem;
             word-break: break-all;
-            max-height: 150px;
-            overflow-y: auto;
+            color: var(--dark-text);
+            line-height: 1.5;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
         }
 
         .sync-actions {
@@ -140,81 +349,212 @@
             gap: 1rem;
             justify-content: center;
             flex-wrap: wrap;
-            margin-top: 1.5rem;
+            margin-top: 2rem;
         }
 
-        .footer {
+        /* Footer */
+        .main-footer {
+            background: var(--light-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
             text-align: center;
-            margin-top: 3rem;
-            padding-top: 2rem;
-            color: white;
-            opacity: 0.8;
-            width: 100%;
         }
 
-        .logo {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            display: inline-block;
-            background: white;
-            color: var(--primary-color);
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
+        .footer-logo {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-primary);
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: white;
+            font-size: 1.5rem;
             margin: 0 auto 1.5rem;
-            box-shadow: var(--shadow);
+            box-shadow: 0 4px 12px rgba(65, 105, 225, 0.3);
         }
 
+        .footer-text {
+            color: var(--gray-text);
+            font-size: 0.9rem;
+        }
+
+        /* Status Messages */
+        .status-message {
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin: 1rem 0;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+
+        .status-success {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(5, 150, 105, 0.3);
+        }
+
+        .status-error {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+
+        /* Loading State */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--border-color);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
             .container {
                 padding: 1rem;
             }
-            
-            .header h1 {
-                font-size: 2.2rem;
+
+            .nav-container {
+                padding: 0 1rem;
             }
-            
-            .card {
-                padding: 1.5rem;
+
+            .hero-section {
+                padding: 8rem 0 2rem;
             }
-            
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1rem;
+                padding: 0 1rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                margin: 2rem 0;
+            }
+
+            .feature-card {
+                padding: 2rem;
+            }
+
+            .sync-section {
+                padding: 2rem;
+                margin: 2rem 0;
+            }
+
+            .section-title {
+                font-size: 1.75rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+                align-items: center;
+            }
+
             .btn {
-                padding: 0.9rem 1.8rem;
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-subtitle {
                 font-size: 1rem;
             }
-            
-            .btn-large {
-                padding: 1rem 2rem;
-                font-size: 1.1rem;
+
+            .brand-text h1 {
+                font-size: 1.2rem;
             }
-            
-            .sync-actions {
-                flex-direction: column;
+
+            .feature-card {
+                padding: 1.5rem;
             }
+
+            .sync-section {
+                padding: 1.5rem;
+            }
+
+            .sync-code {
+                font-size: 0.9rem;
+                padding: 0.75rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-out;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">
-                <i class="fas fa-dumbbell"></i>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="nav-container">
+            <a href="#" class="brand">
+                <div class="brand-logo">
+                    <i class="fas fa-dumbbell"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>ITALO RUAN</h1>
+                    <p>Personal Trainer</p>
+                </div>
+            </a>
+            <div class="nav-actions">
+                <button class="btn btn-secondary" onclick="window.open('login.html', '_blank')">
+                    <i class="fas fa-sign-in-alt"></i> Entrar
+                </button>
             </div>
-            <h1>Italo Ruan</h1>
-            <p>Personal Trainer - Sistema Sincronizado de Treinos</p>
         </div>
+    </header>
 
-        <div class="card">
-            <h2 style="margin-bottom: 1.5rem;">Sistema de Sincronização</h2>
-            <p style="margin-bottom: 2rem; font-size: 1.1rem;">
-                Agora seus dados ficam sincronizados entre todos os dispositivos! 
-                Use o código abaixo para compartilhar alunos e treinos.
+    <!-- Hero Section -->
+    <main class="container">
+        <section class="hero-section animate-fade-in">
+            <div class="hero-background"></div>
+            <h1 class="hero-title">
+                Transforme seus treinos<br>
+                com acompanhamento especializado
+            </h1>
+            <p class="hero-subtitle">
+                Sistema completo de gerenciamento de treinos sincronizado entre aluno e professor. 
+                Acompanhe seu progresso, receba treinos personalizados e evolua de forma inteligente.
             </p>
             
-            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem;">
+            <div class="btn-group">
                 <a href="login.html" class="btn btn-primary btn-large">
                     <i class="fas fa-user"></i> Área do Aluno
                 </a>
@@ -222,21 +562,53 @@
                     <i class="fas fa-dumbbell"></i> Painel do Professor
                 </a>
             </div>
-        </div>
+        </section>
 
-        <div class="sync-section">
-            <h3 style="margin-bottom: 1rem; color: var(--primary-color);">
-                <i class="fas fa-sync-alt"></i> Sincronização de Dados
-            </h3>
-            
-            <p style="margin-bottom: 1rem;">
-                <strong>Como funciona:</strong> O Italo gera um código no computador e os alunos usam o mesmo código no celular.
-            </p>
-            
-            <div class="sync-code" id="syncCode">
-                Carregando código de sincronização...
+        <!-- Features -->
+        <section class="features-grid animate-fade-in">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-sync-alt"></i>
+                </div>
+                <h3>Sincronização Automática</h3>
+                <p>Todos os dados ficam sincronizados em tempo real entre aluno e professor. Treinos atualizados instantaneamente em todos os dispositivos.</p>
             </div>
-            
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Progresso Detalhado</h3>
+                <p>Acompanhe seu desenvolvimento com métricas precisas, histórico de treinos e evolução semana a semana.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-video"></i>
+                </div>
+                <h3>Vídeos Demonstrativos</h3>
+                <p>Cada exercício acompanha link para vídeo demonstrativo. Execute os movimentos com técnica perfeita.</p>
+            </div>
+        </section>
+
+        <!-- Sync Section -->
+        <section class="sync-section animate-fade-in">
+            <h2 class="section-title">
+                <i class="fas fa-sync-alt"></i> Sincronização Simples
+            </h2>
+            <p class="section-subtitle">
+                Compartilhe dados entre dispositivos de forma rápida e segura. O professor gera um código e os alunos usam o mesmo código para sincronizar.
+            </p>
+
+            <div class="sync-code-container">
+                <span class="sync-code-label">CÓDIGO DE SINCRONIZAÇÃO</span>
+                <div class="sync-code" id="syncCode">
+                    Carregando código de sincronização...
+                </div>
+            </div>
+
+            <div id="syncStatus" class="status-message"></div>
+
             <div class="sync-actions">
                 <button class="btn btn-primary" onclick="generateSyncCode()">
                     <i class="fas fa-redo"></i> Gerar Novo Código
@@ -244,18 +616,23 @@
                 <button class="btn btn-secondary" onclick="applySyncCode()">
                     <i class="fas fa-download"></i> Usar Código
                 </button>
-                <button class="btn" style="background: #f59e0b; color: white;" onclick="showInstructions()">
+                <button class="btn" style="background: var(--warning-color); color: white;" onclick="showInstructions()">
                     <i class="fas fa-question-circle"></i> Como Usar
                 </button>
             </div>
-            
-            <div id="syncStatus" style="margin-top: 1rem; padding: 0.5rem; border-radius: 6px;"></div>
-        </div>
+        </section>
+    </main>
 
-        <div class="footer">
-            <p>© 2024 Italo Ruan Personal Trainer. Sistema sincronizado automaticamente.</p>
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <i class="fas fa-dumbbell"></i>
+            </div>
+            <p class="footer-text">© 2024 Italo Ruan Personal Trainer. Todos os direitos reservados.</p>
+            <p class="footer-text">Sistema desenvolvido para acompanhamento personalizado de treinos.</p>
         </div>
-    </div>
+    </footer>
 
     <script>
         // ========================================
@@ -265,63 +642,16 @@
         const SYSTEM_DATA_KEY = 'italoRuanSystemData';
         const SYNC_CODE_KEY = 'italoSyncCode';
         
-        // Inicializar dados do sistema
-        function initializeSystemData() {
-            if (!localStorage.getItem(SYSTEM_DATA_KEY)) {
-                const initialData = {
-                    students: [],
-                    trainings: {},
-                    progress: {},
-                    defaultTrainings: {},
-                    adminCredentials: {
-                        user: 'italo',
-                        password: 'italoruan123'
-                    },
-                    lastSync: new Date().toISOString()
-                };
-                
-                localStorage.setItem(SYSTEM_DATA_KEY, JSON.stringify(initialData));
-                console.log('Sistema inicializado com dados padrão');
-            }
+        // Mostrar status
+        function showStatus(message, type = 'success') {
+            const statusEl = document.getElementById('syncStatus');
+            statusEl.textContent = message;
+            statusEl.className = `status-message status-${type}`;
+            statusEl.style.display = 'block';
             
-            // Verificar se há código de sincronização na URL
-            checkUrlForSyncCode();
-            
-            // Gerar/atualizar código de sincronização
-            updateSyncCode();
-        }
-        
-        // Verificar se há código de sincronização na URL
-        function checkUrlForSyncCode() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const syncCode = urlParams.get('sync');
-            
-            if (syncCode) {
-                applySyncCodeFromUrl(syncCode);
-            }
-        }
-        
-        // Aplicar código de sincronização da URL
-        function applySyncCodeFromUrl(syncCode) {
-            try {
-                const decodedData = decodeSyncCode(syncCode);
-                if (decodedData) {
-                    localStorage.setItem(SYSTEM_DATA_KEY, JSON.stringify(decodedData));
-                    localStorage.setItem(SYNC_CODE_KEY, syncCode);
-                    
-                    showStatus('✅ Dados sincronizados com sucesso via URL!', 'success');
-                    
-                    // Remover parâmetro da URL sem recarregar a página
-                    const newUrl = window.location.pathname;
-                    window.history.replaceState({}, document.title, newUrl);
-                    
-                    // Atualizar código exibido
-                    updateSyncCode();
-                }
-            } catch (error) {
-                showStatus('❌ Erro ao sincronizar dados da URL', 'error');
-                console.error('Erro ao aplicar sync code da URL:', error);
-            }
+            setTimeout(() => {
+                statusEl.style.display = 'none';
+            }, 5000);
         }
         
         // Gerar código de sincronização
@@ -336,6 +666,9 @@
             updateUrlWithSyncCode(syncCode);
             
             showStatus('✅ Novo código gerado! Compartilhe este código com seus alunos.', 'success');
+            
+            // Copiar para área de transferência
+            copyToClipboard(syncCode);
         }
         
         // Atualizar URL com código de sincronização
@@ -360,12 +693,50 @@
         
         // Atualizar exibição do código
         function updateSyncCodeDisplay(syncCode) {
-            document.getElementById('syncCode').textContent = syncCode;
+            const syncCodeEl = document.getElementById('syncCode');
+            
+            // Formatando o código para melhor visualização
+            const formattedCode = syncCode.match(/.{1,4}/g).join(' ');
+            syncCodeEl.innerHTML = `
+                <div style="text-align: center; font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem;">
+                    ${formattedCode}
+                </div>
+                <div style="font-size: 0.85rem; color: var(--gray-text); text-align: center;">
+                    Código válido para sincronização
+                </div>
+            `;
+            
+            // Adicionar botão de cópia
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'btn';
+            copyBtn.style.cssText = `
+                margin-top: 1rem;
+                background: var(--primary-color);
+                color: white;
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            `;
+            copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copiar Código';
+            copyBtn.onclick = () => copyToClipboard(syncCode);
+            
+            if (!syncCodeEl.querySelector('button')) {
+                syncCodeEl.appendChild(copyBtn);
+            }
+        }
+        
+        // Copiar para área de transferência
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showStatus('✅ Código copiado para a área de transferência!', 'success');
+            }).catch(err => {
+                showStatus('❌ Erro ao copiar código', 'error');
+                console.error('Erro ao copiar:', err);
+            });
         }
         
         // Aplicar código de sincronização (manual)
         function applySyncCode() {
-            const syncCode = prompt('Cole o código de sincronização:');
+            const syncCode = prompt('Cole o código de sincronização fornecido pelo professor:');
             
             if (syncCode) {
                 try {
@@ -376,6 +747,11 @@
                         
                         showStatus('✅ Dados sincronizados com sucesso!', 'success');
                         updateSyncCode();
+                        
+                        // Atualizar a página após 2 segundos
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
                     }
                 } catch (error) {
                     showStatus('❌ Código inválido! Verifique e tente novamente.', 'error');
@@ -401,53 +777,179 @@
             }
         }
         
-        // Mostrar status
-        function showStatus(message, type) {
-            const statusEl = document.getElementById('syncStatus');
-            statusEl.textContent = message;
-            statusEl.style.background = type === 'success' ? '#d1fae5' : '#fee2e2';
-            statusEl.style.color = type === 'success' ? '#059669' : '#dc2626';
-            statusEl.style.border = type === 'success' ? '1px solid #10b981' : '1px solid #ef4444';
-            
-            setTimeout(() => {
-                statusEl.textContent = '';
-                statusEl.style.background = 'transparent';
-                statusEl.style.border = 'none';
-            }, 5000);
-        }
-        
         // Mostrar instruções
         function showInstructions() {
-            alert(`COMO USAR A SINCRONIZAÇÃO:
-
-1. ITALO (Professor):
-   - Cadastre os alunos no computador
-   - Clique em "Gerar Novo Código"
-   - Compartilhe o código com os alunos
-
-2. ALUNOS:
-   - Acessem o link deles
-   - Cliquem em "Usar Código"
-   - Colem o código que o Italo enviou
-   - Pronto! Seus nomes aparecerão no login
-
-O código sincroniza automaticamente todos os dados entre dispositivos!`);
+            const instructions = `
+                <div style="text-align: left; max-width: 500px; margin: 0 auto;">
+                    <h3 style="color: var(--primary-color); margin-bottom: 1rem;">📋 COMO USAR A SINCRONIZAÇÃO</h3>
+                    
+                    <div style="background: var(--accent-color); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">🎯 ITALO (Professor):</h4>
+                        <ol style="margin-left: 1.5rem;">
+                            <li>Cadastre os alunos no computador</li>
+                            <li>Clique em "Gerar Novo Código"</li>
+                            <li>Compartilhe o código com os alunos</li>
+                        </ol>
+                    </div>
+                    
+                    <div style="background: var(--accent-color); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">👤 ALUNOS:</h4>
+                        <ol style="margin-left: 1.5rem;">
+                            <li>Acessem o sistema pelo celular</li>
+                            <li>Cliquem em "Usar Código"</li>
+                            <li>Colem o código que o Italo enviou</li>
+                            <li>Pronto! Seus nomes aparecerão no login</li>
+                        </ol>
+                    </div>
+                    
+                    <p style="color: var(--success-color); font-weight: 600; text-align: center; margin-top: 1rem;">
+                        O código sincroniza automaticamente todos os dados entre dispositivos!
+                    </p>
+                </div>
+            `;
+            
+            // Criar modal
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 2000;
+                padding: 1rem;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: var(--light-bg);
+                    border-radius: var(--border-radius-lg);
+                    padding: 2rem;
+                    max-width: 600px;
+                    width: 100%;
+                    max-height: 90vh;
+                    overflow-y: auto;
+                    box-shadow: var(--shadow-hover);
+                    border: 1px solid var(--border-color);
+                    animation: fadeIn 0.3s ease;
+                ">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h2 style="font-family: 'Poppins', sans-serif; color: var(--dark-text);">Instruções de Sincronização</h2>
+                        <button onclick="this.closest('div[style]').remove()" style="
+                            background: none;
+                            border: none;
+                            font-size: 1.5rem;
+                            cursor: pointer;
+                            color: var(--gray-text);
+                        ">&times;</button>
+                    </div>
+                    ${instructions}
+                    <div style="text-align: center; margin-top: 2rem;">
+                        <button onclick="this.closest('div[style]').remove()" style="
+                            padding: 0.75rem 2rem;
+                            background: var(--primary-color);
+                            color: white;
+                            border: none;
+                            border-radius: var(--border-radius);
+                            cursor: pointer;
+                            font-weight: 600;
+                        ">
+                            Entendi
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Fechar ao clicar fora
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
         }
         
         // Obter dados do sistema
         function getSystemData() {
-            return JSON.parse(localStorage.getItem(SYSTEM_DATA_KEY) || '{}');
+            const defaultData = {
+                students: [],
+                trainings: {},
+                progress: {},
+                defaultTrainings: {},
+                adminCredentials: {
+                    user: 'italo',
+                    password: 'italoruan123'
+                },
+                lastSync: new Date().toISOString(),
+                systemVersion: '2.0'
+            };
+            
+            try {
+                const stored = localStorage.getItem(SYSTEM_DATA_KEY);
+                return stored ? JSON.parse(stored) : defaultData;
+            } catch {
+                return defaultData;
+            }
         }
         
-        // Inicializar ao carregar a página
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeSystemData();
+        // Verificar código na URL
+        function checkUrlForSyncCode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const syncCode = urlParams.get('sync');
             
-            // Verificar se há dados para restaurar
+            if (syncCode) {
+                applySyncCodeFromUrl(syncCode);
+            }
+        }
+        
+        // Aplicar código da URL
+        function applySyncCodeFromUrl(syncCode) {
+            try {
+                const decodedData = decodeSyncCode(syncCode);
+                if (decodedData) {
+                    localStorage.setItem(SYSTEM_DATA_KEY, JSON.stringify(decodedData));
+                    localStorage.setItem(SYNC_CODE_KEY, syncCode);
+                    
+                    showStatus('✅ Dados sincronizados automaticamente!', 'success');
+                    
+                    // Limpar URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    
+                    updateSyncCode();
+                }
+            } catch (error) {
+                console.error('Erro ao aplicar sync code da URL:', error);
+            }
+        }
+        
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            checkUrlForSyncCode();
+            updateSyncCode();
+            
+            // Verificar se há dados
             const systemData = getSystemData();
             if (systemData.students && systemData.students.length > 0) {
                 console.log(`Sistema carregado com ${systemData.students.length} aluno(s)`);
             }
+            
+            // Animar elementos
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-fade-in');
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            document.querySelectorAll('.feature-card, .sync-section').forEach(el => {
+                observer.observe(el);
+            });
         });
     </script>
 </body>
