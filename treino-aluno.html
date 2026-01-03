@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Meu Treino - Italo Ruan Personal Trainer">
-    <title>Meu Treino</title>
+    <meta name="description" content="Meu Treino - Acessoria Atlântida">
+    <title>Meu Treino - Acessoria Atlântida</title>
+    <link rel="icon" type="image/png" href="img/acessoriaab.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -16,6 +17,7 @@
             --accent-color: #fdfbd4;
             --danger-color: #dc2626;
             --success-color: #059669;
+            --whatsapp-green: #25D366;
             --light-bg: #ffffff;
             --dark-text: #1a202c;
             --gray-text: #4a5568;
@@ -29,10 +31,29 @@
             --border-radius-lg: 15px;
         }
 
+        /* Dark Theme Variables */
+        [data-theme="dark"] {
+            --primary-color: #5a82ff;
+            --secondary-color: #7b9fff;
+            --accent-color: #2d3748;
+            --light-bg: #1a202c;
+            --dark-text: #f7fafc;
+            --gray-text: #cbd5e0;
+            --border-color: #4a5568;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 12px 24px rgba(65, 105, 225, 0.25);
+            --gradient-primary: linear-gradient(135deg, #5a82ff, #7b9fff);
+            --gradient-accent: linear-gradient(135deg, #2d3748, #4a5568);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
@@ -40,66 +61,121 @@
             background-color: var(--light-bg);
             color: var(--dark-text);
             line-height: 1.6;
-            padding-top: 80px;
+            padding-top: 60px;
             transition: var(--transition);
         }
 
-        /* Header */
+        /* ========== HEADER SUPER COMPACTO ========== */
         .student-header {
             background: var(--light-bg);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             z-index: 1000;
             border-bottom: 1px solid var(--border-color);
-            backdrop-filter: blur(10px);
-            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.98);
             transition: var(--transition);
+            height: 60px;
+        }
+
+        [data-theme="dark"] .student-header {
+            background: rgba(26, 32, 44, 0.98);
         }
 
         .header-container {
             max-width: 100%;
             margin: 0 auto;
-            padding: 1rem 2rem;
+            padding: 0 1rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            height: 100%;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+
+        /* LOGO COM ZOOM AUMENTADO */
+        .logo-img-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            width: 55px; /* AUMENTADO */
+            height: 55px; /* AUMENTADO */
+            position: relative;
+            border-radius: 50%;
+            background: var(--light-bg);
+            border: 3px solid var(--primary-color); /* BORDA MAIS ESPESSA */
+            padding: 3px;
+            flex-shrink: 0;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-img {
+            width: auto;
+            height: 100%;
+            object-fit: contain;
+            transform: scale(2.2); /* ZOOM MUITO MAIOR */
+            transform-origin: center;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+            transition: transform 0.3s ease, filter 0.3s ease;
+        }
+
+        /* Hover effect para a logo */
+        .logo-img-container:hover .logo-img {
+            transform: scale(2.4);
+            filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.2));
+        }
+
+        .header-info {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
         }
 
         .header-info h1 {
             font-family: 'Poppins', sans-serif;
-            font-size: 1.3rem;
+            font-size: 1rem;
             color: var(--primary-color);
-            margin-bottom: 0.25rem;
-        }
-
-        .header-info p {
-            font-size: 0.9rem;
-            color: var(--gray-text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: 600;
+            line-height: 1.2;
         }
 
         .header-actions {
             display: flex;
-            gap: 0.75rem;
+            gap: 0.5rem;
             align-items: center;
+            flex-shrink: 0;
         }
 
+        /* ========== BOTÕES DO HEADER ========== */
         .btn-header {
             background: rgba(65, 105, 225, 0.1);
             color: var(--primary-color);
             border: 1px solid rgba(65, 105, 225, 0.2);
-            padding: 0.5rem 1rem;
-            border-radius: var(--border-radius);
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             transition: var(--transition);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
             font-weight: 500;
-            text-decoration: none;
+            white-space: nowrap;
+            height: 36px;
         }
 
         .btn-header:hover {
@@ -107,41 +183,118 @@
             transform: translateY(-1px);
         }
 
-        /* Menu Hamburger para Dias (Mobile) */
+        [data-theme="dark"] .btn-header {
+            background: rgba(90, 130, 255, 0.15);
+            border-color: rgba(90, 130, 255, 0.3);
+        }
+
+        /* Botão de Tema */
+        .theme-toggle {
+            background: rgba(65, 105, 225, 0.1);
+            color: var(--primary-color);
+            border: 1px solid rgba(65, 105, 225, 0.2);
+            padding: 0.4rem;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            width: 36px;
+            height: 36px;
+            flex-shrink: 0;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(65, 105, 225, 0.2);
+        }
+
+        [data-theme="dark"] .theme-toggle {
+            background: rgba(90, 130, 255, 0.15);
+            border-color: rgba(90, 130, 255, 0.3);
+        }
+
+        /* ========== MENU HAMBURGER PARA ESCOLHER DIAS ========== */
         .menu-hamburger {
-            display: none;
+            display: flex;
             background: var(--gradient-primary);
             color: white;
             border: none;
-            border-radius: var(--border-radius);
-            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            padding: 0.4rem 0.75rem;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             font-weight: 600;
             transition: var(--transition);
             align-items: center;
-            gap: 0.5rem;
-            box-shadow: 0 4px 12px rgba(65, 105, 225, 0.3);
+            gap: 0.4rem;
+            box-shadow: 0 2px 6px rgba(65, 105, 225, 0.3);
+            white-space: nowrap;
+            flex-shrink: 0;
+            height: 36px;
+            min-width: 90px;
         }
 
         .menu-hamburger:hover {
             transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(65, 105, 225, 0.4);
+            box-shadow: 0 4px 10px rgba(65, 105, 225, 0.4);
         }
 
-        /* Days Menu Container - Mobile */
+        /* ========== WHATSAPP FLUTUANTE ========== */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            background: var(--whatsapp-green);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+            z-index: 999;
+            cursor: pointer;
+            transition: var(--transition);
+            animation: float 3s ease-in-out infinite;
+            border: 3px solid white;
+        }
+
+        [data-theme="dark"] .whatsapp-float {
+            border: 3px solid var(--dark-text);
+        }
+
+        .whatsapp-float:hover {
+            transform: scale(1.1) translateY(-5px);
+            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.6);
+            animation: none;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* ========== DAYS MENU MOBILE ========== */
         .days-menu-mobile {
             position: fixed;
-            top: 80px;
+            top: 60px;
             left: 0;
             right: 0;
             background: var(--light-bg);
             z-index: 999;
-            border-bottom: 1px solid var(--border-color);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-bottom: 2px solid var(--primary-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             transform: translateY(-100%);
             opacity: 0;
-            transition: transform 0.3s ease, opacity 0.3s ease;
+            visibility: hidden;
+            transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
             max-height: 0;
             overflow: hidden;
         }
@@ -149,30 +302,42 @@
         .days-menu-mobile.active {
             transform: translateY(0);
             opacity: 1;
-            max-height: 300px;
+            visibility: visible;
+            max-height: 280px;
         }
 
         .days-menu-content {
-            padding: 1.5rem;
+            padding: 0.75rem 1rem;
         }
 
         .days-grid-mobile {
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
             gap: 0.5rem;
         }
 
+        @media (max-width: 480px) {
+            .days-grid-mobile {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
         .day-btn-mobile {
-            padding: 1rem;
+            padding: 0.85rem 0.5rem;
             border: 2px solid var(--border-color);
             background: var(--light-bg);
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
             transition: var(--transition);
-            color: var(--gray-text);
-            font-size: 1rem;
+            color: var(--dark-text);
+            font-size: 0.9rem;
             text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            min-height: 46px;
         }
 
         .day-btn-mobile:hover {
@@ -184,66 +349,26 @@
             background: var(--gradient-primary);
             color: white;
             border-color: var(--primary-color);
-            box-shadow: 0 4px 12px rgba(65, 105, 225, 0.3);
+            box-shadow: 0 3px 8px rgba(65, 105, 225, 0.3);
         }
 
-        /* Days Navigation - Desktop */
-        .days-navigation {
-            background: var(--light-bg);
-            border-radius: var(--border-radius-lg);
-            padding: 1.5rem;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
-            margin-bottom: 1.5rem;
-        }
-
-        .days-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 0.75rem;
-        }
-
-        .day-btn {
-            padding: 0.75rem;
-            border: 2px solid var(--border-color);
-            background: var(--light-bg);
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            font-weight: 600;
-            transition: var(--transition);
-            color: var(--gray-text);
-            font-size: 0.9rem;
-            text-align: center;
-        }
-
-        .day-btn:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-
-        .day-btn.active {
-            background: var(--gradient-primary);
-            color: white;
-            border-color: var(--primary-color);
-            box-shadow: 0 4px 12px rgba(65, 105, 225, 0.3);
-        }
-
-        /* Main Container */
+        /* ========== MAIN CONTAINER ========== */
         .main-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 1rem;
             transition: var(--transition);
         }
 
-        /* Progress Section */
+        /* ========== PROGRESS SECTION ========== */
         .progress-section {
             background: var(--light-bg);
-            border-radius: var(--border-radius-lg);
-            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            padding: 1.25rem;
             box-shadow: var(--shadow);
             border: 1px solid var(--border-color);
             margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary-color);
         }
 
         .progress-header {
@@ -257,43 +382,52 @@
             font-family: 'Poppins', sans-serif;
             font-size: 1.1rem;
             color: var(--dark-text);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .progress-header h3 i {
+            color: var(--primary-color);
         }
 
         .progress-percentage {
-            font-size: 1.3rem;
+            font-size: 1.5rem;
             font-weight: 700;
             color: var(--primary-color);
         }
 
         .progress-bar {
-            height: 8px;
+            height: 10px;
             background: var(--border-color);
-            border-radius: 4px;
+            border-radius: 5px;
             overflow: hidden;
             margin: 1rem 0;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         .progress-fill {
             height: 100%;
             background: var(--gradient-primary);
-            border-radius: 4px;
-            transition: width 0.3s ease;
+            border-radius: 5px;
+            transition: width 0.5s ease;
         }
 
         .progress-text {
             text-align: center;
             font-size: 0.9rem;
             color: var(--gray-text);
+            font-weight: 500;
         }
 
-        /* Training Content */
+        /* ========== TRAINING CONTENT ========== */
         .training-content {
             background: var(--light-bg);
-            border-radius: var(--border-radius-lg);
-            padding: 2rem;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
             box-shadow: var(--shadow);
             border: 1px solid var(--border-color);
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .training-header {
@@ -307,12 +441,19 @@
             font-size: 1.5rem;
             color: var(--primary-color);
             margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .training-header h2 i {
+            font-size: 1.4rem;
         }
 
         .focus-area {
             background: linear-gradient(135deg, rgba(65, 105, 225, 0.1), rgba(91, 130, 255, 0.1));
             padding: 1rem;
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             font-weight: 600;
             color: var(--dark-text);
             font-size: 1rem;
@@ -320,50 +461,76 @@
             border-left: 4px solid var(--primary-color);
         }
 
-        /* Exercises Table */
+        [data-theme="dark"] .focus-area {
+            background: linear-gradient(135deg, rgba(90, 130, 255, 0.15), rgba(123, 159, 255, 0.1));
+        }
+
+        /* ========== EXERCISES TABLE ========== */
         .exercises-container {
             overflow-x: auto;
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             border: 1px solid var(--border-color);
             margin-top: 1.5rem;
+            -webkit-overflow-scrolling: touch;
         }
 
         .exercises-table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 700px;
+            min-width: 600px;
         }
 
         .exercises-table thead {
-            background: rgba(65, 105, 225, 0.05);
+            background: rgba(65, 105, 225, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        [data-theme="dark"] .exercises-table thead {
+            background: rgba(90, 130, 255, 0.12);
         }
 
         .exercises-table th {
-            padding: 1rem;
+            padding: 1rem 0.75rem;
             text-align: left;
             font-weight: 600;
             color: var(--dark-text);
-            border-bottom: 2px solid var(--border-color);
+            border-bottom: 2px solid var(--primary-color);
             font-size: 0.9rem;
+            white-space: nowrap;
         }
 
         .exercises-table td {
-            padding: 1rem;
+            padding: 1rem 0.75rem;
             border-bottom: 1px solid var(--border-color);
             font-size: 0.9rem;
+            vertical-align: middle;
+        }
+
+        .exercises-table tbody tr {
+            transition: var(--transition);
         }
 
         .exercises-table tbody tr:hover {
-            background: rgba(65, 105, 225, 0.02);
+            background: rgba(65, 105, 225, 0.04);
+        }
+
+        [data-theme="dark"] .exercises-table tbody tr:hover {
+            background: rgba(90, 130, 255, 0.08);
         }
 
         .exercise-row.completed {
-            background: rgba(5, 150, 105, 0.05);
+            background: rgba(5, 150, 105, 0.08) !important;
+        }
+
+        [data-theme="dark"] .exercise-row.completed {
+            background: rgba(5, 150, 105, 0.15) !important;
         }
 
         .exercise-row.completed .exercise-name {
             color: var(--success-color);
-            font-weight: 700;
+            font-weight: 600;
         }
 
         .exercise-checkbox {
@@ -372,23 +539,34 @@
             cursor: pointer;
             accent-color: var(--success-color);
             margin-right: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .exercise-checkbox:hover {
             transform: scale(1.1);
         }
 
         .exercise-name {
-            font-weight: 600;
+            font-weight: 500;
             color: var(--dark-text);
             display: flex;
             align-items: center;
             font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .exercise-name label {
+            cursor: pointer;
+            margin-left: 0.5rem;
+            flex: 1;
         }
 
         .video-link {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: var(--danger-color);
+            padding: 0.5rem 0.75rem;
+            background: linear-gradient(135deg, var(--danger-color), #ff4757);
             color: white;
             text-decoration: none;
             border-radius: 6px;
@@ -398,31 +576,37 @@
         }
 
         .video-link:hover {
-            background: #b91c1c;
+            background: linear-gradient(135deg, #b91c1c, #ff3838);
             transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3);
         }
 
-        /* Toast */
+        .video-link i {
+            font-size: 0.9rem;
+        }
+
+        /* ========== TOAST ========== */
         .toast {
             position: fixed;
-            bottom: 20px;
+            bottom: 90px;
             right: 20px;
-            background: var(--success-color);
+            background: linear-gradient(135deg, var(--success-color), #10b981);
             color: white;
             padding: 1rem 1.5rem;
             border-radius: var(--border-radius);
             z-index: 10000;
-            box-shadow: var(--shadow-hover);
+            box-shadow: 0 6px 20px rgba(5, 150, 105, 0.3);
             animation: slideIn 0.3s ease;
             display: flex;
             align-items: center;
             gap: 0.75rem;
             font-weight: 600;
+            font-size: 0.9rem;
+            max-width: 300px;
         }
 
         .toast.error {
-            background: var(--danger-color);
+            background: linear-gradient(135deg, var(--danger-color), #ff4757);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
         }
 
         @keyframes slideIn {
@@ -436,19 +620,14 @@
             }
         }
 
-        @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
-        }
-
-        /* Overlay para fechar menu mobile */
+        /* ========== OVERLAY PARA MENU MOBILE ========== */
         .menu-overlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.3);
             z-index: 998;
             opacity: 0;
             visibility: hidden;
@@ -460,153 +639,163 @@
             visibility: visible;
         }
 
-        /* Responsive Design */
+        /* ========== RESPONSIVE DESIGN ========== */
         @media (max-width: 768px) {
             body {
-                padding-top: 70px;
+                padding-top: 60px;
             }
 
             .header-container {
-                padding: 0.75rem 1rem;
+                padding: 0 0.75rem;
+            }
+
+            .logo-img-container {
+                width: 50px; /* AUMENTADO NO MOBILE */
+                height: 50px; /* AUMENTADO NO MOBILE */
+            }
+
+            .logo-img {
+                transform: scale(2.4); /* ZOOM MAIOR NO MOBILE */
             }
 
             .header-info h1 {
-                font-size: 1.1rem;
-            }
-
-            .header-info p {
-                font-size: 0.8rem;
+                font-size: 0.9rem;
             }
 
             .btn-header {
-                padding: 0.4rem 0.75rem;
-                font-size: 0.8rem;
+                padding: 0.35rem;
+                width: 36px;
+                justify-content: center;
             }
 
             .btn-header span {
                 display: none;
             }
 
-            /* Mostrar menu hamburger e esconder navegação desktop */
+            .btn-header i {
+                margin: 0;
+            }
+
             .menu-hamburger {
-                display: flex;
+                padding: 0.35rem 0.6rem;
+                min-width: 80px;
+                font-size: 0.75rem;
             }
 
-            .days-navigation {
-                display: none;
+            .theme-toggle {
+                width: 34px;
+                height: 34px;
             }
 
-            .main-container {
-                padding: 1rem;
+            .whatsapp-float {
+                width: 55px;
+                height: 55px;
+                font-size: 1.6rem;
+                bottom: 20px;
+                right: 20px;
             }
 
-            /* Ajustar quando menu mobile estiver aberto */
-            body.menu-open .main-container {
-                transform: translateY(200px);
-            }
-
-            .days-menu-mobile.active ~ .main-container {
-                margin-top: 200px;
-            }
-
-            .progress-section,
             .training-content {
-                padding: 1.25rem;
+                padding: 1rem;
             }
 
             .training-header h2 {
                 font-size: 1.3rem;
             }
 
-            .focus-area {
-                padding: 0.75rem;
-                font-size: 0.9rem;
-            }
-
-            .exercises-table {
-                min-width: 600px;
-            }
-
             .exercises-table th,
             .exercises-table td {
-                padding: 0.75rem;
+                padding: 0.75rem 0.5rem;
                 font-size: 0.85rem;
-            }
-
-            .menu-overlay {
-                display: block;
             }
         }
 
         @media (max-width: 480px) {
+            .header-container {
+                padding: 0 0.5rem;
+            }
+
+            .logo-img-container {
+                width: 48px; /* AUMENTADO */
+                height: 48px; /* AUMENTADO */
+            }
+
+            .logo-img {
+                transform: scale(2.6); /* ZOOM MAIOR AINDA */
+            }
+
             .header-info h1 {
-                font-size: 1rem;
+                font-size: 0.85rem;
+            }
+
+            .header-actions {
+                gap: 0.3rem;
             }
 
             .menu-hamburger {
-                padding: 0.4rem 0.75rem;
-                font-size: 0.8rem;
+                min-width: 70px;
+                padding: 0.3rem 0.5rem;
             }
 
             .days-grid-mobile {
-                gap: 0.25rem;
+                grid-template-columns: 1fr;
             }
 
             .day-btn-mobile {
                 padding: 0.75rem;
-                font-size: 0.9rem;
             }
 
-            .training-header h2 {
-                font-size: 1.2rem;
-            }
-
-            .exercises-table {
-                min-width: 500px;
-            }
-
-            .exercises-table th,
-            .exercises-table td {
-                padding: 0.5rem;
-                font-size: 0.8rem;
-            }
-
-            .video-link {
-                padding: 0.4rem 0.75rem;
-                font-size: 0.8rem;
+            .whatsapp-float {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+                bottom: 15px;
+                right: 15px;
             }
         }
 
-        @media (min-width: 769px) {
-            .days-menu-mobile,
-            .menu-hamburger,
-            .menu-overlay {
-                display: none !important;
-            }
+        /* Scroll suave para a tabela */
+        .exercises-container::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .exercises-container::-webkit-scrollbar-track {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
+        .exercises-container::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 3px;
         }
     </style>
 </head>
 
 <body>
-    <!-- Header -->
+    <!-- Header super compacto -->
     <header class="student-header">
         <div class="header-container">
-            <div class="header-info">
-                <h1>Meu Treino</h1>
-                <p id="studentName">Carregando...</p>
+            <div class="header-logo">
+                <div class="logo-img-container">
+                    <!-- A imagem será trocada pelo JavaScript conforme o tema -->
+                    <img src="img/acessoriaar.png" alt="Logo Acessoria Atlântida" class="logo-img" id="logoImage">
+                </div>
+                <div class="header-info">
+                    <h1 id="studentName">Carregando...</h1>
+                </div>
             </div>
             <div class="header-actions">
-                <!-- Menu Hamburger para Mobile -->
-                <button class="menu-hamburger" onclick="toggleDaysMenu()" id="menuToggle">
-                    <i class="fas fa-calendar-alt" id="menuIcon"></i>
-                    <span id="currentDayText">Segunda</span>
+                <button class="theme-toggle" data-action="toggle-theme" title="Alternar tema">
+                    <i class="fas fa-moon" id="themeIcon"></i>
                 </button>
                 
-                <button class="btn-header" onclick="sendWhatsApp()" title="Pedir ajuda">
-                    <i class="fab fa-whatsapp"></i>
-                    <span>Ajuda</span>
+                <!-- Menu Hamburger para escolher dias -->
+                <button class="menu-hamburger" data-action="toggle-days-menu" id="menuToggle">
+                    <i class="fas fa-calendar-alt" id="menuIcon"></i>
+                    <span id="currentDayText">Seg</span>
                 </button>
-                <button class="btn-header" onclick="logout()" title="Sair do sistema">
+                
+                <button class="btn-header" data-action="logout" title="Sair do sistema">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Sair</span>
                 </button>
@@ -614,39 +803,38 @@
         </div>
     </header>
 
-    <!-- Menu Mobile Overlay -->
-    <div class="menu-overlay" onclick="closeDaysMenu()" id="menuOverlay"></div>
+    <!-- Overlay para fechar menu -->
+    <div class="menu-overlay" data-action="close-days-menu" id="menuOverlay"></div>
 
     <!-- Days Menu Mobile -->
     <div class="days-menu-mobile" id="daysMenuMobile">
         <div class="days-menu-content">
             <div class="days-grid-mobile" id="daysGridMobile">
-                <button class="day-btn-mobile active" onclick="selectDayMobile('segunda')">Segunda</button>
-                <button class="day-btn-mobile" onclick="selectDayMobile('terca')">Terça</button>
-                <button class="day-btn-mobile" onclick="selectDayMobile('quarta')">Quarta</button>
-                <button class="day-btn-mobile" onclick="selectDayMobile('quinta')">Quinta</button>
-                <button class="day-btn-mobile" onclick="selectDayMobile('sexta')">Sexta</button>
+                <button class="day-btn-mobile active" data-day="segunda">
+                    Segunda
+                </button>
+                <button class="day-btn-mobile" data-day="terca">
+                    Terça
+                </button>
+                <button class="day-btn-mobile" data-day="quarta">
+                    Quarta
+                </button>
+                <button class="day-btn-mobile" data-day="quinta">
+                    Quinta
+                </button>
+                <button class="day-btn-mobile" data-day="sexta">
+                    Sexta
+                </button>
             </div>
         </div>
     </div>
 
     <!-- Main Content -->
     <main class="main-container">
-        <!-- Days Navigation - Desktop -->
-        <section class="days-navigation" id="daysNavigationDesktop">
-            <div class="days-grid" id="daysGridDesktop">
-                <button class="day-btn active" onclick="selectDay('segunda')">Segunda</button>
-                <button class="day-btn" onclick="selectDay('terca')">Terça</button>
-                <button class="day-btn" onclick="selectDay('quarta')">Quarta</button>
-                <button class="day-btn" onclick="selectDay('quinta')">Quinta</button>
-                <button class="day-btn" onclick="selectDay('sexta')">Sexta</button>
-            </div>
-        </section>
-
         <!-- Progress Section -->
         <section class="progress-section">
             <div class="progress-header">
-                <h3>Progresso do Dia</h3>
+                <h3><i class="fas fa-chart-line"></i> Progresso do Dia</h3>
                 <div class="progress-percentage" id="progressPercentage">0%</div>
             </div>
             <div class="progress-bar">
@@ -658,7 +846,7 @@
         <!-- Training Content -->
         <section class="training-content">
             <div class="training-header">
-                <h2 id="dayTitle">Segunda-feira</h2>
+                <h2 id="dayTitle"><i class="fas fa-calendar-day"></i> Segunda-feira</h2>
                 <div class="focus-area" id="focusArea">Carregando...</div>
             </div>
 
@@ -674,472 +862,378 @@
                         </tr>
                     </thead>
                     <tbody id="exercisesTableBody">
-                        <!-- Exercícios serão injetados aqui -->
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 2rem; color: var(--gray-text);">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                                <br>
+                                Carregando exercícios...
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </section>
     </main>
 
+    <!-- WhatsApp Flutuante -->
+    <div class="whatsapp-float" data-action="send-whatsapp" title="Pedir ajuda pelo WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </div>
+
     <!-- Toast Container -->
     <div id="toastContainer"></div>
 
     <script>
-        // ========================================
-        // CONFIGURAÇÕES SUPABASE
-        // ========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            // ========================================
+            // CONFIGURAÇÕES
+            // ========================================
+            const SUPABASE_URL = 'https://idwtktaypxsomnqlmjdp.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkd3RrdGF5cHhzb21ucWxtamRwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU2ODQ4NjIsImV4cCI6MjA4MTI2MDg2Mn0.NqqhknttW9VfIb4sr3NkpTRemV3_YohxK093Pjhm8v0';
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        const SUPABASE_URL = 'https://idwtktaypxsomnqlmjdp.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkd3RrdGF5cHhzb21ucWxtamRwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU2ODQ4NjIsImV4cCI6MjA4MTI2MDg2Mn0.NqqhknttW9VfIb4sr3NkpTRemV3_YohxK093Pjhm8v0';
-        
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        const ADMIN_WHATSAPP = '5511948773263';
+            const ADMIN_WHATSAPP = '5511948773263';
+            const THEME_KEY = 'student_app_theme';
 
-        let currentStudent = null;
-        let currentDay = 'segunda';
-        let studentTrainings = null;
-        let studentProgress = {};
-        let isMobileMenuOpen = false;
+            // Variáveis de estado
+            let currentStudent = null;
+            let currentDay = 'segunda';
+            let studentTrainings = null;
+            let studentProgress = {};
+            let isMobileMenuOpen = false;
 
-        // ========================================
-        // FUNÇÕES DO MENU HAMBURGER
-        // ========================================
+            // ========================================
+            // INICIALIZAÇÃO
+            // ========================================
+            async function initializeApp() {
+                await checkStudentLogin();
+                if (!currentStudent) return;
 
-        function toggleDaysMenu() {
-            const mobileMenu = document.getElementById('daysMenuMobile');
-            const overlay = document.getElementById('menuOverlay');
-            const body = document.body;
-            
-            if (isMobileMenuOpen) {
-                // Fechar menu
-                mobileMenu.classList.remove('active');
-                overlay.classList.remove('active');
-                body.classList.remove('menu-open');
-                isMobileMenuOpen = false;
-            } else {
-                // Abrir menu
-                mobileMenu.classList.add('active');
-                overlay.classList.add('active');
-                body.classList.add('menu-open');
-                isMobileMenuOpen = true;
-            }
-        }
-
-        function closeDaysMenu() {
-            const mobileMenu = document.getElementById('daysMenuMobile');
-            const overlay = document.getElementById('menuOverlay');
-            const body = document.body;
-            
-            mobileMenu.classList.remove('active');
-            overlay.classList.remove('active');
-            body.classList.remove('menu-open');
-            isMobileMenuOpen = false;
-        }
-
-        // ========================================
-        // FUNÇÕES DE SELEÇÃO DE DIA
-        // ========================================
-
-        function selectDay(day) {
-            currentDay = day;
-            updateDaySelection(day);
-            loadDayTraining();
-        }
-
-        function selectDayMobile(day) {
-            currentDay = day;
-            updateDaySelection(day);
-            loadDayTraining();
-            closeDaysMenu(); // Fecha o menu após selecionar
-        }
-
-        function updateDaySelection(day) {
-            const dayNames = {
-                segunda: 'Segunda',
-                terca: 'Terça',
-                quarta: 'Quarta',
-                quinta: 'Quinta',
-                sexta: 'Sexta'
-            };
-
-            // Atualizar texto do botão hamburger
-            document.getElementById('currentDayText').textContent = dayNames[day];
-
-            // Atualizar botões desktop
-            document.querySelectorAll('.day-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            const desktopBtn = document.querySelector(`[onclick="selectDay('${day}')"]`);
-            if (desktopBtn) {
-                desktopBtn.classList.add('active');
+                loadTheme();
+                setupEventListeners();
+                await loadStudentData();
+                selectDay('segunda');
             }
 
-            // Atualizar botões mobile
-            document.querySelectorAll('.day-btn-mobile').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            const mobileBtn = document.querySelector(`[onclick="selectDayMobile('${day}')"]`);
-            if (mobileBtn) {
-                mobileBtn.classList.add('active');
+            // ========================================
+            // EVENT LISTENERS
+            // ========================================
+            function setupEventListeners() {
+                // Listener genérico
+                document.body.addEventListener('click', (event) => {
+                    const target = event.target.closest('[data-action]');
+                    if (!target) return;
+
+                    const action = target.dataset.action;
+                    
+                    const actions = {
+                        'toggle-theme': toggleTheme,
+                        'toggle-days-menu': toggleDaysMenu,
+                        'close-days-menu': closeDaysMenu,
+                        'send-whatsapp': sendWhatsApp,
+                        'logout': logout,
+                    };
+
+                    if (actions[action]) {
+                        actions[action]();
+                    }
+                });
+
+                // Botões de dia
+                document.querySelectorAll('[data-day]').forEach(button => {
+                    button.addEventListener('click', () => {
+                        selectDay(button.dataset.day);
+                    });
+                });
+
+                // Checkboxes
+                document.getElementById('exercisesTableBody').addEventListener('change', (event) => {
+                    if (event.target.classList.contains('exercise-checkbox')) {
+                        const exerciseIndex = event.target.dataset.index;
+                        toggleExercise(exerciseIndex, event.target);
+                    }
+                });
+
+                // Tecla ESC
+                document.addEventListener('keydown', (event) => {
+                    if (event.key === 'Escape' && isMobileMenuOpen) {
+                        closeDaysMenu();
+                    }
+                });
             }
 
-            // Atualizar título da página
-            const fullDayNames = {
-                segunda: 'Segunda-feira',
-                terca: 'Terça-feira',
-                quarta: 'Quarta-feira',
-                quinta: 'Quinta-feira',
-                sexta: 'Sexta-feira'
-            };
-            document.getElementById('dayTitle').textContent = fullDayNames[day];
-        }
+            // ========================================
+            // FUNÇÕES PRINCIPAIS
+            // ========================================
 
-        // ========================================
-        // FUNÇÕES DE CARREGAMENTO DE TREINO
-        // ========================================
-
-        function loadDayTraining() {
-            if (!studentTrainings || !studentTrainings[currentDay]) {
-                document.getElementById('focusArea').textContent = 'Sem treino definido';
-                document.getElementById('exercisesTableBody').innerHTML = `
-                    <tr>
-                        <td colspan="5" style="text-align: center; padding: 3rem; color: var(--gray-text);">
-                            <i class="fas fa-dumbbell" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
-                            <p>Nenhum treino definido para este dia.</p>
-                        </td>
-                    </tr>
-                `;
-                updateProgressUI();
-                return;
+            function loadTheme() {
+                const savedTheme = localStorage.getItem(THEME_KEY) || 'light';
+                setTheme(savedTheme);
             }
 
-            const training = studentTrainings[currentDay];
-            
-            document.getElementById('focusArea').textContent = training.focus || 'Sem foco definido';
-            const tbody = document.getElementById('exercisesTableBody');
-            tbody.innerHTML = '';
-
-            if (!training.exercises || training.exercises.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="5" style="text-align: center; padding: 3rem; color: var(--gray-text);">
-                            <i class="fas fa-list-alt" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
-                            <p>Nenhum exercício para este dia.</p>
-                        </td>
-                    </tr>
-                `;
-                updateProgressUI();
-                return;
+            function setTheme(theme) {
+                document.documentElement.setAttribute('data-theme', theme);
+                const themeIcon = document.getElementById('themeIcon');
+                themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+                updateLogoImage(theme);
+                localStorage.setItem(THEME_KEY, theme);
             }
 
-            training.exercises.forEach((exercise, index) => {
-                const isCompleted = isExerciseCompleted(index);
-                
-                const row = document.createElement('tr');
-                row.className = `exercise-row ${isCompleted ? 'completed' : ''}`;
-                
-                row.innerHTML = `
-                    <td>
-                        <input type="checkbox" class="exercise-checkbox" ${isCompleted ? 'checked' : ''} 
-                               onchange="toggleExercise(${index}, this)" 
-                               id="exercise-${currentDay}-${index}">
-                    </td>
-                    <td>
-                        <label for="exercise-${currentDay}-${index}" class="exercise-name">
-                            ${exercise.name || exercise}
-                        </label>
-                    </td>
-                    <td>${exercise.series || '-'}</td>
-                    <td>${exercise.reps || '-'}</td>
-                    <td>
-                        ${exercise.video ? `
-                            <a href="${exercise.video}" target="_blank" class="video-link">
-                                <i class="fas fa-play-circle"></i> Assistir
-                            </a>
-                        ` : '-'}
-                    </td>
-                `;
-
-                tbody.appendChild(row);
-            });
-
-            updateProgressUI();
-        }
-
-        function isExerciseCompleted(index) {
-            if (!studentProgress || !studentProgress[currentDay]) return false;
-            const dayProgress = studentProgress[currentDay];
-            return Array.isArray(dayProgress) && dayProgress.includes(parseInt(index));
-        }
-
-        function updateProgressUI() {
-            if (!studentTrainings || !studentTrainings[currentDay]) return;
-            
-            const training = studentTrainings[currentDay];
-            const total = training.exercises ? training.exercises.length : 0;
-            const dayProgress = studentProgress[currentDay] || [];
-            const completed = Array.isArray(dayProgress) ? dayProgress.length : 0;
-            const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
-
-            document.getElementById('progressFill').style.width = `${percentage}%`;
-            document.getElementById('progressPercentage').textContent = `${percentage}%`;
-            document.getElementById('progressText').textContent = `${completed} / ${total} exercícios completos`;
-        }
-
-        // ========================================
-        // FUNÇÕES DE INTERAÇÃO
-        // ========================================
-
-        async function toggleExercise(index, checkbox) {
-            if (!currentStudent) return;
-            
-            const completed = checkbox.checked;
-            const row = checkbox.closest('tr');
-            
-            if (completed) {
-                row.classList.add('completed');
-            } else {
-                row.classList.remove('completed');
-            }
-            
-            checkbox.disabled = true;
-            
-            try {
-                await updateProgress(currentStudent.id, currentDay, index, completed);
-                updateProgressUI();
-                showToast('Progresso salvo!', 'success');
-            } catch (error) {
-                checkbox.checked = !completed;
-                if (completed) {
-                    row.classList.remove('completed');
+            // FUNÇÃO PARA TROCAR A IMAGEM CONFORME O TEMA
+            function updateLogoImage(theme) {
+                const logoImage = document.getElementById('logoImage');
+                if (theme === 'dark') {
+                    // Tema escuro: usa a imagem original (colorida)
+                    logoImage.src = 'img/acessoriaar.png';
+                    logoImage.alt = 'Logo Acessoria Atlântida - Modo Escuro';
                 } else {
-                    row.classList.add('completed');
+                    // Tema claro: usa a imagem preta
+                    logoImage.src = 'img/acessoriapreto.jpg';
+                    logoImage.alt = 'Logo Acessoria Atlântida - Modo Claro';
                 }
-                showToast('Erro ao salvar progresso', 'error');
-            } finally {
-                checkbox.disabled = false;
-            }
-        }
-
-        function sendWhatsApp() {
-            if (!currentStudent) return;
-            
-            const dayName = currentDay.charAt(0).toUpperCase() + currentDay.slice(1);
-            const message = encodeURIComponent(
-                `Olá, Italo Ruan! Estou com uma dúvida sobre o meu treino (${dayName}) no aplicativo. Meu nome é ${currentStudent.name}.`
-            );
-            window.open(`https://wa.me/${ADMIN_WHATSAPP}?text=${message}`, '_blank');
-        }
-
-        function logout() {
-            if (confirm('Tem certeza que deseja sair?')) {
-                localStorage.removeItem('student_session');
-                window.location.href = 'login.html';
-            }
-        }
-
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toastContainer');
-            const existingToast = document.querySelector('.toast');
-            if (existingToast) existingToast.remove();
-            
-            const toast = document.createElement('div');
-            toast.className = `toast ${type === 'error' ? 'error' : ''}`;
-            toast.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
-                <span>${message}</span>
-            `;
-            
-            container.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.style.animation = 'fadeOut 0.3s ease';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        // ========================================
-        // FUNÇÕES DE DADOS SUPABASE
-        // ========================================
-
-        async function getStudentData(studentId) {
-            try {
-                const { data: aluno } = await supabase
-                    .from('alunos')
-                    .select('*')
-                    .eq('id', studentId)
-                    .single();
-
-                const { data: treinoData } = await supabase
-                    .from('treinos')
-                    .select('*')
-                    .eq('aluno_id', studentId)
-                    .single();
-
-                const { data: progressoData } = await supabase
-                    .from('progresso')
-                    .select('*')
-                    .eq('aluno_id', studentId)
-                    .single();
-
-                let treino;
-                if (treinoData && treinoData.treino) {
-                    treino = treinoData.treino;
-                } else {
-                    treino = await getDefaultTraining();
-                }
-
-                return {
-                    aluno,
-                    treino: treino,
-                    progresso: progressoData?.progresso || {}
-                };
-            } catch (error) {
-                console.error('Erro ao buscar dados:', error);
-                return {
-                    aluno: null,
-                    treino: await getDefaultTraining(),
-                    progresso: {}
-                };
-            }
-        }
-
-        async function updateProgress(studentId, day, exerciseIndex, completed) {
-            try {
-                const { data: existingProgress } = await supabase
-                    .from('progresso')
-                    .select('id, progresso')
-                    .eq('aluno_id', studentId)
-                    .single();
-
-                let progresso = {};
-                
-                if (existingProgress && existingProgress.progresso) {
-                    progresso = typeof existingProgress.progresso === 'object' 
-                        ? JSON.parse(JSON.stringify(existingProgress.progresso))
-                        : {};
-                }
-
-                if (!progresso[day]) progresso[day] = [];
-                
-                const indexNum = parseInt(exerciseIndex);
-                const currentIndex = progresso[day].indexOf(indexNum);
-                
-                if (completed && currentIndex === -1) {
-                    progresso[day].push(indexNum);
-                    progresso[day].sort((a, b) => a - b);
-                } else if (!completed && currentIndex > -1) {
-                    progresso[day].splice(currentIndex, 1);
-                }
-
-                const progressData = {
-                    aluno_id: studentId,
-                    progresso: progresso,
-                    updated_at: new Date().toISOString()
-                };
-
-                if (existingProgress && existingProgress.id) {
-                    progressData.id = existingProgress.id;
-                }
-
-                const { data } = await supabase
-                    .from('progresso')
-                    .upsert([progressData]);
-
-                studentProgress = progresso;
-                return true;
-            } catch (error) {
-                console.error('Erro ao atualizar progresso:', error);
-                return false;
-            }
-        }
-
-        async function getDefaultTraining() {
-            try {
-                const { data } = await supabase
-                    .from('treinos_padroes')
-                    .select('*')
-                    .single();
-                return data?.treino || {};
-            } catch (error) {
-                return {};
-            }
-        }
-
-        // ========================================
-        // INICIALIZAÇÃO
-        // ========================================
-
-        document.addEventListener('DOMContentLoaded', async function() {
-            await checkStudentLogin();
-            await loadStudentData();
-            selectDay('segunda');
-            
-            // Fechar menu ao clicar fora (mobile)
-            document.addEventListener('click', function(event) {
-                const mobileMenu = document.getElementById('daysMenuMobile');
-                const menuToggle = document.getElementById('menuToggle');
-                const overlay = document.getElementById('menuOverlay');
-                
-                if (isMobileMenuOpen && 
-                    !mobileMenu.contains(event.target) && 
-                    !menuToggle.contains(event.target) &&
-                    overlay.contains(event.target)) {
-                    closeDaysMenu();
-                }
-            });
-            
-            // Fechar menu com tecla ESC
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'Escape' && isMobileMenuOpen) {
-                    closeDaysMenu();
-                }
-            });
-        });
-
-        async function checkStudentLogin() {
-            const studentSession = localStorage.getItem('student_session');
-            
-            if (!studentSession) {
-                window.location.href = 'login.html';
-                return;
             }
 
-            try {
-                const session = JSON.parse(studentSession);
-                const currentTime = new Date().getTime();
-                
-                if (session.expiresAt < currentTime) {
-                    localStorage.removeItem('student_session');
+            function toggleTheme() {
+                const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                setTheme(newTheme);
+            }
+
+            async function checkStudentLogin() {
+                const sessionData = localStorage.getItem('student_session');
+                if (!sessionData) {
                     window.location.href = 'login.html';
                     return;
                 }
+                try {
+                    const session = JSON.parse(sessionData);
+                    if (session.expiresAt < new Date().getTime()) {
+                        logout();
+                        return;
+                    }
+                    currentStudent = { id: session.id, name: session.name };
+                    document.getElementById('studentName').textContent = currentStudent.name;
+                } catch {
+                    logout();
+                }
+            }
 
-                currentStudent = {
-                    id: session.id,
-                    name: session.name
+            async function loadStudentData() {
+                if (!currentStudent) return;
+                try {
+                    const { data: treinoData } = await supabase.from('treinos').select('treino').eq('aluno_id', currentStudent.id).single();
+                    const { data: progressoData } = await supabase.from('progresso').select('progresso').eq('aluno_id', currentStudent.id).single();
+                    
+                    studentTrainings = treinoData?.treino || await getDefaultTraining();
+                    studentProgress = progressoData?.progresso || {};
+                } catch (error) {
+                    console.error('Erro ao carregar dados:', error);
+                    showToast('Não foi possível carregar seus dados.', 'error');
+                }
+            }
+
+            function toggleDaysMenu() {
+                isMobileMenuOpen = !isMobileMenuOpen;
+                const daysMenu = document.getElementById('daysMenuMobile');
+                const overlay = document.getElementById('menuOverlay');
+                const menuIcon = document.getElementById('menuIcon');
+                
+                if (isMobileMenuOpen) {
+                    daysMenu.classList.add('active');
+                    overlay.classList.add('active');
+                    menuIcon.className = 'fas fa-times';
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    closeDaysMenu();
+                }
+            }
+
+            function closeDaysMenu() {
+                if (!isMobileMenuOpen) return;
+                isMobileMenuOpen = false;
+                document.getElementById('daysMenuMobile').classList.remove('active');
+                document.getElementById('menuOverlay').classList.remove('active');
+                document.getElementById('menuIcon').className = 'fas fa-calendar-alt';
+                document.body.style.overflow = 'auto';
+            }
+
+            function selectDay(day) {
+                currentDay = day;
+                updateDaySelectionUI(day);
+                loadDayTraining();
+                closeDaysMenu();
+            }
+
+            function updateDaySelectionUI(day) {
+                const dayNames = { 
+                    segunda: 'Segunda', 
+                    terca: 'Terça', 
+                    quarta: 'Quarta', 
+                    quinta: 'Quinta', 
+                    sexta: 'Sexta' 
                 };
                 
-                document.getElementById('studentName').textContent = currentStudent.name;
-            } catch (error) {
-                localStorage.removeItem('student_session');
-                window.location.href = 'login.html';
+                const shortNames = {
+                    segunda: 'Seg',
+                    terca: 'Ter',
+                    quarta: 'Qua',
+                    quinta: 'Qui',
+                    sexta: 'Sex'
+                };
+                
+                // Atualizar texto do botão hamburger
+                document.getElementById('currentDayText').textContent = shortNames[day];
+                
+                // Atualizar título
+                document.getElementById('dayTitle').innerHTML = `<i class="fas fa-calendar-day"></i> ${dayNames[day]}-feira`;
+                
+                // Atualizar todos os botões do menu
+                document.querySelectorAll('[data-day]').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.day === day);
+                });
             }
-        }
 
-        async function loadStudentData() {
-            if (!currentStudent) return;
-            
-            try {
-                const data = await getStudentData(currentStudent.id);
-                studentTrainings = data.treino;
-                studentProgress = data.progresso || {};
-            } catch (error) {
-                console.error('Erro ao carregar dados:', error);
-                studentTrainings = await getDefaultTraining();
-                studentProgress = {};
+            function loadDayTraining() {
+                const training = studentTrainings?.[currentDay];
+                const tbody = document.getElementById('exercisesTableBody');
+                tbody.innerHTML = '';
+
+                if (!training || !training.exercises || training.exercises.length === 0) {
+                    document.getElementById('focusArea').textContent = 'Dia de descanso';
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align:center; padding: 2rem; color: var(--gray-text);">
+                                <i class="fas fa-bed" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                                <br>
+                                Nenhum exercício para hoje.
+                            </td>
+                        </tr>`;
+                    updateProgressUI();
+                    return;
+                }
+
+                document.getElementById('focusArea').textContent = training.focus || 'Treino do dia';
+                
+                training.exercises.forEach((exercise, index) => {
+                    const isCompleted = studentProgress[currentDay]?.includes(index) ?? false;
+                    const exerciseId = `exercise_${currentDay}_${index}_${Date.now()}`;
+                    
+                    tbody.innerHTML += `
+                        <tr class="exercise-row ${isCompleted ? 'completed' : ''}">
+                            <td>
+                                <input type="checkbox" 
+                                       class="exercise-checkbox" 
+                                       id="${exerciseId}"
+                                       name="${exerciseId}"
+                                       data-index="${index}" 
+                                       ${isCompleted ? 'checked' : ''}
+                                       autocomplete="off">
+                            </td>
+                            <td class="exercise-name">
+                                <label for="${exerciseId}">${exercise.name || 'Exercício'}</label>
+                            </td>
+                            <td>${exercise.series || '-'}</td>
+                            <td>${exercise.reps || '-'}</td>
+                            <td>
+                                ${exercise.video ? 
+                                    `<a href="${exercise.video}" target="_blank" class="video-link">
+                                        <i class="fas fa-play-circle"></i> Vídeo
+                                    </a>` : 
+                                    '<span style="color: var(--gray-text);">-</span>'
+                                }
+                            </td>
+                        </tr>`;
+                });
+                updateProgressUI();
             }
-        }
+
+            function updateProgressUI() {
+                const exercises = studentTrainings?.[currentDay]?.exercises || [];
+                const completedExercises = studentProgress?.[currentDay] || [];
+                const total = exercises.length;
+                const completedCount = completedExercises.length;
+                const percentage = total > 0 ? Math.round((completedCount / total) * 100) : 0;
+
+                document.getElementById('progressFill').style.width = `${percentage}%`;
+                document.getElementById('progressPercentage').textContent = `${percentage}%`;
+                document.getElementById('progressText').textContent = `${completedCount} / ${total} exercícios`;
+            }
+
+            async function toggleExercise(index, checkbox) {
+                const exerciseIndex = parseInt(index);
+                const isCompleted = checkbox.checked;
+                checkbox.disabled = true;
+
+                try {
+                    if (!Array.isArray(studentProgress[currentDay])) {
+                        studentProgress[currentDay] = [];
+                    }
+                    
+                    const progressDay = studentProgress[currentDay];
+                    const existingIndex = progressDay.indexOf(exerciseIndex);
+
+                    if (isCompleted && existingIndex === -1) {
+                        progressDay.push(exerciseIndex);
+                    } else if (!isCompleted && existingIndex > -1) {
+                        progressDay.splice(existingIndex, 1);
+                    }
+
+                    await supabase.from('progresso').upsert({ 
+                        aluno_id: currentStudent.id, 
+                        progresso: studentProgress 
+                    }, { onConflict: 'aluno_id' });
+                    
+                    checkbox.closest('tr').classList.toggle('completed', isCompleted);
+                    updateProgressUI();
+                    showToast('Progresso salvo!', 'success');
+                } catch (error) {
+                    console.error("Erro ao salvar progresso:", error);
+                    showToast('Erro ao salvar.', 'error');
+                    checkbox.checked = !isCompleted;
+                } finally {
+                    checkbox.disabled = false;
+                }
+            }
+
+            function sendWhatsApp() {
+                const dayNames = { 
+                    segunda: 'Segunda', 
+                    terca: 'Terça', 
+                    quarta: 'Quarta', 
+                    quinta: 'Quinta', 
+                    sexta: 'Sexta' 
+                };
+                const dayName = dayNames[currentDay];
+                const message = `Olá, Italo! Sou ${currentStudent.name} e estou com uma dúvida sobre o meu treino de ${dayName}.`;
+                window.open(`https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(message)}`, '_blank');
+            }
+
+            function logout() {
+                if (confirm('Tem certeza que deseja sair?')) {
+                    localStorage.removeItem('student_session');
+                    window.location.href = 'login.html';
+                }
+            }
+
+            async function getDefaultTraining() {
+                try {
+                    const { data } = await supabase.from('treinos_padroes').select('treino').single();
+                    return data?.treino || {};
+                } catch { return {}; }
+            }
+
+            function showToast(message, type = 'success') {
+                const container = document.getElementById('toastContainer') || document.body;
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> <span>${message}</span>`;
+                container.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            }
+
+            // Inicia a aplicação
+            initializeApp();
+        });
     </script>
 </body>
 </html>
