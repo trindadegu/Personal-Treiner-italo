@@ -316,6 +316,30 @@
             gap: 0.5rem;
         }
 
+        /* MENU MAIOR PARA DESKTOP */
+        @media (min-width: 769px) {
+            .days-menu-content {
+                padding: 1.5rem 2rem;
+            }
+
+            .days-grid-mobile {
+                gap: 1rem;
+                max-width: 800px;
+                margin: 0 auto;
+            }
+
+            .day-btn-mobile {
+                padding: 1.5rem 1rem !important;
+                font-size: 1.1rem !important;
+                min-height: 70px !important;
+                border-width: 3px !important;
+            }
+
+            .day-btn-mobile i {
+                font-size: 1.3rem;
+            }
+        }
+
         @media (max-width: 480px) {
             .days-grid-mobile {
                 grid-template-columns: repeat(2, 1fr);
@@ -892,7 +916,7 @@
             const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkd3RrdGF5cHhzb21ucWxtamRwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU2ODQ4NjIsImV4cCI6MjA4MTI2MDg2Mn0.NqqhknttW9VfIb4sr3NkpTRemV3_YohxK093Pjhm8v0';
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-            const ADMIN_WHATSAPP = '5511948773263';
+            const ADMIN_WHATSAPP = '5585981521490';
             const THEME_KEY = 'student_app_theme';
 
             // Variáveis de estado
@@ -906,13 +930,21 @@
             // INICIALIZAÇÃO
             // ========================================
             async function initializeApp() {
+                console.log('🚀 Iniciando aplicação...');
+                
                 await checkStudentLogin();
-                if (!currentStudent) return;
+                
+                if (!currentStudent) {
+                    console.error('❌ currentStudent não foi definido! Parando inicialização.');
+                    return;
+                }
 
+                console.log('✅ Login verificado. Continuando inicialização...');
                 loadTheme();
                 setupEventListeners();
                 await loadStudentData();
                 selectDay('segunda');
+                console.log('✅ Aplicação inicializada com sucesso!');
             }
 
             // ========================================
@@ -1000,35 +1032,87 @@
             }
 
             async function checkStudentLogin() {
+                console.log('🔍 Verificando login do aluno...');
                 const sessionData = localStorage.getItem('student_session');
+                console.log('📦 Session data:', sessionData);
+                
                 if (!sessionData) {
+                    console.error('❌ Nenhuma sessão encontrada! Redirecionando para login...');
+                    alert('Sessão não encontrada. Faça login novamente.');
                     window.location.href = 'login.html';
                     return;
                 }
                 try {
                     const session = JSON.parse(sessionData);
+                    console.log('✅ Sessão parseada:', session);
+                    
                     if (session.expiresAt < new Date().getTime()) {
+                        console.error('⏰ Sessão expirada!');
+                        alert('Sua sessão expirou. Faça login novamente.');
                         logout();
                         return;
                     }
                     currentStudent = { id: session.id, name: session.name };
-                    document.getElementById('studentName').textContent = currentStudent.name;
-                } catch {
+                    console.log('👤 Aluno atual:', currentStudent);
+                    
+                    const studentNameElement = document.getElementById('studentName');
+                    if (studentNameElement) {
+                        studentNameElement.textContent = currentStudent.name;
+                        console.log('✅ Nome do aluno atualizado no header');
+                    } else {
+                        console.error('❌ Elemento studentName não encontrado!');
+                    }
+                } catch (error) {
+                    console.error('❌ Erro ao processar sessão:', error);
+                    alert('Erro ao carregar sessão. Faça login novamente.');
                     logout();
                 }
             }
 
             async function loadStudentData() {
-                if (!currentStudent) return;
+                if (!currentStudent) {
+                    console.error('❌ loadStudentData: currentStudent está vazio!');
+                    return;
+                }
+                
+                console.log('📊 Carregando dados do aluno:', currentStudent.id);
+                
                 try {
-                    const { data: treinoData } = await supabase.from('treinos').select('treino').eq('aluno_id', currentStudent.id).single();
-                    const { data: progressoData } = await supabase.from('progresso').select('progresso').eq('aluno_id', currentStudent.id).single();
+                    console.log('🔄 Buscando treinos no Supabase...');
+                    const { data: treinoData, error: treinoError } = await supabase
+                        .from('treinos')
+                        .select('treino')
+                        .eq('aluno_id', currentStudent.id)
+                        .single();
+                    
+                    if (treinoError) {
+                        console.warn('⚠️ Erro ao buscar treino:', treinoError);
+                    } else {
+                        console.log('✅ Treino encontrado:', treinoData);
+                    }
+                    
+                    console.log('🔄 Buscando progresso no Supabase...');
+                    const { data: progressoData, error: progressoError } = await supabase
+                        .from('progresso')
+                        .select('progresso')
+                        .eq('aluno_id', currentStudent.id)
+                        .single();
+                    
+                    if (progressoError) {
+                        console.warn('⚠️ Erro ao buscar progresso:', progressoError);
+                    } else {
+                        console.log('✅ Progresso encontrado:', progressoData);
+                    }
                     
                     studentTrainings = treinoData?.treino || await getDefaultTraining();
                     studentProgress = progressoData?.progresso || {};
+                    
+                    console.log('📋 Dados carregados - Treinos:', studentTrainings);
+                    console.log('📈 Dados carregados - Progresso:', studentProgress);
+                    
                 } catch (error) {
-                    console.error('Erro ao carregar dados:', error);
-                    showToast('Não foi possível carregar seus dados.', 'error');
+                    console.error('❌ Erro ao carregar dados:', error);
+                    showToast('Não foi possível carregar seus dados. Verifique sua conexão.', 'error');
                 }
             }
 
