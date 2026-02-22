@@ -7,818 +7,32 @@
     <title>Meu Treino - Acessoria Atlântida</title>
     <link rel="icon" type="image/png" href="img/acessoriaab.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
-
-        :root {
-            --primary-color: #4169e1;
-            --secondary-color: #5a82ff;
-            --accent-color: #fdfbd4;
-            --danger-color: #dc2626;
-            --success-color: #059669;
-            --whatsapp-green: #25D366;
-            --light-bg: #ffffff;
-            --dark-text: #1a202c;
-            --gray-text: #4a5568;
-            --border-color: #e2e8f0;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            --shadow-hover: 0 12px 24px rgba(65, 105, 225, 0.15);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --gradient-primary: linear-gradient(135deg, #4169e1, #5a82ff);
-            --gradient-accent: linear-gradient(135deg, #fdfbd4, #fff9c9);
-            --border-radius: 10px;
-            --border-radius-lg: 15px;
-        }
-
-        /* Dark Theme Variables */
-        [data-theme="dark"] {
-            --primary-color: #5a82ff;
-            --secondary-color: #7b9fff;
-            --accent-color: #2d3748;
-            --light-bg: #1a202c;
-            --dark-text: #f7fafc;
-            --gray-text: #cbd5e0;
-            --border-color: #4a5568;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            --shadow-hover: 0 12px 24px rgba(65, 105, 225, 0.25);
-            --gradient-primary: linear-gradient(135deg, #5a82ff, #7b9fff);
-            --gradient-accent: linear-gradient(135deg, #2d3748, #4a5568);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--light-bg);
-            color: var(--dark-text);
-            line-height: 1.6;
-            padding-top: 60px;
-            transition: var(--transition);
-        }
-
-        /* ========== HEADER SUPER COMPACTO ========== */
-        .student-header {
-            background: var(--light-bg);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            border-bottom: 1px solid var(--border-color);
-            backdrop-filter: blur(8px);
-            background: rgba(255, 255, 255, 0.98);
-            transition: var(--transition);
-            height: 60px;
-        }
-
-        [data-theme="dark"] .student-header {
-            background: rgba(26, 32, 44, 0.98);
-        }
-
-        .header-container {
-            max-width: 100%;
-            margin: 0 auto;
-            padding: 0 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 100%;
-        }
-
-        .header-logo {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            flex-shrink: 0;
-            min-width: 0;
-        }
-
-        /* LOGO COM ZOOM AUMENTADO */
-        .logo-img-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            width: 55px; /* AUMENTADO */
-            height: 55px; /* AUMENTADO */
-            position: relative;
-            border-radius: 50%;
-            background: var(--light-bg);
-            border: 3px solid var(--primary-color); /* BORDA MAIS ESPESSA */
-            padding: 3px;
-            flex-shrink: 0;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .logo-img {
-            width: auto;
-            height: 100%;
-            object-fit: contain;
-            transform: scale(2.2); /* ZOOM MUITO MAIOR */
-            transform-origin: center;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
-            transition: transform 0.3s ease, filter 0.3s ease;
-        }
-
-        /* Hover effect para a logo */
-        .logo-img-container:hover .logo-img {
-            transform: scale(2.4);
-            filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.2));
-        }
-
-        .header-info {
-            flex: 1;
-            min-width: 0;
-            overflow: hidden;
-        }
-
-        .header-info h1 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 1rem;
-            color: var(--primary-color);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-weight: 600;
-            line-height: 1.2;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-            flex-shrink: 0;
-        }
-
-        /* ========== BOTÕES DO HEADER ========== */
-        .btn-header {
-            background: rgba(65, 105, 225, 0.1);
-            color: var(--primary-color);
-            border: 1px solid rgba(65, 105, 225, 0.2);
-            padding: 0.4rem 0.75rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            font-weight: 500;
-            white-space: nowrap;
-            height: 36px;
-        }
-
-        .btn-header:hover {
-            background: rgba(65, 105, 225, 0.2);
-            transform: translateY(-1px);
-        }
-
-        [data-theme="dark"] .btn-header {
-            background: rgba(90, 130, 255, 0.15);
-            border-color: rgba(90, 130, 255, 0.3);
-        }
-
-        /* Botão de Tema */
-        .theme-toggle {
-            background: rgba(65, 105, 225, 0.1);
-            color: var(--primary-color);
-            border: 1px solid rgba(65, 105, 225, 0.2);
-            padding: 0.4rem;
-            border-radius: 6px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-            width: 36px;
-            height: 36px;
-            flex-shrink: 0;
-        }
-
-        .theme-toggle:hover {
-            background: rgba(65, 105, 225, 0.2);
-        }
-
-        [data-theme="dark"] .theme-toggle {
-            background: rgba(90, 130, 255, 0.15);
-            border-color: rgba(90, 130, 255, 0.3);
-        }
-
-        /* ========== MENU HAMBURGER PARA ESCOLHER DIAS ========== */
-        .menu-hamburger {
-            display: flex;
-            background: var(--gradient-primary);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            padding: 0.4rem 0.75rem;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 600;
-            transition: var(--transition);
-            align-items: center;
-            gap: 0.4rem;
-            box-shadow: 0 2px 6px rgba(65, 105, 225, 0.3);
-            white-space: nowrap;
-            flex-shrink: 0;
-            height: 36px;
-            min-width: 90px;
-        }
-
-        .menu-hamburger:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 10px rgba(65, 105, 225, 0.4);
-        }
-
-        /* ========== WHATSAPP FLUTUANTE ========== */
-        .whatsapp-float {
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            width: 60px;
-            height: 60px;
-            background: var(--whatsapp-green);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
-            z-index: 999;
-            cursor: pointer;
-            transition: var(--transition);
-            animation: float 3s ease-in-out infinite;
-            border: 3px solid white;
-        }
-
-        [data-theme="dark"] .whatsapp-float {
-            border: 3px solid var(--dark-text);
-        }
-
-        .whatsapp-float:hover {
-            transform: scale(1.1) translateY(-5px);
-            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.6);
-            animation: none;
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-10px);
-            }
-        }
-
-        /* ========== DAYS MENU MOBILE ========== */
-        .days-menu-mobile {
-            position: fixed;
-            top: 60px;
-            left: 0;
-            right: 0;
-            background: var(--light-bg);
-            z-index: 999;
-            border-bottom: 2px solid var(--primary-color);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            transform: translateY(-100%);
-            opacity: 0;
-            visibility: hidden;
-            transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
-            max-height: 0;
-            overflow: hidden;
-        }
-
-        .days-menu-mobile.active {
-            transform: translateY(0);
-            opacity: 1;
-            visibility: visible;
-            max-height: 280px;
-        }
-
-        .days-menu-content {
-            padding: 0.75rem 1rem;
-        }
-
-        .days-grid-mobile {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.5rem;
-        }
-
-        /* MENU MAIOR PARA DESKTOP */
-        @media (min-width: 769px) {
-            .days-menu-content {
-                padding: 1.5rem 2rem;
-            }
-
-            .days-grid-mobile {
-                gap: 1rem;
-                max-width: 800px;
-                margin: 0 auto;
-            }
-
-            .day-btn-mobile {
-                padding: 1.5rem 1rem !important;
-                font-size: 1.1rem !important;
-                min-height: 70px !important;
-                border-width: 3px !important;
-            }
-
-            .day-btn-mobile i {
-                font-size: 1.3rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .days-grid-mobile {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        .day-btn-mobile {
-            padding: 0.85rem 0.5rem;
-            border: 2px solid var(--border-color);
-            background: var(--light-bg);
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: var(--transition);
-            color: var(--dark-text);
-            font-size: 0.9rem;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            min-height: 46px;
-        }
-
-        .day-btn-mobile:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-
-        .day-btn-mobile.active {
-            background: var(--gradient-primary);
-            color: white;
-            border-color: var(--primary-color);
-            box-shadow: 0 3px 8px rgba(65, 105, 225, 0.3);
-        }
-
-        /* ========== MAIN CONTAINER ========== */
-        .main-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 1rem;
-            transition: var(--transition);
-        }
-
-        /* ========== PROGRESS SECTION ========== */
-        .progress-section {
-            background: var(--light-bg);
-            border-radius: var(--border-radius);
-            padding: 1.25rem;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
-            margin-bottom: 1.5rem;
-            border-left: 4px solid var(--primary-color);
-        }
-
-        .progress-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .progress-header h3 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 1.1rem;
-            color: var(--dark-text);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .progress-header h3 i {
-            color: var(--primary-color);
-        }
-
-        .progress-percentage {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-
-        .progress-bar {
-            height: 10px;
-            background: var(--border-color);
-            border-radius: 5px;
-            overflow: hidden;
-            margin: 1rem 0;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--gradient-primary);
-            border-radius: 5px;
-            transition: width 0.5s ease;
-        }
-
-        .progress-text {
-            text-align: center;
-            font-size: 0.9rem;
-            color: var(--gray-text);
-            font-weight: 500;
-        }
-
-        /* ========== TRAINING CONTENT ========== */
-        .training-content {
-            background: var(--light-bg);
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
-            margin-bottom: 2rem;
-        }
-
-        .training-header {
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        .training-header h2 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 1.5rem;
-            color: var(--primary-color);
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .training-header h2 i {
-            font-size: 1.4rem;
-        }
-
-        .focus-area {
-            background: linear-gradient(135deg, rgba(65, 105, 225, 0.1), rgba(91, 130, 255, 0.1));
-            padding: 1rem;
-            border-radius: 8px;
-            font-weight: 600;
-            color: var(--dark-text);
-            font-size: 1rem;
-            text-align: center;
-            border-left: 4px solid var(--primary-color);
-        }
-
-        [data-theme="dark"] .focus-area {
-            background: linear-gradient(135deg, rgba(90, 130, 255, 0.15), rgba(123, 159, 255, 0.1));
-        }
-
-        /* ========== EXERCISES TABLE ========== */
-        .exercises-container {
-            overflow-x: auto;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            margin-top: 1.5rem;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .exercises-table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 600px;
-        }
-
-        .exercises-table thead {
-            background: rgba(65, 105, 225, 0.08);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        [data-theme="dark"] .exercises-table thead {
-            background: rgba(90, 130, 255, 0.12);
-        }
-
-        .exercises-table th {
-            padding: 1rem 0.75rem;
-            text-align: left;
-            font-weight: 600;
-            color: var(--dark-text);
-            border-bottom: 2px solid var(--primary-color);
-            font-size: 0.9rem;
-            white-space: nowrap;
-        }
-
-        .exercises-table td {
-            padding: 1rem 0.75rem;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.9rem;
-            vertical-align: middle;
-        }
-
-        .exercises-table tbody tr {
-            transition: var(--transition);
-        }
-
-        .exercises-table tbody tr:hover {
-            background: rgba(65, 105, 225, 0.04);
-        }
-
-        [data-theme="dark"] .exercises-table tbody tr:hover {
-            background: rgba(90, 130, 255, 0.08);
-        }
-
-        .exercise-row.completed {
-            background: rgba(5, 150, 105, 0.08) !important;
-        }
-
-        [data-theme="dark"] .exercise-row.completed {
-            background: rgba(5, 150, 105, 0.15) !important;
-        }
-
-        .exercise-row.completed .exercise-name {
-            color: var(--success-color);
-            font-weight: 600;
-        }
-
-        .exercise-checkbox {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            accent-color: var(--success-color);
-            margin-right: 0.5rem;
-            transition: var(--transition);
-        }
-
-        .exercise-checkbox:hover {
-            transform: scale(1.1);
-        }
-
-        .exercise-name {
-            font-weight: 500;
-            color: var(--dark-text);
-            display: flex;
-            align-items: center;
-            font-size: 0.9rem;
-            line-height: 1.4;
-        }
-
-        .exercise-name label {
-            cursor: pointer;
-            margin-left: 0.5rem;
-            flex: 1;
-        }
-
-        .video-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 0.75rem;
-            background: linear-gradient(135deg, var(--danger-color), #ff4757);
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            transition: var(--transition);
-        }
-
-        .video-link:hover {
-            background: linear-gradient(135deg, #b91c1c, #ff3838);
-            transform: translateY(-1px);
-        }
-
-        .video-link i {
-            font-size: 0.9rem;
-        }
-
-        /* ========== TOAST ========== */
-        .toast {
-            position: fixed;
-            bottom: 90px;
-            right: 20px;
-            background: linear-gradient(135deg, var(--success-color), #10b981);
-            color: white;
-            padding: 1rem 1.5rem;
-            border-radius: var(--border-radius);
-            z-index: 10000;
-            box-shadow: 0 6px 20px rgba(5, 150, 105, 0.3);
-            animation: slideIn 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-weight: 600;
-            font-size: 0.9rem;
-            max-width: 300px;
-        }
-
-        .toast.error {
-            background: linear-gradient(135deg, var(--danger-color), #ff4757);
-            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(100px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        /* ========== OVERLAY PARA MENU MOBILE ========== */
-        .menu-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.3);
-            z-index: 998;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-
-        .menu-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        /* ========== RESPONSIVE DESIGN ========== */
-        @media (max-width: 768px) {
-            body {
-                padding-top: 60px;
-            }
-
-            .header-container {
-                padding: 0 0.75rem;
-            }
-
-            .logo-img-container {
-                width: 50px; /* AUMENTADO NO MOBILE */
-                height: 50px; /* AUMENTADO NO MOBILE */
-            }
-
-            .logo-img {
-                transform: scale(2.4); /* ZOOM MAIOR NO MOBILE */
-            }
-
-            .header-info h1 {
-                font-size: 0.9rem;
-            }
-
-            .btn-header {
-                padding: 0.35rem;
-                width: 36px;
-                justify-content: center;
-            }
-
-            .btn-header span {
-                display: none;
-            }
-
-            .btn-header i {
-                margin: 0;
-            }
-
-            .menu-hamburger {
-                padding: 0.35rem 0.6rem;
-                min-width: 80px;
-                font-size: 0.75rem;
-            }
-
-            .theme-toggle {
-                width: 34px;
-                height: 34px;
-            }
-
-            .whatsapp-float {
-                width: 55px;
-                height: 55px;
-                font-size: 1.6rem;
-                bottom: 20px;
-                right: 20px;
-            }
-
-            .training-content {
-                padding: 1rem;
-            }
-
-            .training-header h2 {
-                font-size: 1.3rem;
-            }
-
-            .exercises-table th,
-            .exercises-table td {
-                padding: 0.75rem 0.5rem;
-                font-size: 0.85rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .header-container {
-                padding: 0 0.5rem;
-            }
-
-            .logo-img-container {
-                width: 48px; /* AUMENTADO */
-                height: 48px; /* AUMENTADO */
-            }
-
-            .logo-img {
-                transform: scale(2.6); /* ZOOM MAIOR AINDA */
-            }
-
-            .header-info h1 {
-                font-size: 0.85rem;
-            }
-
-            .header-actions {
-                gap: 0.3rem;
-            }
-
-            .menu-hamburger {
-                min-width: 70px;
-                padding: 0.3rem 0.5rem;
-            }
-
-            .days-grid-mobile {
-                grid-template-columns: 1fr;
-            }
-
-            .day-btn-mobile {
-                padding: 0.75rem;
-            }
-
-            .whatsapp-float {
-                width: 50px;
-                height: 50px;
-                font-size: 1.5rem;
-                bottom: 15px;
-                right: 15px;
-            }
-        }
-
-        /* Scroll suave para a tabela */
-        .exercises-container::-webkit-scrollbar {
-            height: 6px;
-        }
-
-        .exercises-container::-webkit-scrollbar-track {
-            background: var(--border-color);
-            border-radius: 3px;
-        }
-
-        .exercises-container::-webkit-scrollbar-thumb {
-            background: var(--primary-color);
-            border-radius: 3px;
-        }
-    </style>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
+<body class="page-aluno">
 
-<body>
-    <!-- Header super compacto -->
+    <!-- Header -->
     <header class="student-header">
-        <div class="header-container">
+        <div class="header-container-aluno">
             <div class="header-logo">
                 <div class="logo-img-container">
-                    <!-- A imagem será trocada pelo JavaScript conforme o tema -->
-                    <img src="img/acessoriaar.png" alt="Logo Acessoria Atlântida" class="logo-img" id="logoImage">
+                    <img src="img/acessoriaar.png" alt="Logo Acessoria Atlântida" class="logo-img-aluno" id="logoImage">
                 </div>
-                <div class="header-info">
+                <div class="header-info-aluno">
                     <h1 id="studentName">Carregando...</h1>
                 </div>
             </div>
             <div class="header-actions">
-                <button class="theme-toggle" data-action="toggle-theme" title="Alternar tema">
+                <button class="theme-toggle-aluno" data-action="toggle-theme" title="Alternar tema">
                     <i class="fas fa-moon" id="themeIcon"></i>
                 </button>
-                
-                <!-- Menu Hamburger para escolher dias -->
                 <button class="menu-hamburger" data-action="toggle-days-menu" id="menuToggle">
                     <i class="fas fa-calendar-alt" id="menuIcon"></i>
                     <span id="currentDayText">Seg</span>
                 </button>
-                
                 <button class="btn-header" data-action="logout" title="Sair do sistema">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Sair</span>
@@ -827,35 +41,25 @@
         </div>
     </header>
 
-    <!-- Overlay para fechar menu -->
     <div class="menu-overlay" data-action="close-days-menu" id="menuOverlay"></div>
 
-    <!-- Days Menu Mobile -->
+    <!-- Days Menu -->
     <div class="days-menu-mobile" id="daysMenuMobile">
         <div class="days-menu-content">
             <div class="days-grid-mobile" id="daysGridMobile">
-                <button class="day-btn-mobile active" data-day="segunda">
-                    Segunda
-                </button>
-                <button class="day-btn-mobile" data-day="terca">
-                    Terça
-                </button>
-                <button class="day-btn-mobile" data-day="quarta">
-                    Quarta
-                </button>
-                <button class="day-btn-mobile" data-day="quinta">
-                    Quinta
-                </button>
-                <button class="day-btn-mobile" data-day="sexta">
-                    Sexta
-                </button>
+                <button class="day-btn-mobile active" data-day="segunda">Segunda</button>
+                <button class="day-btn-mobile" data-day="terca">Terça</button>
+                <button class="day-btn-mobile" data-day="quarta">Quarta</button>
+                <button class="day-btn-mobile" data-day="quinta">Quinta</button>
+                <button class="day-btn-mobile" data-day="sexta">Sexta</button>
             </div>
         </div>
     </div>
 
     <!-- Main Content -->
     <main class="main-container">
-        <!-- Progress Section -->
+
+        <!-- Progress -->
         <section class="progress-section">
             <div class="progress-header">
                 <h3><i class="fas fa-chart-line"></i> Progresso do Dia</h3>
@@ -867,15 +71,63 @@
             <div class="progress-text" id="progressText">0 / 0 exercícios completos</div>
         </section>
 
+        <!-- ============================== CHECK-IN CARD ============================== -->
+        <section class="checkin-card-aluno" id="checkinCard">
+            <div class="checkin-card-top">
+                <div class="checkin-card-title">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Fazer Check-in na Academia</span>
+                </div>
+                <!-- Badge com status do último check-in -->
+                <div class="checkin-badge" id="checkinBadge" style="display:none;"></div>
+            </div>
+
+            <p class="checkin-card-desc">
+                Registre sua presença! Vamos encontrar a academia mais próxima de você e avisar seu professor.
+            </p>
+
+            <!-- Último check-in info -->
+            <div class="checkin-last-info" id="checkinLastInfo" style="display:none;">
+                <i class="fas fa-history"></i>
+                <span id="checkinLastText">Último check-in: —</span>
+            </div>
+
+            <!-- Botão principal -->
+            <button class="btn-checkin" id="btnCheckin" data-action="do-checkin">
+                <i class="fas fa-map-pin"></i>
+                <span>Fazer Check-in agora</span>
+            </button>
+
+            <!-- Loading state -->
+            <div class="checkin-loading" id="checkinLoading" style="display:none;">
+                <i class="fas fa-spinner fa-spin"></i>
+                <span id="checkinLoadingText">Obtendo localização...</span>
+            </div>
+
+            <!-- Resultado do check-in -->
+            <div class="checkin-result" id="checkinResult" style="display:none;">
+                <div class="checkin-result-gym">
+                    <i class="fas fa-dumbbell checkin-result-icon"></i>
+                    <div>
+                        <div class="checkin-result-name" id="checkinGymName">—</div>
+                        <div class="checkin-result-address" id="checkinGymAddress">—</div>
+                        <div class="checkin-result-dist" id="checkinGymDist">—</div>
+                    </div>
+                </div>
+                <!-- Mini mapa no card -->
+                <div id="checkinMiniMap" class="checkin-mini-map"></div>
+            </div>
+        </section>
+        <!-- ============================== FIM CHECK-IN CARD ============================== -->
+
         <!-- Training Content -->
         <section class="training-content">
             <div class="training-header">
                 <h2 id="dayTitle"><i class="fas fa-calendar-day"></i> Segunda-feira</h2>
                 <div class="focus-area" id="focusArea">Carregando...</div>
             </div>
-
             <div class="exercises-container">
-                <table class="exercises-table">
+                <table class="exercises-table-aluno">
                     <thead>
                         <tr>
                             <th width="5%"></th>
@@ -887,10 +139,8 @@
                     </thead>
                     <tbody id="exercisesTableBody">
                         <tr>
-                            <td colspan="5" style="text-align: center; padding: 2rem; color: var(--gray-text);">
-                                <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
-                                <br>
-                                Carregando exercícios...
+                            <td colspan="5" style="text-align:center;padding:2rem;color:var(--gray-text);">
+                                <i class="fas fa-spinner fa-spin" style="font-size:1.5rem;margin-bottom:.5rem;"></i><br>Carregando exercícios...
                             </td>
                         </tr>
                     </tbody>
@@ -904,420 +154,7 @@
         <i class="fab fa-whatsapp"></i>
     </div>
 
-    <!-- Toast Container -->
     <div id="toastContainer"></div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // ========================================
-            // CONFIGURAÇÕES
-            // ========================================
-            const SUPABASE_URL = 'https://idwtktaypxsomnqlmjdp.supabase.co';
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkd3RrdGF5cHhzb21ucWxtamRwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU2ODQ4NjIsImV4cCI6MjA4MTI2MDg2Mn0.NqqhknttW9VfIb4sr3NkpTRemV3_YohxK093Pjhm8v0';
-            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-            const ADMIN_WHATSAPP = '5585981521490';
-            const THEME_KEY = 'student_app_theme';
-
-            // Variáveis de estado
-            let currentStudent = null;
-            let currentDay = 'segunda';
-            let studentTrainings = null;
-            let studentProgress = {};
-            let isMobileMenuOpen = false;
-
-            // ========================================
-            // INICIALIZAÇÃO
-            // ========================================
-            async function initializeApp() {
-                console.log('🚀 Iniciando aplicação...');
-                
-                await checkStudentLogin();
-                
-                if (!currentStudent) {
-                    console.error('❌ currentStudent não foi definido! Parando inicialização.');
-                    return;
-                }
-
-                console.log('✅ Login verificado. Continuando inicialização...');
-                loadTheme();
-                setupEventListeners();
-                await loadStudentData();
-                selectDay('segunda');
-                console.log('✅ Aplicação inicializada com sucesso!');
-            }
-
-            // ========================================
-            // EVENT LISTENERS
-            // ========================================
-            function setupEventListeners() {
-                // Listener genérico
-                document.body.addEventListener('click', (event) => {
-                    const target = event.target.closest('[data-action]');
-                    if (!target) return;
-
-                    const action = target.dataset.action;
-                    
-                    const actions = {
-                        'toggle-theme': toggleTheme,
-                        'toggle-days-menu': toggleDaysMenu,
-                        'close-days-menu': closeDaysMenu,
-                        'send-whatsapp': sendWhatsApp,
-                        'logout': logout,
-                    };
-
-                    if (actions[action]) {
-                        actions[action]();
-                    }
-                });
-
-                // Botões de dia
-                document.querySelectorAll('[data-day]').forEach(button => {
-                    button.addEventListener('click', () => {
-                        selectDay(button.dataset.day);
-                    });
-                });
-
-                // Checkboxes
-                document.getElementById('exercisesTableBody').addEventListener('change', (event) => {
-                    if (event.target.classList.contains('exercise-checkbox')) {
-                        const exerciseIndex = event.target.dataset.index;
-                        toggleExercise(exerciseIndex, event.target);
-                    }
-                });
-
-                // Tecla ESC
-                document.addEventListener('keydown', (event) => {
-                    if (event.key === 'Escape' && isMobileMenuOpen) {
-                        closeDaysMenu();
-                    }
-                });
-            }
-
-            // ========================================
-            // FUNÇÕES PRINCIPAIS
-            // ========================================
-
-            function loadTheme() {
-                const savedTheme = localStorage.getItem(THEME_KEY) || 'light';
-                setTheme(savedTheme);
-            }
-
-            function setTheme(theme) {
-                document.documentElement.setAttribute('data-theme', theme);
-                const themeIcon = document.getElementById('themeIcon');
-                themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-                updateLogoImage(theme);
-                localStorage.setItem(THEME_KEY, theme);
-            }
-
-            // FUNÇÃO PARA TROCAR A IMAGEM CONFORME O TEMA
-            function updateLogoImage(theme) {
-                const logoImage = document.getElementById('logoImage');
-                if (theme === 'dark') {
-                    // Tema escuro: usa a imagem original (colorida)
-                    logoImage.src = 'img/acessoriaar.png';
-                    logoImage.alt = 'Logo Acessoria Atlântida - Modo Escuro';
-                } else {
-                    // Tema claro: usa a imagem preta
-                    logoImage.src = 'img/acessoriapreto.jpg';
-                    logoImage.alt = 'Logo Acessoria Atlântida - Modo Claro';
-                }
-            }
-
-            function toggleTheme() {
-                const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-                setTheme(newTheme);
-            }
-
-            async function checkStudentLogin() {
-                console.log('🔍 Verificando login do aluno...');
-                const sessionData = localStorage.getItem('student_session');
-                console.log('📦 Session data:', sessionData);
-                
-                if (!sessionData) {
-                    console.error('❌ Nenhuma sessão encontrada! Redirecionando para login...');
-                    alert('Sessão não encontrada. Faça login novamente.');
-                    window.location.href = 'login.html';
-                    return;
-                }
-                try {
-                    const session = JSON.parse(sessionData);
-                    console.log('✅ Sessão parseada:', session);
-                    
-                    if (session.expiresAt < new Date().getTime()) {
-                        console.error('⏰ Sessão expirada!');
-                        alert('Sua sessão expirou. Faça login novamente.');
-                        logout();
-                        return;
-                    }
-                    currentStudent = { id: session.id, name: session.name };
-                    console.log('👤 Aluno atual:', currentStudent);
-                    
-                    const studentNameElement = document.getElementById('studentName');
-                    if (studentNameElement) {
-                        studentNameElement.textContent = currentStudent.name;
-                        console.log('✅ Nome do aluno atualizado no header');
-                    } else {
-                        console.error('❌ Elemento studentName não encontrado!');
-                    }
-                } catch (error) {
-                    console.error('❌ Erro ao processar sessão:', error);
-                    alert('Erro ao carregar sessão. Faça login novamente.');
-                    logout();
-                }
-            }
-
-            async function loadStudentData() {
-                if (!currentStudent) {
-                    console.error('❌ loadStudentData: currentStudent está vazio!');
-                    return;
-                }
-                
-                console.log('📊 Carregando dados do aluno:', currentStudent.id);
-                
-                try {
-                    console.log('🔄 Buscando treinos no Supabase...');
-                    const { data: treinoData, error: treinoError } = await supabase
-                        .from('treinos')
-                        .select('treino')
-                        .eq('aluno_id', currentStudent.id)
-                        .single();
-                    
-                    if (treinoError) {
-                        console.warn('⚠️ Erro ao buscar treino:', treinoError);
-                    } else {
-                        console.log('✅ Treino encontrado:', treinoData);
-                    }
-                    
-                    console.log('🔄 Buscando progresso no Supabase...');
-                    const { data: progressoData, error: progressoError } = await supabase
-                        .from('progresso')
-                        .select('progresso')
-                        .eq('aluno_id', currentStudent.id)
-                        .single();
-                    
-                    if (progressoError) {
-                        console.warn('⚠️ Erro ao buscar progresso:', progressoError);
-                    } else {
-                        console.log('✅ Progresso encontrado:', progressoData);
-                    }
-                    
-                    studentTrainings = treinoData?.treino || await getDefaultTraining();
-                    studentProgress = progressoData?.progresso || {};
-                    
-                    console.log('📋 Dados carregados - Treinos:', studentTrainings);
-                    console.log('📈 Dados carregados - Progresso:', studentProgress);
-                    
-                } catch (error) {
-                    console.error('❌ Erro ao carregar dados:', error);
-                    showToast('Não foi possível carregar seus dados. Verifique sua conexão.', 'error');
-                }
-            }
-
-            function toggleDaysMenu() {
-                isMobileMenuOpen = !isMobileMenuOpen;
-                const daysMenu = document.getElementById('daysMenuMobile');
-                const overlay = document.getElementById('menuOverlay');
-                const menuIcon = document.getElementById('menuIcon');
-                
-                if (isMobileMenuOpen) {
-                    daysMenu.classList.add('active');
-                    overlay.classList.add('active');
-                    menuIcon.className = 'fas fa-times';
-                    document.body.style.overflow = 'hidden';
-                } else {
-                    closeDaysMenu();
-                }
-            }
-
-            function closeDaysMenu() {
-                if (!isMobileMenuOpen) return;
-                isMobileMenuOpen = false;
-                document.getElementById('daysMenuMobile').classList.remove('active');
-                document.getElementById('menuOverlay').classList.remove('active');
-                document.getElementById('menuIcon').className = 'fas fa-calendar-alt';
-                document.body.style.overflow = 'auto';
-            }
-
-            function selectDay(day) {
-                currentDay = day;
-                updateDaySelectionUI(day);
-                loadDayTraining();
-                closeDaysMenu();
-            }
-
-            function updateDaySelectionUI(day) {
-                const dayNames = { 
-                    segunda: 'Segunda', 
-                    terca: 'Terça', 
-                    quarta: 'Quarta', 
-                    quinta: 'Quinta', 
-                    sexta: 'Sexta' 
-                };
-                
-                const shortNames = {
-                    segunda: 'Seg',
-                    terca: 'Ter',
-                    quarta: 'Qua',
-                    quinta: 'Qui',
-                    sexta: 'Sex'
-                };
-                
-                // Atualizar texto do botão hamburger
-                document.getElementById('currentDayText').textContent = shortNames[day];
-                
-                // Atualizar título
-                document.getElementById('dayTitle').innerHTML = `<i class="fas fa-calendar-day"></i> ${dayNames[day]}-feira`;
-                
-                // Atualizar todos os botões do menu
-                document.querySelectorAll('[data-day]').forEach(btn => {
-                    btn.classList.toggle('active', btn.dataset.day === day);
-                });
-            }
-
-            function loadDayTraining() {
-                const training = studentTrainings?.[currentDay];
-                const tbody = document.getElementById('exercisesTableBody');
-                tbody.innerHTML = '';
-
-                if (!training || !training.exercises || training.exercises.length === 0) {
-                    document.getElementById('focusArea').textContent = 'Dia de descanso';
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="5" style="text-align:center; padding: 2rem; color: var(--gray-text);">
-                                <i class="fas fa-bed" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
-                                <br>
-                                Nenhum exercício para hoje.
-                            </td>
-                        </tr>`;
-                    updateProgressUI();
-                    return;
-                }
-
-                document.getElementById('focusArea').textContent = training.focus || 'Treino do dia';
-                
-                training.exercises.forEach((exercise, index) => {
-                    const isCompleted = studentProgress[currentDay]?.includes(index) ?? false;
-                    const exerciseId = `exercise_${currentDay}_${index}_${Date.now()}`;
-                    
-                    tbody.innerHTML += `
-                        <tr class="exercise-row ${isCompleted ? 'completed' : ''}">
-                            <td>
-                                <input type="checkbox" 
-                                       class="exercise-checkbox" 
-                                       id="${exerciseId}"
-                                       name="${exerciseId}"
-                                       data-index="${index}" 
-                                       ${isCompleted ? 'checked' : ''}
-                                       autocomplete="off">
-                            </td>
-                            <td class="exercise-name">
-                                <label for="${exerciseId}">${exercise.name || 'Exercício'}</label>
-                            </td>
-                            <td>${exercise.series || '-'}</td>
-                            <td>${exercise.reps || '-'}</td>
-                            <td>
-                                ${exercise.video ? 
-                                    `<a href="${exercise.video}" target="_blank" class="video-link">
-                                        <i class="fas fa-play-circle"></i> Vídeo
-                                    </a>` : 
-                                    '<span style="color: var(--gray-text);">-</span>'
-                                }
-                            </td>
-                        </tr>`;
-                });
-                updateProgressUI();
-            }
-
-            function updateProgressUI() {
-                const exercises = studentTrainings?.[currentDay]?.exercises || [];
-                const completedExercises = studentProgress?.[currentDay] || [];
-                const total = exercises.length;
-                const completedCount = completedExercises.length;
-                const percentage = total > 0 ? Math.round((completedCount / total) * 100) : 0;
-
-                document.getElementById('progressFill').style.width = `${percentage}%`;
-                document.getElementById('progressPercentage').textContent = `${percentage}%`;
-                document.getElementById('progressText').textContent = `${completedCount} / ${total} exercícios`;
-            }
-
-            async function toggleExercise(index, checkbox) {
-                const exerciseIndex = parseInt(index);
-                const isCompleted = checkbox.checked;
-                checkbox.disabled = true;
-
-                try {
-                    if (!Array.isArray(studentProgress[currentDay])) {
-                        studentProgress[currentDay] = [];
-                    }
-                    
-                    const progressDay = studentProgress[currentDay];
-                    const existingIndex = progressDay.indexOf(exerciseIndex);
-
-                    if (isCompleted && existingIndex === -1) {
-                        progressDay.push(exerciseIndex);
-                    } else if (!isCompleted && existingIndex > -1) {
-                        progressDay.splice(existingIndex, 1);
-                    }
-
-                    await supabase.from('progresso').upsert({ 
-                        aluno_id: currentStudent.id, 
-                        progresso: studentProgress 
-                    }, { onConflict: 'aluno_id' });
-                    
-                    checkbox.closest('tr').classList.toggle('completed', isCompleted);
-                    updateProgressUI();
-                    showToast('Progresso salvo!', 'success');
-                } catch (error) {
-                    console.error("Erro ao salvar progresso:", error);
-                    showToast('Erro ao salvar.', 'error');
-                    checkbox.checked = !isCompleted;
-                } finally {
-                    checkbox.disabled = false;
-                }
-            }
-
-            function sendWhatsApp() {
-                const dayNames = { 
-                    segunda: 'Segunda', 
-                    terca: 'Terça', 
-                    quarta: 'Quarta', 
-                    quinta: 'Quinta', 
-                    sexta: 'Sexta' 
-                };
-                const dayName = dayNames[currentDay];
-                const message = `Olá, Italo! Sou ${currentStudent.name} e estou com uma dúvida sobre o meu treino de ${dayName}.`;
-                window.open(`https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(message)}`, '_blank');
-            }
-
-            function logout() {
-                if (confirm('Tem certeza que deseja sair?')) {
-                    localStorage.removeItem('student_session');
-                    window.location.href = 'login.html';
-                }
-            }
-
-            async function getDefaultTraining() {
-                try {
-                    const { data } = await supabase.from('treinos_padroes').select('treino').single();
-                    return data?.treino || {};
-                } catch { return {}; }
-            }
-
-            function showToast(message, type = 'success') {
-                const container = document.getElementById('toastContainer') || document.body;
-                const toast = document.createElement('div');
-                toast.className = `toast ${type}`;
-                toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> <span>${message}</span>`;
-                container.appendChild(toast);
-                setTimeout(() => toast.remove(), 3000);
-            }
-
-            // Inicia a aplicação
-            initializeApp();
-        });
-    </script>
+    <script src="treino-aluno.js"></script>
 </body>
 </html>
