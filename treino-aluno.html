@@ -71,14 +71,13 @@
             <div class="progress-text" id="progressText">0 / 0 exercícios completos</div>
         </section>
 
-        <!-- ============================== CHECK-IN CARD ============================== -->
+        <!-- CHECK-IN CARD -->
         <section class="checkin-card-aluno" id="checkinCard">
             <div class="checkin-card-top">
                 <div class="checkin-card-title">
                     <i class="fas fa-map-marker-alt"></i>
                     <span>Fazer Check-in na Academia</span>
                 </div>
-                <!-- Badge com status do último check-in -->
                 <div class="checkin-badge" id="checkinBadge" style="display:none;"></div>
             </div>
 
@@ -86,25 +85,21 @@
                 Registre sua presença! Vamos encontrar a academia mais próxima de você e avisar seu professor.
             </p>
 
-            <!-- Último check-in info -->
             <div class="checkin-last-info" id="checkinLastInfo" style="display:none;">
                 <i class="fas fa-history"></i>
                 <span id="checkinLastText">Último check-in: —</span>
             </div>
 
-            <!-- Botão principal -->
             <button class="btn-checkin" id="btnCheckin" data-action="do-checkin">
                 <i class="fas fa-map-pin"></i>
                 <span>Fazer Check-in agora</span>
             </button>
 
-            <!-- Loading state -->
             <div class="checkin-loading" id="checkinLoading" style="display:none;">
                 <i class="fas fa-spinner fa-spin"></i>
                 <span id="checkinLoadingText">Obtendo localização...</span>
             </div>
 
-            <!-- Resultado do check-in -->
             <div class="checkin-result" id="checkinResult" style="display:none;">
                 <div class="checkin-result-gym">
                     <i class="fas fa-dumbbell checkin-result-icon"></i>
@@ -114,11 +109,9 @@
                         <div class="checkin-result-dist" id="checkinGymDist">—</div>
                     </div>
                 </div>
-                <!-- Mini mapa no card -->
                 <div id="checkinMiniMap" class="checkin-mini-map"></div>
             </div>
         </section>
-        <!-- ============================== FIM CHECK-IN CARD ============================== -->
 
         <!-- Training Content -->
         <section class="training-content">

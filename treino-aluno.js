@@ -1,21 +1,18 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // ============================================================
-    // CONFIGURAÇÕES
-    // ============================================================
     const SUPABASE_URL = 'https://idwtktaypxsomnqlmjdp.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkd3RrdGF5cHhzb21ucWxtamRwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU2ODQ4NjIsImV4cCI6MjA4MTI2MDg2Mn0.NqqhknttW9VfIb4sr3NkpTRemV3_YohxK093Pjhm8v0';
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const ADMIN_WHATSAPP = '5585981521490';
     const THEME_KEY     = 'student_app_theme';
-    const CHECKIN_RADIUS_M = 3000; // busca academias num raio de 3 km
+    const CHECKIN_RADIUS_M = 3000;
 
     let currentStudent  = null;
     let currentDay      = 'segunda';
     let studentTrainings = null;
     let studentProgress  = {};
     let isMobileMenuOpen = false;
-    let miniMap          = null; // instância Leaflet do mini-mapa no card
+    let miniMap          = null;
 
     // ============================================================
     // INICIALIZAÇÃO
@@ -225,6 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
             );
             checkbox.closest('tr').classList.toggle('completed', checked);
             updateProgressUI();
+            await checkWeeklyCompletion();  // Verifica se a semana foi concluída
             showToast('Progresso salvo!', 'success');
         } catch {
             showToast('Erro ao salvar.', 'error');
@@ -235,10 +233,51 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ============================================================
-    // ✅ CHECK-IN  —  lógica principal
+    // REINÍCIO SEMANAL E AVISO MENSAL
     // ============================================================
+    async function checkWeeklyCompletion() {
+        const days = ['segunda', 'terca', 'quarta', 'quinta', 'sexta'];
+        let allCompleted = true;
 
-    /** Carrega o último check-in do aluno e mostra no card */
+        for (const day of days) {
+            const exercises = studentTrainings?.[day]?.exercises || [];
+            const completed = studentProgress?.[day] || [];
+            if (exercises.length === 0) continue;
+            if (completed.length !== exercises.length) {
+                allCompleted = false;
+                break;
+            }
+        }
+
+        if (allCompleted) {
+            showToast('🎉 Parabéns! Você concluiu todos os treinos da semana!', 'success');
+            // Reiniciar progresso semanal
+            for (const day of days) {
+                studentProgress[day] = [];
+            }
+            await supabase.from('progresso').upsert(
+                { aluno_id: currentStudent.id, progresso: studentProgress },
+                { onConflict: 'aluno_id' }
+            );
+            // Contador de semanas consecutivas
+            const storageKey = `consecutiveWeeks_${currentStudent.id}`;
+            let weeks = parseInt(localStorage.getItem(storageKey) || '0', 10);
+            weeks += 1;
+            localStorage.setItem(storageKey, weeks.toString());
+
+            if (weeks >= 4) {
+                showToast('💡 Já se passaram 4 semanas! Considere pedir ao seu professor uma atualização de treino.', 'success');
+                localStorage.setItem(storageKey, '0');
+            }
+
+            // Recarregar a tela do dia atual para refletir o reset
+            selectDay(currentDay);
+        }
+    }
+
+    // ============================================================
+    // CHECK-IN
+    // ============================================================
     async function loadLastCheckin() {
         try {
             const { data } = await supabase
@@ -262,24 +301,19 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch { /* silencioso */ }
     }
 
-    /** Fluxo completo de check-in */
     async function doCheckin() {
         const btn     = document.getElementById('btnCheckin');
         const loading = document.getElementById('checkinLoading');
         const result  = document.getElementById('checkinResult');
         const loadTxt = document.getElementById('checkinLoadingText');
 
-        // Reseta UI
         btn.style.display     = 'none';
         result.style.display  = 'none';
         loading.style.display = 'flex';
         loadTxt.textContent   = 'Obtendo sua localização...';
 
         try {
-            // 1. Pega coords do browser
             const { lat, lng } = await getCurrentPosition();
-
-            // 2. Busca academias via Overpass (OSM) — gratuito, sem chave
             loadTxt.textContent = 'Buscando academias próximas...';
             const gyms = await fetchNearbyGyms(lat, lng, CHECKIN_RADIUS_M);
 
@@ -288,10 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // 3. Pega a mais próxima
             const nearest = gyms[0];
-
-            // 4. Salva no Supabase
             loadTxt.textContent = 'Salvando check-in...';
             await supabase.from('checkins').insert([{
                 aluno_id:    currentStudent.id,
@@ -306,12 +337,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 created_at:  new Date().toISOString()
             }]);
 
-            // 5. Mostra resultado
             loading.style.display = 'none';
             showCheckinResult(nearest, lat, lng);
             await loadLastCheckin();
             showToast(`Check-in feito em ${nearest.name}! 💪`, 'success');
-
         } catch (err) {
             showCheckinError(err.message || 'Erro inesperado. Tente novamente.', btn, loading);
         }
@@ -331,11 +360,8 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.style.display     = 'block';
         btn.innerHTML         = '<i class="fas fa-check-circle"></i> <span>Check-in feito! Fazer novo</span>';
 
-        // Mini mapa Leaflet
         const mapDiv = document.getElementById('checkinMiniMap');
         mapDiv.style.display = 'block';
-
-        // Destrói instância anterior se existir
         if (miniMap) { miniMap.remove(); miniMap = null; }
 
         setTimeout(() => {
@@ -344,15 +370,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 attribution: '© OpenStreetMap'
             }).addTo(miniMap);
 
-            // Marcador aluno (azul)
             const iconAluno = L.divIcon({ className: '', html: `<div style="width:16px;height:16px;background:#1e40af;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.4);"></div>`, iconSize:[16,16], iconAnchor:[8,8] });
             L.marker([latAluno, lngAluno], { icon: iconAluno }).addTo(miniMap).bindPopup('Você está aqui');
 
-            // Marcador academia (vermelho)
             const iconGym = L.divIcon({ className:'', html:`<div style="width:20px;height:20px;background:#dc2626;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.4);"></div>`, iconSize:[20,20], iconAnchor:[10,10] });
             L.marker([gym.lat, gym.lng], { icon: iconGym }).addTo(miniMap).bindPopup(gym.name).openPopup();
 
-            // Linha conectando
             L.polyline([[latAluno, lngAluno], [gym.lat, gym.lng]], { color:'#1e40af', weight:2, dashArray:'6,4', opacity:.7 }).addTo(miniMap);
         }, 100);
     }
@@ -364,10 +387,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ============================================================
-    // HELPERS DE GEOLOCALIZAÇÃO / OSM
+    // GEOLOCALIZAÇÃO E OSM
     // ============================================================
-
-    /** Retorna { lat, lng } via browser Geolocation API */
     function getCurrentPosition() {
         return new Promise((resolve, reject) => {
             if (!navigator.geolocation) {
@@ -389,9 +410,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    /** Busca academias próximas via Overpass API (OpenStreetMap) — totalmente gratuito */
     async function fetchNearbyGyms(lat, lng, radiusM) {
-        // Overpass query: fitness centres, gyms e sports centres num raio
         const query = `
             [out:json][timeout:15];
             (
@@ -430,7 +449,6 @@ document.addEventListener('DOMContentLoaded', () => {
             .sort((a, b) => a.distance - b.distance);
     }
 
-    /** Distância em metros entre dois pontos (Haversine) */
     function haversineDistance(lat1, lng1, lat2, lng2) {
         const R = 6371000;
         const dLat = toRad(lat2 - lat1);
@@ -468,9 +486,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch { return {}; }
     }
 
-    // ============================================================
-    // TOAST
-    // ============================================================
     function showToast(message, type = 'success') {
         const container = document.getElementById('toastContainer') || document.body;
         const toast = document.createElement('div');

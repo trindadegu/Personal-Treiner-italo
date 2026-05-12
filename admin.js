@@ -10,9 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentStudentId      = null;
     let currentDay            = 'segunda';
     let currentDefaultTraining= null;
-    let adminMap              = null;   // instância Leaflet do mapa admin
-    let mapMarkers            = [];     // marcadores no mapa
-    let allCheckins           = [];     // cache dos check-ins carregados
+    let adminMap              = null;
+    let mapMarkers            = [];
+    let allCheckins           = [];
 
     // ============================================================
     // INICIALIZAÇÃO
@@ -64,11 +64,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 'close-modal':                () => closeModal(target.dataset.modalId),
                 'remove-exercise-row':        () => removeExerciseRow(target),
                 'delete-student':             () => deleteStudentHandler(target.dataset.studentId),
-                // Check-ins
                 'clear-checkins':             clearCheckins,
                 'export-checkins':            exportCheckinsCsv,
             };
             if (actions[action]) actions[action]();
+        });
+
+        // Toggle de visibilidade de senha
+        document.querySelectorAll('[data-action="toggle-password"]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = btn.dataset.target;
+                const input = document.getElementById(targetId);
+                const icon = btn.querySelector('i');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.className = 'fas fa-eye-slash';
+                } else {
+                    input.type = 'password';
+                    icon.className = 'fas fa-eye';
+                }
+            });
         });
 
         document.querySelectorAll('.nav-item[data-tab]').forEach(tab => {
@@ -335,10 +351,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function getDefaultTraining() {
         try {
-            const { data, error } = await supabase.from('treinos_padroes').select('*').single();
-            if (error) { if (error.code === 'PGRST116') return initializeDefaultTrainings(); throw error; }
+            const { data, error } = await supabase
+                .from('treinos_padroes')
+                .select('*')
+                .eq('id', 1)
+                .single();
+            if (error) {
+                if (error.code === 'PGRST116') {
+                    const defaultTreino = initializeDefaultTrainings();
+                    await saveDefaultTrainingToDB(defaultTreino);
+                    return defaultTreino;
+                }
+                throw error;
+            }
             return data.treino || initializeDefaultTrainings();
-        } catch { return initializeDefaultTrainings(); }
+        } catch {
+            return initializeDefaultTrainings();
+        }
     }
 
     function initializeDefaultTrainings() {
@@ -422,7 +451,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function saveDefaultTrainingToDB(treino) {
-        const { error } = await supabase.from('treinos_padroes').upsert([{ treino, updated_at: new Date().toISOString() }]);
+        const { error } = await supabase
+            .from('treinos_padroes')
+            .upsert({ id: 1, treino, updated_at: new Date().toISOString() }, { onConflict: 'id' });
         if (error) throw error;
     }
 
@@ -539,7 +570,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ============================================================
-    // ✅ CHECK-INS — aba do admin
+    // CHECK-INS — aba do admin
     // ============================================================
     async function loadCheckinsTab() {
         try {
@@ -565,13 +596,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const uniqueStudents = new Set(checkins.map(c => c.aluno_id)).size;
         document.getElementById('statActiveStudents').textContent = uniqueStudents;
 
-        // Academia mais visitada
         const gymCount = {};
         checkins.forEach(c => { gymCount[c.gym_name] = (gymCount[c.gym_name]||0)+1; });
         const topGym = Object.entries(gymCount).sort((a,b) => b[1]-a[1])[0];
         document.getElementById('statTopGym').textContent = topGym ? `${topGym[0]} (${topGym[1]}x)` : '—';
 
-        // Último check-in
         if (checkins.length) {
             const last = new Date(checkins[0].created_at);
             document.getElementById('statLastCheckin').textContent =
@@ -608,10 +637,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderCheckinMap(checkins) {
         const mapDiv = document.getElementById('adminMap');
 
-        // Destrói mapa anterior
         if (adminMap) { adminMap.remove(); adminMap = null; mapMarkers = []; }
 
-        // Centro padrão: Fortaleza-CE (área do usuário)
         const defaultCenter = [-3.7172, -38.5433];
         adminMap = L.map('adminMap').setView(defaultCenter, 12);
 
@@ -626,7 +653,6 @@ document.addEventListener('DOMContentLoaded', () => {
         checkins.forEach(c => {
             if (!c.lat_aluno || !c.lng_aluno) return;
 
-            // Marcador aluno (azul)
             const iconAluno = L.divIcon({
                 className: '',
                 html: `<div style="position:relative;">
@@ -645,7 +671,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             bounds.push([c.lat_aluno, c.lng_aluno]);
 
-            // Marcador academia (vermelho)
             if (c.lat_gym && c.lng_gym) {
                 const iconGym = L.divIcon({
                     className: '',

@@ -25,9 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Abas de Login
         document.querySelectorAll('.login-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                switchLoginTab(tab.dataset.tab);
-            });
+            tab.addEventListener('click', () => switchLoginTab(tab.dataset.tab));
         });
 
         // Formulários de Login
@@ -36,6 +34,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Botão "Esqueci minha senha"
         document.querySelector('.btn-forgot-password').addEventListener('click', forgotPassword);
+
+        // Toggle de visibilidade de senha
+        document.querySelectorAll('[data-action="toggle-password"]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = btn.dataset.target;
+                const input = document.getElementById(targetId);
+                const icon = btn.querySelector('i');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.className = 'fas fa-eye-slash';
+                } else {
+                    input.type = 'password';
+                    icon.className = 'fas fa-eye';
+                }
+            });
+        });
     }
 
     // ========================================

@@ -80,7 +80,6 @@ body {
     transition: var(--transition);
 }
 
-
 /* ============================================================
    INDEX.HTML
    ============================================================ */
@@ -155,17 +154,10 @@ body.page-index {
 }
 
 @media (max-width: 768px) {
-    .page-index .container {
-        padding: 2rem;
-    }
-    .page-index h1 {
-        font-size: 2rem;
-    }
-    .page-index p {
-        font-size: 1rem;
-    }
+    .page-index .container { padding: 2rem; }
+    .page-index h1 { font-size: 2rem; }
+    .page-index p { font-size: 1rem; }
 }
-
 
 /* ============================================================
    LOGIN.HTML
@@ -339,10 +331,7 @@ body.page-login {
 .login-body { padding: 2rem 1.5rem; }
 
 .login-form { display: none; }
-.login-form.active {
-    display: block;
-    animation: fadeIn 0.4s ease-in-out;
-}
+.login-form.active { display: block; animation: fadeIn 0.4s ease-in-out; }
 
 .form-group { margin-bottom: 1.5rem; }
 
@@ -376,6 +365,32 @@ select:focus {
 }
 
 select { cursor: pointer; }
+
+/* Grupo de input com ícone de olho */
+.password-input-group {
+    position: relative;
+}
+
+.password-input-group input {
+    padding-right: 3rem;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--gray-text);
+    font-size: 1.2rem;
+    padding: 0.5rem;
+}
+
+.password-toggle:hover {
+    color: var(--primary-color);
+}
 
 .btn-primary {
     width: 100%;
@@ -491,7 +506,6 @@ select { cursor: pointer; }
 
 [data-theme="dark"] { --gradient-accent: linear-gradient(135deg, #1a202c, #2d3748); }
 
-
 /* ============================================================
    ADMIN.HTML
    ============================================================ */
@@ -501,7 +515,6 @@ body.page-admin {
     background-color: var(--light-bg);
 }
 
-/* Variáveis específicas do admin */
 body.page-admin {
     --primary-color: #1e40af;
     --secondary-color: #059669;
@@ -644,6 +657,8 @@ body.page-admin[data-theme="dark"] {
 
 .nav-item i { font-size: 1.1rem; min-width: 24px; }
 
+
+
 .main-content {
     flex: 1;
     padding: 1.5rem;
@@ -688,43 +703,29 @@ body.page-admin[data-theme="dark"] {
     white-space: nowrap;
 }
 
-.btn-primary-admin {
+.btn-primary {
     background: linear-gradient(135deg, #1e40af, #1e3a8a);
     color: white;
     box-shadow: 0 4px 12px rgba(30, 64, 175, 0.2);
 }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
 
-.btn-primary-admin:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
-
-.btn-secondary-admin {
+.btn-secondary {
     background: linear-gradient(135deg, #059669, #047857);
     color: white;
 }
+.btn-secondary:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(5, 150, 105, 0.2); }
 
-.btn-secondary-admin:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(5, 150, 105, 0.2); }
-
-.btn-danger-admin {
+.btn-danger {
     background: var(--danger-color);
     color: white;
 }
+.btn-danger:hover { background: #b91c1c; transform: translateY(-2px); }
 
-.btn-danger-admin:hover { background: #b91c1c; transform: translateY(-2px); }
-
-.btn-warning-admin {
+.btn-warning {
     background: var(--warning-color);
     color: white;
 }
-
-.btn-warning-admin:hover { background: #d97706; transform: translateY(-2px); }
-
-/* Atalhos para manter compatibilidade com classes originais */
-.btn-primary { background: linear-gradient(135deg, #1e40af, #1e3a8a); color: white; box-shadow: 0 4px 12px rgba(30, 64, 175, 0.2); }
-.btn-primary:hover { transform: translateY(-2px); }
-.btn-secondary { background: linear-gradient(135deg, #059669, #047857); color: white; }
-.btn-secondary:hover { transform: translateY(-2px); }
-.btn-danger { background: var(--danger-color); color: white; }
-.btn-danger:hover { background: #b91c1c; transform: translateY(-2px); }
-.btn-warning { background: var(--warning-color); color: white; }
 .btn-warning:hover { background: #d97706; transform: translateY(-2px); }
 
 .treinos-container, .students-container, .edit-training-container, .progress-container, .settings-box {
@@ -831,6 +832,10 @@ body.page-admin[data-theme="dark"] {
     overflow-x: auto;
 }
 
+.table-container {
+    overflow-x: auto;
+}
+
 .exercises-table {
     width: 100%;
     border-collapse: collapse;
@@ -905,6 +910,29 @@ body.page-admin[data-theme="dark"] {
 }
 
 .form-input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1); }
+
+.password-input-group {
+    position: relative;
+}
+
+.password-input-group .form-input {
+    padding-right: 3rem;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--gray-text);
+    font-size: 1.2rem;
+    padding: 0.5rem;
+}
+
+.password-toggle:hover { color: var(--primary-color); }
 
 .progress-grid {
     display: grid;
@@ -1021,8 +1049,8 @@ body.page-admin[data-theme="dark"] {
     font-size: 0.9rem;
 }
 
-.toast.success { border-left: 4px solid #059669; color: #059669; }
-.toast.error { border-left: 4px solid var(--danger-color); color: var(--danger-color); }
+.toast.success { border-left-color: #059669; color: #059669; }
+.toast.error { border-left-color: var(--danger-color); color: var(--danger-color); }
 
 .btn-menu-toggle {
     display: none;
@@ -1115,7 +1143,6 @@ body.page-admin[data-theme="dark"] {
     .btn-logout { padding: 0.5rem; }
     .theme-toggle { padding: 0.5rem; }
 }
-
 
 /* ============================================================
    TREINO-ALUNO.HTML
@@ -1521,7 +1548,6 @@ body.page-aluno {
     .whatsapp-float { width: 50px; height: 50px; font-size: 1.5rem; bottom: 15px; right: 15px; }
 }
 
-
 /* ============================================================
    ANIMAÇÕES COMPARTILHADAS
    ============================================================ */
@@ -1699,32 +1725,10 @@ body.page-aluno {
     border-color: var(--dark-border);
 }
 
-
 /* ============================================================
    CHECK-INS — ABA ADMIN (admin.html)
    ============================================================ */
 
-/* Botão check-in no sidebar com destaque */
-.nav-item-checkin {
-    position: relative;
-}
-
-.nav-item-checkin::after {
-    content: 'NOVO';
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: #dc2626;
-    color: #fff;
-    font-size: 9px;
-    font-weight: 700;
-    padding: 2px 5px;
-    border-radius: 4px;
-    letter-spacing: 0.5px;
-}
-
-/* Header actions do check-in */
 .checkin-header-actions {
     display: flex;
     gap: 0.6rem;

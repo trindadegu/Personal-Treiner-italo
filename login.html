@@ -56,7 +56,12 @@
                     <label for="adminPassword">
                         <i class="fas fa-lock"></i> Senha
                     </label>
-                    <input type="password" id="adminPassword" placeholder="Digite sua senha" required autocomplete="current-password">
+                    <div class="password-input-group">
+                        <input type="password" id="adminPassword" placeholder="Digite sua senha" required autocomplete="current-password">
+                        <button type="button" class="password-toggle" data-action="toggle-password" data-target="adminPassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn-primary" id="adminLoginBtn">
@@ -83,7 +88,12 @@
                     <label for="studentPassword">
                         <i class="fas fa-lock"></i> Senha
                     </label>
-                    <input type="password" id="studentPassword" placeholder="6 últimos dígitos do seu ID" required autocomplete="current-password" maxlength="6">
+                    <div class="password-input-group">
+                        <input type="password" id="studentPassword" placeholder="6 últimos dígitos do seu ID" required autocomplete="current-password" maxlength="6">
+                        <button type="button" class="password-toggle" data-action="toggle-password" data-target="studentPassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn-primary" id="studentLoginBtn">

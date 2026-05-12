@@ -42,7 +42,7 @@
                 <button class="nav-item" data-tab="edit-training"><i class="fas fa-edit"></i> Editar Treino Aluno</button>
                 <button class="nav-item" data-tab="default-trainings"><i class="fas fa-clipboard-list"></i> Treinos Padrão</button>
                 <button class="nav-item" data-tab="progress"><i class="fas fa-chart-line"></i> Progresso dos Alunos</button>
-                <button class="nav-item nav-item-checkin" data-tab="checkins"><i class="fas fa-map-marker-alt"></i> Check-ins</button>
+                <button class="nav-item" data-tab="checkins"><i class="fas fa-map-marker-alt"></i> Check-ins</button>
                 <button class="nav-item" data-tab="settings"><i class="fas fa-cog"></i> Configurações</button>
             </nav>
         </aside>
@@ -255,7 +255,12 @@
                         </div>
                         <div class="form-group">
                             <label for="adminPasswordSetting">Nova Senha:</label>
-                            <input type="password" id="adminPasswordSetting" name="adminPasswordSetting" class="form-input" placeholder="Deixe em branco para manter a atual" autocomplete="new-password">
+                            <div class="password-input-group">
+                                <input type="password" id="adminPasswordSetting" name="adminPasswordSetting" class="form-input" placeholder="Deixe em branco para manter a atual" autocomplete="new-password">
+                                <button type="button" class="password-toggle" data-action="toggle-password" data-target="adminPasswordSetting">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
                         </div>
                         <button class="btn btn-primary" data-action="save-admin-settings"><i class="fas fa-save"></i> Salvar Configurações</button>
                     </div>
