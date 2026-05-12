@@ -89,16 +89,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================================================
     async function checkStudentLogin() {
         const sessionData = localStorage.getItem('student_session');
-        if (!sessionData) { alert('Sessão não encontrada. Faça login novamente.'); window.location.href = 'login.html'; return; }
+        if (!sessionData) { alert('Sessão não encontrada.'); window.location.href = 'login.html'; return; }
         try {
             const session = JSON.parse(sessionData);
-            if (session.expiresAt < Date.now()) { alert('Sua sessão expirou. Faça login novamente.'); logout(); return; }
+            if (session.expiresAt < Date.now()) { alert('Sessão expirada.'); logout(); return; }
             currentStudent = { id: session.id, name: session.name };
             document.getElementById('studentName').textContent = currentStudent.name;
-        } catch {
-            alert('Erro ao carregar sessão.');
-            logout();
-        }
+        } catch { alert('Erro na sessão.'); logout(); }
     }
 
     // ============================================================
@@ -113,13 +110,11 @@ document.addEventListener('DOMContentLoaded', () => {
             ]);
             studentTrainings = treinoRes.data?.treino || await getDefaultTraining();
             studentProgress  = progressoRes.data?.progresso || {};
-        } catch (err) {
-            showToast('Não foi possível carregar seus dados.', 'error');
-        }
+        } catch { showToast('Não foi possível carregar seus dados.', 'error'); }
     }
 
     // ============================================================
-    // MENU DE DIAS
+    // MENU DE DIAS / TREINOS / PROGRESSO (mantido igual)
     // ============================================================
     function toggleDaysMenu() {
         isMobileMenuOpen = !isMobileMenuOpen;
@@ -131,9 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
             overlay.classList.add('active');
             icon.className = 'fas fa-times';
             document.body.style.overflow = 'hidden';
-        } else {
-            closeDaysMenu();
-        }
+        } else { closeDaysMenu(); }
     }
 
     function closeDaysMenu() {
@@ -155,51 +148,42 @@ document.addEventListener('DOMContentLoaded', () => {
         closeDaysMenu();
     }
 
-    // ============================================================
-    // TREINO DO DIA + PROGRESSO
-    // ============================================================
     function loadDayTraining() {
         const training = studentTrainings?.[currentDay];
         const tbody = document.getElementById('exercisesTableBody');
         tbody.innerHTML = '';
-
         if (!training?.exercises?.length) {
             document.getElementById('focusArea').textContent = 'Dia de descanso';
             tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--gray-text);">
-                <i class="fas fa-bed" style="font-size:1.5rem;margin-bottom:.5rem;"></i><br>Nenhum exercício para hoje.</td></tr>`;
+                <i class="fas fa-bed"></i><br>Nenhum exercício para hoje.</td></tr>`;
             updateProgressUI();
             return;
         }
-
         document.getElementById('focusArea').textContent = training.focus || 'Treino do dia';
-
         training.exercises.forEach((ex, index) => {
             const isCompleted = studentProgress[currentDay]?.includes(index) ?? false;
             const exId = `ex_${currentDay}_${index}_${Date.now()}`;
             tbody.innerHTML += `
                 <tr class="exercise-row ${isCompleted ? 'completed' : ''}">
-                    <td><input type="checkbox" class="exercise-checkbox" id="${exId}" name="${exId}"
-                               data-index="${index}" ${isCompleted ? 'checked' : ''} autocomplete="off"></td>
+                    <td><input type="checkbox" class="exercise-checkbox" id="${exId}" data-index="${index}" ${isCompleted ? 'checked' : ''}></td>
                     <td class="exercise-name"><label for="${exId}">${ex.name || 'Exercício'}</label></td>
                     <td>${ex.series || '-'}</td>
                     <td>${ex.reps || '-'}</td>
-                    <td>${ex.video
-                        ? `<a href="${ex.video}" target="_blank" class="video-link"><i class="fas fa-play-circle"></i> Vídeo</a>`
-                        : '<span style="color:var(--gray-text);">-</span>'}</td>
+                    <td>${ex.video ? `<a href="${ex.video}" target="_blank" class="video-link"><i class="fas fa-play-circle"></i> Vídeo</a>` : '<span style="color:var(--gray-text);">-</span>'}</td>
                 </tr>`;
         });
         updateProgressUI();
     }
 
     function updateProgressUI() {
-        const exercises  = studentTrainings?.[currentDay]?.exercises || [];
-        const completed  = studentProgress?.[currentDay] || [];
-        const total      = exercises.length;
-        const count      = completed.length;
-        const pct        = total > 0 ? Math.round((count / total) * 100) : 0;
-        document.getElementById('progressFill').style.width       = `${pct}%`;
+        const exercises = studentTrainings?.[currentDay]?.exercises || [];
+        const completed = studentProgress?.[currentDay] || [];
+        const total = exercises.length;
+        const count = completed.length;
+        const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+        document.getElementById('progressFill').style.width = `${pct}%`;
         document.getElementById('progressPercentage').textContent = `${pct}%`;
-        document.getElementById('progressText').textContent       = `${count} / ${total} exercícios`;
+        document.getElementById('progressText').textContent = `${count} / ${total} exercícios`;
     }
 
     async function toggleExercise(index, checkbox) {
@@ -232,7 +216,6 @@ document.addEventListener('DOMContentLoaded', () => {
     async function checkWeeklyCompletion() {
         const days = ['segunda', 'terca', 'quarta', 'quinta', 'sexta'];
         let allCompleted = true;
-
         for (const day of days) {
             const exercises = studentTrainings?.[day]?.exercises || [];
             const completed = studentProgress?.[day] || [];
@@ -241,7 +224,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
             }
         }
-
         if (allCompleted) {
             showToast('🎉 Parabéns! Você concluiu todos os treinos da semana!', 'success');
             days.forEach(day => studentProgress[day] = []);
@@ -253,7 +235,6 @@ document.addEventListener('DOMContentLoaded', () => {
             let weeks = parseInt(localStorage.getItem(storageKey) || '0', 10);
             weeks += 1;
             localStorage.setItem(storageKey, weeks.toString());
-
             if (weeks >= 4) {
                 showToast('💡 Já se passaram 4 semanas! Considere pedir ao seu professor uma atualização de treino.', 'success');
                 localStorage.setItem(storageKey, '0');
@@ -274,14 +255,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 .order('created_at', { ascending: false })
                 .limit(1)
                 .maybeSingle();
-
             if (data) {
                 const dt  = new Date(data.created_at);
                 const fmt = dt.toLocaleDateString('pt-BR') + ' às ' + dt.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
                 document.getElementById('checkinLastText').textContent = `Último: ${data.gym_name} — ${fmt}`;
                 document.getElementById('checkinLastInfo').style.display = 'flex';
             }
-        } catch { /* silencioso */ }
+        } catch {}
     }
 
     async function doCheckin() {
@@ -299,12 +279,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const { lat, lng } = await getCurrentPosition();
             loadTxt.textContent = 'Buscando academias próximas...';
             const gyms = await fetchNearbyGyms(lat, lng, CHECKIN_RADIUS_M);
-
             if (gyms.length === 0) {
-                showCheckinError('Nenhuma academia encontrada em um raio de 3 km. Tente em outro local.', btn, loading);
+                showCheckinError('Nenhuma academia encontrada em 3 km.', btn, loading);
                 return;
             }
-
             const nearest = gyms[0];
             loadTxt.textContent = 'Salvando check-in...';
             await supabase.from('checkins').insert([{
@@ -319,7 +297,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 lng_gym:     nearest.lng,
                 created_at:  new Date().toISOString()
             }]);
-
             loading.style.display = 'none';
             showCheckinResult(nearest, lat, lng);
             await loadLastCheckin();
@@ -330,184 +307,140 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showCheckinResult(gym, latAluno, lngAluno) {
-        const result  = document.getElementById('checkinResult');
-        const btn     = document.getElementById('btnCheckin');
+        const result = document.getElementById('checkinResult');
+        const btn    = document.getElementById('btnCheckin');
         const loading = document.getElementById('checkinLoading');
-
-        document.getElementById('checkinGymName').textContent    = gym.name;
-        document.getElementById('checkinGymAddress').textContent = gym.address || 'Endereço não disponível';
-        document.getElementById('checkinGymDist').textContent    = formatDistance(gym.distance);
-
-        result.style.display  = 'block';
+        document.getElementById('checkinGymName').textContent = gym.name;
+        document.getElementById('checkinGymAddress').textContent = gym.address || '—';
+        document.getElementById('checkinGymDist').textContent = formatDistance(gym.distance);
+        result.style.display = 'block';
         loading.style.display = 'none';
-        btn.style.display     = 'block';
-        btn.innerHTML         = '<i class="fas fa-check-circle"></i> <span>Check-in feito! Fazer novo</span>';
-
+        btn.style.display = 'block';
+        btn.innerHTML = '<i class="fas fa-check-circle"></i> <span>Check-in feito! Fazer novo</span>';
         const mapDiv = document.getElementById('checkinMiniMap');
         mapDiv.style.display = 'block';
         if (miniMap) { miniMap.remove(); miniMap = null; }
-
         setTimeout(() => {
             miniMap = L.map('checkinMiniMap', { zoomControl: true, scrollWheelZoom: false }).setView([latAluno, lngAluno], 15);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap'
-            }).addTo(miniMap);
-
-            const iconAluno = L.divIcon({ className: '', html: `<div style="width:16px;height:16px;background:#1e40af;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.4);"></div>`, iconSize:[16,16], iconAnchor:[8,8] });
-            L.marker([latAluno, lngAluno], { icon: iconAluno }).addTo(miniMap).bindPopup('Você está aqui');
-
-            const iconGym = L.divIcon({ className:'', html:`<div style="width:20px;height:20px;background:#dc2626;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.4);"></div>`, iconSize:[20,20], iconAnchor:[10,10] });
-            L.marker([gym.lat, gym.lng], { icon: iconGym }).addTo(miniMap).bindPopup(gym.name).openPopup();
-
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(miniMap);
+            L.marker([latAluno, lngAluno], { icon: L.divIcon({ html: '<div style="width:16px;height:16px;background:#1e40af;border:3px solid #fff;border-radius:50%;"></div>', iconSize:[16,16], iconAnchor:[8,8] }) }).addTo(miniMap).bindPopup('Você');
+            L.marker([gym.lat, gym.lng], { icon: L.divIcon({ html: '<div style="width:20px;height:20px;background:#dc2626;border:3px solid #fff;border-radius:50%;"></div>', iconSize:[20,20], iconAnchor:[10,10] }) }).addTo(miniMap).bindPopup(gym.name).openPopup();
             L.polyline([[latAluno, lngAluno], [gym.lat, gym.lng]], { color:'#1e40af', weight:2, dashArray:'6,4', opacity:.7 }).addTo(miniMap);
         }, 100);
     }
 
     function showCheckinError(msg, btn, loading) {
         loading.style.display = 'none';
-        btn.style.display     = 'block';
+        btn.style.display = 'block';
         showToast(msg, 'error');
     }
 
     // ============================================================
-    // GEOLOCALIZAÇÃO COM FEEDBACK INTELIGENTE
+    // GEOLOCALIZAÇÃO COM INSTRUÇÕES POR NAVEGADOR
     // ============================================================
     function getCurrentPosition() {
         return new Promise((resolve, reject) => {
             if (!navigator.geolocation) {
-                reject(new Error('Seu navegador não suporta geolocalização.'));
+                reject(new Error('Geolocalização não suportada.'));
                 return;
             }
-
             navigator.geolocation.getCurrentPosition(
-                (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-                (err) => {
+                pos => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+                err => {
                     let msg = '';
-                    let canOpenSettings = false;
+                    const ua = navigator.userAgent;
+                    const isIOS = /iPhone|iPad|iPod/.test(ua);
+                    const isSafari = /Safari/.test(ua) && !/Chrome/.test(ua);
+                    const isAndroid = /Android/.test(ua);
+                    const isChrome = /Chrome/.test(ua);
 
-                    switch(err.code) {
-                        case err.PERMISSION_DENIED:
-                            msg = 'Localização bloqueada. Para usar o check-in, permita o acesso à localização nas configurações do seu navegador.';
-                            canOpenSettings = true;
-                            break;
-                        case err.POSITION_UNAVAILABLE:
-                            msg = 'Localização indisponível. Verifique se o GPS/Wi-Fi está ativo.';
-                            break;
-                        case err.TIMEOUT:
-                            msg = 'Tempo esgotado. Tente novamente em uma área com melhor sinal.';
-                            break;
-                        default:
-                            msg = 'Erro ao obter localização.';
-                            break;
-                    }
-
-                    // Exibe toast com instruções
-                    showToast(msg, 'error');
-
-                    // Se possível, oferece um atalho para as configurações do site
-                    if (canOpenSettings) {
-                        // Abre um diálogo nativo ou instrução extra
-                        if (window.confirm(msg + '\n\nDeseja abrir as configurações do site? (funciona no Chrome/Edge para desktop e Android)')) {
-                            openSiteSettings();
+                    if (err.code === err.PERMISSION_DENIED) {
+                        if (isIOS) {
+                            // iOS (Safari ou qualquer navegador no iOS)
+                            msg = 'Localização bloqueada. No iPhone/iPad:\n1. Abra Ajustes > Privacidade > Localização.\n2. Role até "Safari" (ou seu navegador) e selecione "Ao usar o app".\n3. Depois volte ao site e tente novamente.';
+                        } else if (isAndroid && isChrome) {
+                            msg = 'Localização bloqueada. Toque em "Configurações" (ícone de cadeado na barra de endereço) e permita a localização.';
+                        } else {
+                            msg = 'Localização bloqueada. Verifique as configurações do navegador para permitir o acesso.';
                         }
+                        // Exibe modal com instruções detalhadas
+                        showLocationHelpModal(msg, isIOS);
+                    } else if (err.code === err.POSITION_UNAVAILABLE) {
+                        msg = 'Localização indisponível. Verifique se o GPS/Wi-Fi está ativo.';
+                    } else if (err.code === err.TIMEOUT) {
+                        msg = 'Tempo esgotado. Tente novamente em área com melhor sinal.';
+                    } else {
+                        msg = 'Erro ao obter localização.';
                     }
-
+                    if (msg) showToast(msg, 'error');
                     reject(new Error(msg));
                 },
-                {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 0
-                }
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
             );
         });
     }
 
-    /**
-     * Tenta abrir as configurações de permissão do site.
-     * Funciona no Chrome/Edge para desktop (chrome://settings/content/siteDetails)
-     * e no Android (intent de configurações do navegador).
-     */
-    function openSiteSettings() {
-        // Fallback: se for mobile, tentar abrir as configurações do app
-        const ua = navigator.userAgent;
-        const isAndroid = /Android/i.test(ua);
-        const isChrome = /Chrome/i.test(ua);
+    function showLocationHelpModal(message, isIOS) {
+        // Remove modal anterior se existir
+        const old = document.getElementById('locationHelpOverlay');
+        if (old) old.remove();
 
-        if (isAndroid && isChrome) {
-            // No Android Chrome, podemos tentar abrir as configurações do site via intent
-            window.location.href = 'intent://settings#Intent;scheme=chrome;package=com.android.chrome;end';
-        } else {
-            // Desktop: tentar abrir diretamente as configurações do site
-            window.open('chrome://settings/content/siteDetails?site=' + encodeURIComponent(window.location.origin), '_blank');
-        }
-
-        // Dica extra no toast
-        showToast('📱 Se a janela de configurações não abrir, acesse manualmente: Configurações do navegador > Privacidade > Localização.', 'success');
+        const overlay = document.createElement('div');
+        overlay.id = 'locationHelpOverlay';
+        overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:10000;display:flex;align-items:center;justify-content:center;';
+        const box = document.createElement('div');
+        box.style.cssText = 'background:var(--light-bg);color:var(--dark-text);padding:1.5rem;border-radius:12px;max-width:90%;width:350px;text-align:center;';
+        box.innerHTML = `
+            <h3 style="margin-bottom:1rem;">Permitir Localização</h3>
+            <p style="white-space:pre-line;font-size:0.9rem;margin-bottom:1.5rem;">${message.replace(/\n/g, '<br>')}</p>
+            ${isIOS ? '<p style="font-size:0.8rem;color:var(--gray-text);">⚠️ Este site precisa ser acessado via <b>HTTPS</b> para funcionar no iPhone.</p>' : ''}
+            <button id="closeLocationHelp" style="margin-top:0.5rem;padding:0.5rem 1.5rem;background:var(--primary-color);color:white;border:none;border-radius:6px;cursor:pointer;">OK, entendi</button>
+        `;
+        overlay.appendChild(box);
+        document.body.appendChild(overlay);
+        document.getElementById('closeLocationHelp').addEventListener('click', () => overlay.remove());
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
     }
 
     // ============================================================
-    // OVERPASS API – BUSCA DE ACADEMIAS
+    // OVERPASS API
     // ============================================================
     async function fetchNearbyGyms(lat, lng, radiusM) {
-        const query = `
-            [out:json][timeout:10];
-            (
-              node["leisure"="fitness_centre"](around:${radiusM},${lat},${lng});
-              node["leisure"="sports_centre"](around:${radiusM},${lat},${lng});
-              node["amenity"="gym"](around:${radiusM},${lat},${lng});
-              way["leisure"="fitness_centre"](around:${radiusM},${lat},${lng});
-              way["leisure"="sports_centre"](around:${radiusM},${lat},${lng});
-            );
-            out center;
-        `;
-
+        const query = `[out:json][timeout:10];(node["leisure"="fitness_centre"](around:${radiusM},${lat},${lng});node["leisure"="sports_centre"](around:${radiusM},${lat},${lng});node["amenity"="gym"](around:${radiusM},${lat},${lng});way["leisure"="fitness_centre"](around:${radiusM},${lat},${lng});way["leisure"="sports_centre"](around:${radiusM},${lat},${lng}););out center;`;
         const res = await fetch('https://overpass-api.de/api/interpreter', {
             method: 'POST',
             body: query,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         });
-
-        if (!res.ok) throw new Error('Falha ao buscar academias. Tente novamente mais tarde.');
-
+        if (!res.ok) throw new Error('Falha ao buscar academias.');
         const json = await res.json();
-        return json.elements
-            .map(el => {
-                const elLat = el.lat ?? el.center?.lat;
-                const elLng = el.lon ?? el.center?.lon;
-                if (!elLat || !elLng) return null;
-                const dist = haversineDistance(lat, lng, elLat, elLng);
-                const name = el.tags?.name || el.tags?.['name:pt'] || 'Academia sem nome';
-                const street = el.tags?.['addr:street'] || '';
-                const num    = el.tags?.['addr:housenumber'] || '';
-                const city   = el.tags?.['addr:city'] || '';
-                const address = [street, num, city].filter(Boolean).join(', ') || null;
-                return { name, address, lat: elLat, lng: elLng, distance: dist };
-            })
-            .filter(Boolean)
-            .sort((a, b) => a.distance - b.distance);
+        return json.elements.map(el => {
+            const elLat = el.lat ?? el.center?.lat;
+            const elLng = el.lon ?? el.center?.lon;
+            if (!elLat || !elLng) return null;
+            const dist = haversineDistance(lat, lng, elLat, elLng);
+            const name = el.tags?.name || el.tags?.['name:pt'] || 'Academia sem nome';
+            const addr = [el.tags?.['addr:street'], el.tags?.['addr:housenumber'], el.tags?.['addr:city']].filter(Boolean).join(', ') || null;
+            return { name, address: addr, lat: elLat, lng: elLng, distance: dist };
+        }).filter(Boolean).sort((a,b) => a.distance - b.distance);
     }
 
     function haversineDistance(lat1, lng1, lat2, lng2) {
         const R = 6371000;
-        const dLat = toRad(lat2 - lat1);
-        const dLng = toRad(lng2 - lng1);
+        const dLat = toRad(lat2-lat1);
+        const dLng = toRad(lng2-lng1);
         const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng/2)**2;
         return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     }
-
-    function toRad(deg) { return deg * Math.PI / 180; }
-
-    function formatDistance(m) {
-        return m < 1000 ? `${Math.round(m)} m de distância` : `${(m/1000).toFixed(1)} km de distância`;
-    }
+    function toRad(d) { return d * Math.PI/180; }
+    function formatDistance(m) { return m < 1000 ? `${Math.round(m)} m` : `${(m/1000).toFixed(1)} km`; }
 
     // ============================================================
     // AÇÕES
     // ============================================================
     function sendWhatsApp() {
         const names = { segunda:'Segunda', terca:'Terça', quarta:'Quarta', quinta:'Quinta', sexta:'Sexta' };
-        const msg = `Olá, Italo! Sou ${currentStudent.name} e estou com uma dúvida sobre o meu treino de ${names[currentDay]}.`;
+        const msg = `Olá, Italo! Sou ${currentStudent.name} e estou com uma dúvida sobre o treino de ${names[currentDay]}.`;
         window.open(`https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
@@ -529,7 +462,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const container = document.getElementById('toastContainer') || document.body;
         const toast = document.createElement('div');
         toast.className = `toast-aluno ${type}`;
-        toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> <span>${message}</span>`;
+        toast.innerHTML = `<i class="fas fa-${type==='success'?'check-circle':'exclamation-circle'}"></i> <span>${message}</span>`;
         container.appendChild(toast);
         setTimeout(() => toast.remove(), 5000);
     }
